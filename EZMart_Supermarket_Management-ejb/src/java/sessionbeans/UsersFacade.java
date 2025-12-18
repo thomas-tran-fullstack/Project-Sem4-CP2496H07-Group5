@@ -8,6 +8,7 @@ import entityclass.Users;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.NoResultException;
 
 /**
  *
@@ -26,6 +27,53 @@ public class UsersFacade extends AbstractFacade<Users> implements UsersFacadeLoc
 
     public UsersFacade() {
         super(Users.class);
+    }
+    
+    public Users findByUsername(String username) {
+        try {
+            return em.createNamedQuery("Users.findByUsername", Users.class)
+                    .setParameter("username", username)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
+    public Users findByEmail(String email) {
+        try {
+            return em.createNamedQuery("Users.findByEmail", Users.class)
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
+    public Users findByIdentifierAndPassword(String identifier, String passwordHash) {
+        try {
+            Users u = null;
+            // try username
+            try {
+                u = em.createNamedQuery("Users.findByUsername", Users.class)
+                        .setParameter("username", identifier)
+                        .getSingleResult();
+            } catch (NoResultException nre) {
+                // try email
+                try {
+                    u = em.createNamedQuery("Users.findByEmail", Users.class)
+                            .setParameter("email", identifier)
+                            .getSingleResult();
+                } catch (NoResultException ex) {
+                    return null;
+                }
+            }
+            if (u != null && passwordHash != null && passwordHash.equals(u.getPasswordHash())) {
+                return u;
+            }
+            return null;
+        } catch (Exception ex) {
+            return null;
+        }
     }
     
 }

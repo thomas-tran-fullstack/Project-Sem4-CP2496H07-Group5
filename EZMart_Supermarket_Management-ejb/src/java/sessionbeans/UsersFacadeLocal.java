@@ -29,4 +29,8 @@ public interface UsersFacadeLocal {
 
     int count();
     
+    Users findByUsername(String username);
+    Users findByEmail(String email);
+    Users findByIdentifierAndPassword(String identifier, String passwordHash);
+    
 }

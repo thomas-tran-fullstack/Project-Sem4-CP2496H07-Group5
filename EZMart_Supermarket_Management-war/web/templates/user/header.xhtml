@@ -65,16 +65,40 @@
                     <!-- Icon Actions -->
                     <div class="flex items-center gap-3">
                         <!-- Sign In Button (Mobile: hidden text, Desktop: full) -->
-                        <h:link outcome="login"
-                                styleClass="flex items-center justify-center rounded-lg h-10 px-4 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
+                        <h:panelGroup rendered="#{not auth.loggedIn}">
+                            <h:link outcome="login"
+                                    styleClass="flex items-center justify-center rounded-lg h-10 px-4 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
 
-                            <span class="material-symbols-outlined text-[#111813] dark:text-white mr-2">person</span>
-                            <div class="flex flex-col items-start leading-none">
-                                <span class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Sign In</span>
-                                <span class="text-sm text-[#111813] dark:text-white font-bold">Account</span>
+                                <span class="material-symbols-outlined text-[#111813] dark:text-white mr-2">person</span>
+                                <div class="flex flex-col items-start leading-none">
+                                    <span class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Sign In</span>
+                                    <span class="text-sm text-[#111813] dark:text-white font-bold">Account</span>
+                                </div>
+
+                            </h:link>
+                        </h:panelGroup>
+
+                        <!-- Logged In User Dropdown -->
+                        <h:panelGroup rendered="#{auth.loggedIn}" styleClass="relative">
+                            <div class="group" id="user-dropdown-menu">
+                                <button class="flex items-center justify-center rounded-lg h-10 px-4 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
+                                    <span class="material-symbols-outlined text-[#111813] dark:text-white mr-2">person</span>
+                                    <div class="flex flex-col items-start leading-none">
+                                        <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">#{auth.currentUser != null ? auth.currentUser.username : ''}</span>
+                                        <span class="text-sm text-[#111813] dark:text-white font-bold">#{auth.displayName}</span>
+                                    </div>
+                                </button>
+                                <!-- Dropdown -->
+                                <div class="absolute right-0 mt-2 w-44 bg-white dark:bg-[#14231b] border border-[#e8ecea] dark:border-[#2a4034] rounded-md shadow-lg hidden dropdown-menu-content">
+                                    <div class="flex flex-col p-2">
+                                        <h:link outcome="profile" styleClass="px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800">User Profile</h:link>
+                                        <h:form>
+                                            <h:commandButton action="#{auth.logout}" styleClass="px-3 py-2 text-red-600 hover:bg-gray-50 dark:hover:bg-gray-800 w-full text-left" value="Log Out"/>
+                                        </h:form>
+                                    </div>
+                                </div>
                             </div>
-
-                        </h:link>
+                        </h:panelGroup>
 
                         <!-- Cart Button -->
                         <h:link outcome="cart"
@@ -106,4 +130,24 @@
             </div>
         </div>
     </header>
+    <script>//<![CDATA[
+        document.addEventListener('DOMContentLoaded', function() {
+            var dropdown = document.getElementById('user-dropdown-menu');
+            if(dropdown) {
+                var dropdownContent = dropdown.querySelector('.dropdown-menu-content');
+                var closeTimeout;
+                
+                dropdown.addEventListener('mouseenter', function() {
+                    if(closeTimeout) clearTimeout(closeTimeout);
+                    dropdownContent.classList.remove('hidden');
+                });
+                
+                dropdown.addEventListener('mouseleave', function() {
+                    closeTimeout = setTimeout(function() {
+                        dropdownContent.classList.add('hidden');
+                    }, 300);
+                });
+            }
+        });
+    //]]></script>
 </ui:composition>

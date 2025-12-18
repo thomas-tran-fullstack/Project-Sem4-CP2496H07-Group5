@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:define name="content">
+        <main class="flex-grow flex items-center justify-center p-4 lg:p-8">
+            <div class="w-full max-w-md bg-white dark:bg-[#112116] rounded-2xl shadow-xl overflow-hidden p-8 sm:p-12">
+                <!-- Processing Google OAuth -->
+                <div class="text-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                    <h1 class="text-2xl font-bold text-[#111813] dark:text-white mb-2">
+                        Processing Login...
+                    </h1>
+                    <p class="text-[#63886f] dark:text-gray-400">
+                        Please wait while we verify your Google account.
+                    </p>
+                </div>
+                
+                <!-- Hidden form to trigger the controller action -->
+                <h:form style="display: none;">
+                    <h:commandButton id="processOAuth" action="#{auth.processGoogleOAuth()}" immediate="true" />
+                </h:form>
+                
+                <!-- JavaScript to auto-submit the form -->
+                <script>//<![CDATA[
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var btn = document.getElementById('processOAuth');
+                        if (btn) {
+                            setTimeout(function() {
+                                btn.click();
+                            }, 500);
+                        }
+                    });
+                //]]></script>
+            </div>
+        </main>
+    </ui:define>
+</ui:composition>
