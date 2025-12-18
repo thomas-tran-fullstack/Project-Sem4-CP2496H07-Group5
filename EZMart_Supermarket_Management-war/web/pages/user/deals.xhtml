@@ -4,6 +4,267 @@
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="jakarta.faces.facelets">
     <ui:define name="content">
-        
+        <main class="flex-1 flex flex-col items-center w-full px-4 md:px-10 py-6">
+            <div class="w-full max-w-[1200px] flex flex-col gap-8">
+                <!-- Hero Section with Timer -->
+                <section class="@container w-full">
+                    <div class="flex flex-col gap-6 md:gap-8 lg:flex-row bg-white dark:bg-surface-dark rounded-2xl p-6 md:p-8 shadow-sm border border-[#e5e7eb] dark:border-[#2a4030]">
+                        <div class="w-full lg:w-1/2 aspect-video lg:aspect-auto min-h-[240px] bg-center bg-no-repeat bg-cover rounded-xl relative overflow-hidden group" data-alt="Top down view of various fresh vegetables and fruits on a wooden table" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDuxr3kBIPGXgYbJhkkalQqL30BiIVuC0v3yVifnooZcI10km5CApSGnidSiMbatthtb4MEG9LJqqatrzybFifm2i4yFrQiuiC_tke5WLbTQn1haydV7UMKhPS9KKrtuzvwFiR0AfiL0biTU5O_tkr2xGN_W_vrjDPq_elqlSdSWx59hqdO9_hJBhOalkkZek2UXwejvCyVWTkL9IoGB6P2qPvMgDI3RoGIh5EAcuwWIFbKXwO9rgVxHfO20A-9s0x6PioHm7OWTD4");'>
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all duration-500"></div>
+                            <div class="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">Flash Sale</div>
+                        </div>
+                        <div class="flex flex-col justify-center gap-6 w-full lg:w-1/2">
+                            <div class="flex flex-col gap-3">
+                                <h1 class="text-[#111813] dark:text-white text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-[-0.033em]">
+                                    50% Off Organic &amp; Fresh Produce
+                                </h1>
+                                <p class="text-[#63886f] dark:text-gray-300 text-base md:text-lg font-normal leading-relaxed">
+                                    Stock up on vitamins! Huge savings on our premium selection of organic fruits and vegetables. Deal ends soon.
+                                </p>
+                            </div>
+                            <!-- Integrated Timer -->
+                            <div class="flex gap-3 py-2">
+                                <div class="flex flex-col items-center gap-1">
+                                    <div class="flex size-12 items-center justify-center rounded-lg bg-[#f0f4f2] dark:bg-[#2a4030]">
+                                        <p class="text-primary text-xl font-bold">01</p>
+                                    </div>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Days</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-1">
+                                    <div class="flex size-12 items-center justify-center rounded-lg bg-[#f0f4f2] dark:bg-[#2a4030]">
+                                        <p class="text-primary text-xl font-bold">04</p>
+                                    </div>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Hrs</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-1">
+                                    <div class="flex size-12 items-center justify-center rounded-lg bg-[#f0f4f2] dark:bg-[#2a4030]">
+                                        <p class="text-primary text-xl font-bold">23</p>
+                                    </div>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Mins</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-1">
+                                    <div class="flex size-12 items-center justify-center rounded-lg bg-[#f0f4f2] dark:bg-[#2a4030]">
+                                        <p class="text-primary text-xl font-bold">18</p>
+                                    </div>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Secs</span>
+                                </div>
+                            </div>
+                            <button class="w-fit flex items-center justify-center rounded-lg h-12 px-8 bg-primary hover:bg-primary-dark transition-colors text-white text-base font-bold tracking-[0.015em] shadow-lg shadow-primary/30">
+                                Shop Flash Sale
+                            </button>
+                        </div>
+                    </div>
+                </section>
+                <!-- Filter Chips -->
+                <section class="flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-[#111813] dark:text-white">Categories</h3>
+                        <button class="text-sm font-bold text-primary hover:underline">View All</button>
+                    </div>
+                    <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                        <button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary text-white px-6 shadow-md shadow-primary/20 transition-transform active:scale-95">
+                            <span class="text-sm font-bold">All Deals</span>
+                        </button>
+                        <button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a4030] px-6 text-[#111813] dark:text-gray-200 hover:border-primary hover:text-primary transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">nutrition</span>
+                            <span class="text-sm font-medium">Fresh Food</span>
+                        </button>
+                        <button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a4030] px-6 text-[#111813] dark:text-gray-200 hover:border-primary hover:text-primary transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">local_drink</span>
+                            <span class="text-sm font-medium">Beverages</span>
+                        </button>
+                        <button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a4030] px-6 text-[#111813] dark:text-gray-200 hover:border-primary hover:text-primary transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">cleaning_services</span>
+                            <span class="text-sm font-medium">Household</span>
+                        </button>
+                        <button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a4030] px-6 text-[#111813] dark:text-gray-200 hover:border-primary hover:text-primary transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+                            <span class="text-sm font-medium">Bundle Offers</span>
+                        </button>
+                        <button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a4030] px-6 text-[#111813] dark:text-gray-200 hover:border-primary hover:text-primary transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">pets</span>
+                            <span class="text-sm font-medium">Pet Care</span>
+                        </button>
+                    </div>
+                </section>
+                <!-- Deals Grid -->
+                <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10">
+                    <!-- Card 1 -->
+                    <article class="flex flex-col gap-3 group bg-white dark:bg-surface-dark rounded-xl p-3 border border-transparent hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <div class="w-full h-full bg-center bg-no-repeat bg-cover group-hover:scale-105 transition-transform duration-500" data-alt="A basket full of red fresh apples" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDgrDeMP_jokzCXDTGSymb8bARJIXupIJ_UzfiyW-FtvPHHMepnvt9AhP3h-9LCWL-XMnUjalGDIeLRr83ErSm-RML0_-qNrbk9s2Uvwjha9q_d_AgTaTrX_uYYn5FjqOWmBGl62OHM4S2X-AisWcQvgDLwasreONW5q9hi9f0k9b9S-9_6Wep6FDGIYFjBUsrB42gXIUGo-aD-Bbt8Gbi-at6plKyMxTxuLL-Q3EqkBEk4lWayeXxnSJ5necFX6bhBHjLeg1plG_Y");'>
+                            </div>
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">-20% OFF</div>
+                            <button class="absolute bottom-2 right-2 size-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:text-primary">
+                                <span class="material-symbols-outlined text-[20px]">favorite</span>
+                            </button>
+                        </div>
+                        <div class="flex flex-col gap-1 px-1">
+                            <h4 class="text-[#111813] dark:text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">Apple Bundle</h4>
+                            <p class="text-[#63886f] text-xs font-normal leading-normal">Fresh Orchard Apples (3kg)</p>
+                            <div class="flex items-end justify-between mt-2">
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-gray-400 line-through">$15.00</span>
+                                    <span class="text-lg font-bold text-primary">$12.00</span>
+                                </div>
+                                <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-[#f0f4f2] dark:bg-[#2a4030] text-[#111813] dark:text-white text-sm font-bold hover:bg-primary hover:text-white transition-colors">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- Card 2 -->
+                    <article class="flex flex-col gap-3 group bg-white dark:bg-surface-dark rounded-xl p-3 border border-transparent hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <div class="w-full h-full bg-center bg-no-repeat bg-cover group-hover:scale-105 transition-transform duration-500" data-alt="Yellow liquid detergent bottle with lemons" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA0twXfYRTGzM30Wfu4BM-N4mf16WocdrWs-L4v0jwNj5W_yCZT61fiIgoWSH8CYwECoLaPBWzvcmyWpnyxBIbbRGiT7BgdfEBogmwLXnFdm6J43X91w6A-tHebdBXfRzWpDnqk5xlCvriuCy1cqfy9yq1JlGPtH9Ijrj6zJVHbqDsNEZNO1t1wb9Aiv4RBka1f9rT3G1Cc7rBtq1W7yt6R3vObelAptwsq6hbQ9mFvSCzI2Tzbl6JW7IUuRZFefqiQWVggh9m7rc8");'>
+                            </div>
+                            <div class="absolute top-2 left-2 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">BOGO FREE</div>
+                        </div>
+                        <div class="flex flex-col gap-1 px-1">
+                            <h4 class="text-[#111813] dark:text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">Lemon Detergent</h4>
+                            <p class="text-[#63886f] text-xs font-normal leading-normal">Buy 1 Get 1 Free - Lemon Scent</p>
+                            <div class="flex items-end justify-between mt-2">
+                                <div class="flex flex-col">
+                                    <span class="text-lg font-bold text-primary">$8.50</span>
+                                </div>
+                                <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-[#f0f4f2] dark:bg-[#2a4030] text-[#111813] dark:text-white text-sm font-bold hover:bg-primary hover:text-white transition-colors">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- Card 3 -->
+                    <article class="flex flex-col gap-3 group bg-white dark:bg-surface-dark rounded-xl p-3 border border-transparent hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <div class="w-full h-full bg-center bg-no-repeat bg-cover group-hover:scale-105 transition-transform duration-500" data-alt="Glass bottle of milk on a table" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAt14dcSXFVTm6mqPFN5dncyhvQU0NIKvCCBvZTLVPdT740HsZimfNPb6oUQVPXBGU6hxRifwyqtOSHrWke1ji9K4YNSGwUQVflheQW8CqubTcqckjx6hzfPE_XrUuLpRIscm4i_-WsdeAcbFX9tqViUE-gaEu0DwNP0Q9kU9irFpgOXELNk1Do6fewWZw2M0vjzl5x1RlRcAUfaME5gvqHVygw4tw_Gm5Fz4-qBhg20SYNLAikM86dQs1agkz8btAt_h1KOAuilvo");'>
+                            </div>
+                            <div class="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">SAVE $2</div>
+                        </div>
+                        <div class="flex flex-col gap-1 px-1">
+                            <h4 class="text-[#111813] dark:text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">Organic Whole Milk</h4>
+                            <p class="text-[#63886f] text-xs font-normal leading-normal">1 Gallon - Farm Fresh</p>
+                            <div class="flex items-end justify-between mt-2">
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-gray-400 line-through">$6.99</span>
+                                    <span class="text-lg font-bold text-primary">$4.99</span>
+                                </div>
+                                <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-[#f0f4f2] dark:bg-[#2a4030] text-[#111813] dark:text-white text-sm font-bold hover:bg-primary hover:text-white transition-colors">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- Card 4 -->
+                    <article class="flex flex-col gap-3 group bg-white dark:bg-surface-dark rounded-xl p-3 border border-transparent hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <div class="w-full h-full bg-center bg-no-repeat bg-cover group-hover:scale-105 transition-transform duration-500" data-alt="Assorted chips and snacks in bowls" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCuL40pEU8r3mIM74FxyFW3AqHWKMtz1I_c83Lwx3G46sVL3R7AkTD0RoMGBeTZ-xUmZg7ScjsjgxfCBzEYxDhIuKtKjf9s-E1KdJqb1NTqlSsQRpXtgUdK0aswKcRwMtUwlxvNshg6GFif-yORa0KnUXwX9uO_29Yb5lsxc0hHUslYdZEQRu0Ehit11A8Xsii5IlN6RIuZ9dOiVbbFk7EKTABrMuE8l54bCdoHsifpNq_ARMRS_o1_MuwbEvPEDSnYys49F8-059M");'>
+                            </div>
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">-30% OFF</div>
+                        </div>
+                        <div class="flex flex-col gap-1 px-1">
+                            <h4 class="text-[#111813] dark:text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">Party Snack Pack</h4>
+                            <p class="text-[#63886f] text-xs font-normal leading-normal">Family Size Assortment</p>
+                            <div class="flex items-end justify-between mt-2">
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-gray-400 line-through">$20.00</span>
+                                    <span class="text-lg font-bold text-primary">$14.00</span>
+                                </div>
+                                <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-[#f0f4f2] dark:bg-[#2a4030] text-[#111813] dark:text-white text-sm font-bold hover:bg-primary hover:text-white transition-colors">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- Card 5 -->
+                    <article class="flex flex-col gap-3 group bg-white dark:bg-surface-dark rounded-xl p-3 border border-transparent hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <div class="w-full h-full bg-center bg-no-repeat bg-cover group-hover:scale-105 transition-transform duration-500" data-alt="Bottle of sunflower oil on wooden table" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDs7I_KBEI18232muWw1pKRJrXcGY6h4XwFeVHLto_FPx6WV6SA_ahs8I4zajMTdKWzKFUMmt4wXNFyuaunh4HcChaqiClLb9TGZ1qkxXTOhvatgoBIvWkedM4gf_OWGsNvX9pBk9sUM2psjtBHj9xju0Ecg7oH-4eys8eHgmDWY1JhmUlYwrku2S1At81BRg4qBm265p8dC_zwakwmmdhLZ8NKomb9vfZyLlAVVfc_MQeEWxVIYC1H41-K0kc57AXjYgX7HpW8S4c");'>
+                            </div>
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">-15% OFF</div>
+                        </div>
+                        <div class="flex flex-col gap-1 px-1">
+                            <h4 class="text-[#111813] dark:text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">Sunflower Oil</h4>
+                            <p class="text-[#63886f] text-xs font-normal leading-normal">1L Pure Sunflower Oil</p>
+                            <div class="flex items-end justify-between mt-2">
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-gray-400 line-through">$5.50</span>
+                                    <span class="text-lg font-bold text-primary">$4.68</span>
+                                </div>
+                                <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-[#f0f4f2] dark:bg-[#2a4030] text-[#111813] dark:text-white text-sm font-bold hover:bg-primary hover:text-white transition-colors">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- Card 6 -->
+                    <article class="flex flex-col gap-3 group bg-white dark:bg-surface-dark rounded-xl p-3 border border-transparent hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <div class="w-full h-full bg-center bg-no-repeat bg-cover group-hover:scale-105 transition-transform duration-500" data-alt="Cans of cola on ice" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA1_noAZpmaszZd1eCtwsajEeEU86KH-Qpy7paf3jZHDLOk7-swOg-dg_A49TEIXVaVPm5VRj14uEdmNEuqib6mw8_S5V8N7wJJfm86oqBPPN2R4_gPFOpkvMHojOKQalBRuvNtBGwSwZ5kfMQSiqtnnmpGcoNxVnF1dv0pQ2yZoAIWS7mvqK-F2ycdWChS1O2cR9ZIyDJ5_T_vleHFthf1K7929EZjg6zcH17utBB5r9YCimk1dTSfX4aPo5v86b2G1vbO4Hv1ugI");'>
+                            </div>
+                            <div class="absolute top-2 left-2 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">BUY 2 GET 1</div>
+                        </div>
+                        <div class="flex flex-col gap-1 px-1">
+                            <h4 class="text-[#111813] dark:text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">Cola 6-Pack</h4>
+                            <p class="text-[#63886f] text-xs font-normal leading-normal">Refreshing Soda Cans</p>
+                            <div class="flex items-end justify-between mt-2">
+                                <div class="flex flex-col">
+                                    <span class="text-lg font-bold text-primary">$6.00</span>
+                                </div>
+                                <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-[#f0f4f2] dark:bg-[#2a4030] text-[#111813] dark:text-white text-sm font-bold hover:bg-primary hover:text-white transition-colors">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- Card 7 -->
+                    <article class="flex flex-col gap-3 group bg-white dark:bg-surface-dark rounded-xl p-3 border border-transparent hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <div class="w-full h-full bg-center bg-no-repeat bg-cover group-hover:scale-105 transition-transform duration-500" data-alt="Pack of toilet paper rolls" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBnlN-4K53HIQEgRED3FE3BKJV10V5jTq8XOnP3vPHVQOe9Y_AZ5y-sK15vnkTVIkJigpzp-aY3xcsWBbSrYqLOSb59Ft22m_-VKOP_nFO88o6jIgwAz3Sn3oChSDrlxtxzaGlhEclfBaCs4h6yUYkW9bjtZSWOCFv4n5vY9hcMBio1DmyNiSEEj5Za1uldhzD97sUHu9E84xgM_pPXUSk-Dqum2BEOIoY0-FOwt_Lnq38CF3vTgVtPuySdxRGX9eaZThqAyRxi_Lc");'>
+                            </div>
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">-25% OFF</div>
+                        </div>
+                        <div class="flex flex-col gap-1 px-1">
+                            <h4 class="text-[#111813] dark:text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">Soft Tissue Pack</h4>
+                            <p class="text-[#63886f] text-xs font-normal leading-normal">12 Rolls - Ultra Soft</p>
+                            <div class="flex items-end justify-between mt-2">
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-gray-400 line-through">$12.00</span>
+                                    <span class="text-lg font-bold text-primary">$9.00</span>
+                                </div>
+                                <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-[#f0f4f2] dark:bg-[#2a4030] text-[#111813] dark:text-white text-sm font-bold hover:bg-primary hover:text-white transition-colors">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- Card 8 -->
+                    <article class="flex flex-col gap-3 group bg-white dark:bg-surface-dark rounded-xl p-3 border border-transparent hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <div class="w-full h-full bg-center bg-no-repeat bg-cover group-hover:scale-105 transition-transform duration-500" data-alt="Jar of instant coffee beans" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBunP45TGbvkCNcWp---s0IpGCROVd2gZNnju32uiz6z9QK6JNnXCVLxqoGR-tk99rfkthGMDLUpqMJPZbu_CR7MSc7fOVl5wEpl_o7pvG-x-8At5z8V04OvdNi_ExVGxysQy-ulruytrkNpDa-MfuFuE-HUjMKD6Th3hRAy1MS7qwS9i3WvBdknG3Oj3WGuFauEO6bMVQcL5ErMSXb0FNJz6Vn_xEaNSPbHTFshs-73kGxiQn8XwGD3CxRlB5NvgXcQ6nBavofnOc");'>
+                            </div>
+                            <div class="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">NEW ARRIVAL</div>
+                        </div>
+                        <div class="flex flex-col gap-1 px-1">
+                            <h4 class="text-[#111813] dark:text-white text-base font-bold leading-tight group-hover:text-primary transition-colors">Premium Coffee</h4>
+                            <p class="text-[#63886f] text-xs font-normal leading-normal">200g Instant Coffee Jar</p>
+                            <div class="flex items-end justify-between mt-2">
+                                <div class="flex flex-col">
+                                    <span class="text-lg font-bold text-primary">$11.50</span>
+                                </div>
+                                <button class="flex items-center justify-center rounded-lg h-9 px-4 bg-[#f0f4f2] dark:bg-[#2a4030] text-[#111813] dark:text-white text-sm font-bold hover:bg-primary hover:text-white transition-colors">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                </section>
+                <div class="flex justify-center pb-12">
+                    <button class="flex items-center gap-2 px-6 py-3 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-white dark:hover:bg-surface-dark hover:shadow-md transition-all">
+                        <span class="text-sm font-bold text-gray-600 dark:text-gray-300">Load More Deals</span>
+                        <span class="material-symbols-outlined text-[20px] text-gray-600 dark:text-gray-300">expand_more</span>
+                    </button>
+                </div>
+            </div>
+        </main>
     </ui:define>
 </ui:composition>
