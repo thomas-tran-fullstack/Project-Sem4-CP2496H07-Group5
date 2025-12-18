@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets">
+    <ui:define name="content">
+
+        <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap gap-2 py-4 mb-4">
+                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="#">Home</a>
+                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="#">Account</a>
+                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                <span class="text-[#111813] dark:text-white text-sm font-medium leading-normal">Profile</span>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <!-- Sidebar Navigation -->
+                <aside class="lg:col-span-3 w-full">
+                    <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] overflow-hidden">
+                        <!-- User Mini Profile -->
+                        <div class="p-6 border-b border-[#f0f4f2] dark:border-[#2a3e32] flex gap-3 items-center">
+                            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" data-alt="User avatar small" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBdzlAa0gemhz6488zVN0E9xVDHWuAum4ZtPTSat9CJz5vt0emvzPjkblV5l2HrCW3ILEvh_YHOtPzqbVDxHJgLiMpi9Nxime1_lEfoggmp330hAi36BzeE1O57_I3XUNzj6jnag4KNEOTjwabsN1rQ3ZwbPF85NpyEDvNGHK2kuYdIgaz6HM0YRZwiewUDnB_oLVPtDMtsDXDgOTBOM5fqjLztvquEkWZip-D41t-xNXv66X-kUXwPfliIMjqXCwMmTrGjfjjkmV0");'>
+                            </div>
+                            <div class="flex flex-col">
+                                <h1 class="text-[#111813] dark:text-white text-sm font-bold">Jane Doe</h1>
+                                <p class="text-[#63886f] text-xs">Member since 2023</p>
+                            </div>
+                        </div>
+                        <!-- Navigation Links -->
+                        <nav class="flex flex-col p-2 gap-1">
+                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary transition-all" href="#">
+                                <span class="material-symbols-outlined fill">person</span>
+                                <span class="text-sm font-bold">Personal Info</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all" href="#">
+                                <span class="material-symbols-outlined">location_on</span>
+                                <span class="text-sm font-medium">My Addresses</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all" href="#">
+                                <span class="material-symbols-outlined">credit_card</span>
+                                <span class="text-sm font-medium">Payment Methods</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all" href="#">
+                                <span class="material-symbols-outlined">notifications</span>
+                                <span class="text-sm font-medium">Notification Settings</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all" href="#">
+                                <span class="material-symbols-outlined">package_2</span>
+                                <span class="text-sm font-medium">Order History</span>
+                            </a>
+                            <div class="h-px bg-[#f0f4f2] dark:bg-[#2a3e32] my-1 mx-2"></div>
+                            <button class="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all w-full text-left">
+                                <span class="material-symbols-outlined">logout</span>
+                                <span class="text-sm font-bold">Sign Out</span>
+                            </button>
+                        </nav>
+                    </div>
+                </aside>
+                <!-- Main Content Area -->
+                <main class="lg:col-span-9 flex flex-col gap-6">
+                    <!-- Page Heading & Profile Header Combined -->
+                    <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-primary/20 to-green-100 dark:from-primary/10 dark:to-[#1a2e22]"></div>
+                        <div class="relative flex flex-col md:flex-row gap-6 items-end md:items-center mt-8">
+                            <div class="relative group">
+                                <div class="bg-center bg-no-repeat bg-cover rounded-full size-28 border-4 border-white dark:border-surface-dark shadow-md" data-alt="User profile picture large" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCRyJuBQnXcmTT0AyQSiSfVpVuffP6kFDRA2FcJgPxLcNaNVUalP5Vh8MtgIu3kR8OOLIRX6-Cgi0MIGTuDwf0jMvff3cFYOnS-bXyjRLEtzrTy5G98E6bKvZY26T35QxSiAml9DbKk2SgY5i0eAPaJLMwS_tLu1JGy8xeuAAs_5LqMQdVPhVTVIXu2Jx7x0wArZzigUzgQQr7sYjS6qIxoKN_EljvMEDYGfM4QIYG4FPetO4B-QpVLfOJi_vnB8v0iuolJ3b9cggk");'>
+                                </div>
+                                <button class="absolute bottom-0 right-0 bg-white dark:bg-[#2a3e32] rounded-full p-2 border border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-[#111813] dark:text-white transition-colors">
+                                    <span class="material-symbols-outlined text-[18px] leading-none">photo_camera</span>
+                                </button>
+                            </div>
+                            <div class="flex-1 pb-2">
+                                <h2 class="text-2xl md:text-3xl font-black text-[#111813] dark:text-white tracking-tight">Jane Doe</h2>
+                                <div class="flex flex-wrap gap-3 mt-1 items-center text-[#63886f]">
+                                    <span class="flex items-center gap-1 text-sm"><span class="material-symbols-outlined text-[18px]">mail</span> jane.doe@example.com</span>
+                                    <span class="hidden md:inline text-gray-300">|</span>
+                                    <span class="flex items-center gap-1 text-sm bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-2 py-0.5 rounded-full font-medium">
+                                        <span class="material-symbols-outlined text-[16px] fill">stars</span> Gold Member
+                                    </span>
+                                </div>
+                            </div>
+                            <button class="hidden md:flex items-center justify-center h-10 px-5 bg-[#f0f4f2] dark:bg-[#2a3e32] text-[#111813] dark:text-white text-sm font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-[#354a3d] transition-colors whitespace-nowrap">
+                                Edit Public Profile
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Personal Information Form -->
+                    <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 lg:p-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-[#111813] dark:text-white">Personal Information</h3>
+                                <p class="text-[#63886f] text-sm mt-1">Manage your personal details and account preferences.</p>
+                            </div>
+                        </div>
+                        <form class="flex flex-col gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[#111813] dark:text-white text-sm font-medium">First Name</label>
+                                    <input class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors" type="text" value="Jane"/>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[#111813] dark:text-white text-sm font-medium">Last Name</label>
+                                    <input class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors" type="text" value="Doe"/>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[#111813] dark:text-white text-sm font-medium">Email Address</label>
+                                    <div class="relative">
+                                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-[#63886f]">mail</span>
+                                        <input class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors" type="email" value="jane.doe@example.com"/>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[#111813] dark:text-white text-sm font-medium">Phone Number</label>
+                                    <div class="relative">
+                                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-[#63886f]">call</span>
+                                        <input class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors" type="tel" value="+1 (555) 123-4567"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="h-px bg-[#f0f4f2] dark:bg-[#2a3e32] my-2"></div>
+                            <div class="flex justify-end gap-3">
+                                <button class="px-6 h-11 rounded-lg border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white font-bold text-sm hover:bg-gray-50 dark:hover:bg-[#25382c] transition-colors" type="button">Cancel</button>
+                                <button class="px-6 h-11 rounded-lg bg-primary hover:bg-[#14b84b] text-[#111813] font-bold text-sm transition-colors shadow-sm flex items-center gap-2" type="button">
+                                    <span class="material-symbols-outlined text-[20px]">check</span>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Addresses Section (Simulated below for demo) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Delivery Address Card -->
+                        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 flex flex-col justify-between h-full">
+                            <div>
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="p-2 bg-primary/10 rounded-lg text-primary">
+                                            <span class="material-symbols-outlined">home</span>
+                                        </div>
+                                        <span class="text-[#111813] dark:text-white font-bold">Home</span>
+                                        <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs rounded-full font-bold">Default</span>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button class="text-[#63886f] hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+                                        <button class="text-[#63886f] hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+                                    </div>
+                                </div>
+                                <p class="text-[#63886f] text-sm leading-relaxed mb-4">
+                                    1234 Greenway Blvd, Apt 4B<br/>
+                                    Springfield, IL 62704<br/>
+                                    United States
+                                </p>
+                            </div>
+                            <div class="h-32 w-full rounded-lg bg-gray-100 dark:bg-[#25382c] bg-cover bg-center overflow-hidden relative" data-alt="Map thumbnail of delivery location" data-location="Springfield" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCctsRS31zW1dIJNWLFpGbbjDPi6XzD5AQLDW_Lj5nlQGtL1Em_NVzytmOG2Sxq5IyzLjrk03LmpNxCOrM2z_XY6VKXN1bNEhgiJLDNJRnto52xjI18DrkVmxgVv0tvSZirMQwjreKgH_dkx3J3KKNU72xKuznZ4rVL9Wp2k56B91hKW4_wipNLgjsnQdd_Sl5yN2LSkbMAQk4pzvNGEmkupyjSvCetufnoyfPUA8eP81aBs3xocaQG-_naT-GNffdPPJAqYmmvvCM');">
+                                <div class="absolute inset-0 bg-black/10"></div>
+                            </div>
+                        </div>
+                        <!-- Add New Address Card -->
+                        <button class="border-2 border-dashed border-[#e5e7eb] dark:border-[#2a3e32] rounded-xl p-6 flex flex-col items-center justify-center min-h-[200px] text-[#63886f] hover:border-primary hover:text-primary hover:bg-primary/5 transition-all group cursor-pointer h-full">
+                            <div class="size-14 rounded-full bg-[#f0f4f2] dark:bg-[#25382c] flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-[#111813] transition-colors">
+                                <span class="material-symbols-outlined text-3xl">add</span>
+                            </div>
+                            <span class="font-bold text-lg">Add New Address</span>
+                        </button>
+                    </div>
+                    <!-- Payment & Notifications Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Payment Methods -->
+                        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-bold text-[#111813] dark:text-white">Payment Methods</h3>
+                                <button class="text-primary text-sm font-bold hover:underline">Add New</button>
+                            </div>
+                            <div class="flex flex-col gap-4">
+                                <div class="flex items-center justify-between p-4 rounded-lg border border-[#e5e7eb] dark:border-[#2a3e32] bg-[#f9fafb] dark:bg-[#1f3326]">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-8 bg-white dark:bg-white rounded border border-gray-200 flex items-center justify-center">
+                                            <img alt="Visa" class="h-4 w-auto" data-alt="Visa logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy3n_L1bPMJ54ZTmJ1kNk9x2v-H6mzph16teqMAt3PGoZLwq3Yj4WVPieVJrQzrlLcsjsNm8XF2KCdGJ1IGFFZyxsDhACiIBaYcneMbdqWievRnqH-bcYexwfK0CXwVAu7w0kcrtNY85n6PNdDXtQG1U3ceaQ_yKhjL3myIpZ-lZmRq8zZQZiL4W2AehLiZag17zVcRN27JipPVcoj_oVBBkblSkV5WR95XnK2KmE-R8_kBk4_8ClQxHZT2YioBIK7jF8i0jufHnA"/>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[#111813] dark:text-white text-sm font-bold">Visa ending in 4242</span>
+                                            <span class="text-[#63886f] text-xs">Expires 12/25</span>
+                                        </div>
+                                    </div>
+                                    <span class="material-symbols-outlined text-[#17cf54]">check_circle</span>
+                                </div>
+                                <div class="flex items-center justify-between p-4 rounded-lg border border-[#e5e7eb] dark:border-[#2a3e32]">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-8 bg-white dark:bg-white rounded border border-gray-200 flex items-center justify-center">
+                                            <img alt="Mastercard" class="h-5 w-auto" data-alt="Mastercard logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDifrWLKWYlT02-4UzU5tXlZvk5vlEMAtFLPMO_jYeQ2jb9jr_wPjQ_tSbbNo1jRcvl5IYdAorawn2X3lC7_ooA0ZxVuwGfGrAkEnlteteiApTuL8-y-NlaLW8vd9FGgfk8LsFjkeQ3CNSWt8Jo3cujf-_QnQGfLi6Omqz_K1aEdnL2i8KtU_UNU71QKCSsQkvYM6jjqg5sUwVKWxr0ONQpTRxSuB5WW0aeQkkl3NqbEQdPV3076pLlgEmEUurfifBgpDlAQ2o2J4"/>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[#111813] dark:text-white text-sm font-bold">Mastercard ending in 8899</span>
+                                            <span class="text-[#63886f] text-xs">Expires 09/24</span>
+                                        </div>
+                                    </div>
+                                    <button class="text-[#63886f] hover:text-[#111813] text-sm">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Notification Settings -->
+                        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6">
+                            <h3 class="text-lg font-bold text-[#111813] dark:text-white mb-6">Notification Settings</h3>
+                            <div class="flex flex-col gap-6">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <span class="text-[#111813] dark:text-white text-sm font-bold">Order Updates</span>
+                                        <span class="text-[#63886f] text-xs">Receive updates about your order status.</span>
+                                    </div>
+                                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                        <input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 dark:border-gray-500 checked:right-0 checked:border-primary transition-all duration-300" id="toggle1" name="toggle" type="checkbox"/>
+                                        <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer checked:bg-primary transition-all duration-300" for="toggle1"></label>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <span class="text-[#111813] dark:text-white text-sm font-bold">Promotions &amp; Deals</span>
+                                        <span class="text-[#63886f] text-xs">Receive emails about new products and deals.</span>
+                                    </div>
+                                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                        <input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 dark:border-gray-500 checked:right-0 checked:border-primary transition-all duration-300" id="toggle2" name="toggle" type="checkbox"/>
+                                        <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer checked:bg-primary transition-all duration-300" for="toggle2"></label>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <span class="text-[#111813] dark:text-white text-sm font-bold">SMS Notifications</span>
+                                        <span class="text-[#63886f] text-xs">Get text messages for delivery alerts.</span>
+                                    </div>
+                                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                        <input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 dark:border-gray-500 checked:right-0 checked:border-primary transition-all duration-300" id="toggle3" name="toggle" type="checkbox"/>
+                                        <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer checked:bg-primary transition-all duration-300" for="toggle3"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

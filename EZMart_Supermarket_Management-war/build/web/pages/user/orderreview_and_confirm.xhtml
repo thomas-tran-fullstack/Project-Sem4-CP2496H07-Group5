@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets">
+    <ui:define name="content">
+
+        <main class="flex-grow container mx-auto px-4 lg:px-8 py-8 max-w-7xl">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap items-center gap-2 mb-8 text-sm">
+                <a class="text-text-muted hover:text-primary transition-colors" href="#">Cart</a>
+                <span class="text-text-muted">/</span>
+                <a class="text-text-muted hover:text-primary transition-colors" href="#">Shipping</a>
+                <span class="text-text-muted">/</span>
+                <a class="text-text-muted hover:text-primary transition-colors" href="#">Payment</a>
+                <span class="text-text-muted">/</span>
+                <span class="text-primary font-bold">Review</span>
+            </div>
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Left Column: Details -->
+                <div class="w-full lg:w-2/3 flex flex-col gap-6">
+                    <!-- Page Heading -->
+                    <div class="flex flex-col gap-2">
+                        <h1 class="text-3xl lg:text-4xl font-black text-text-main dark:text-white tracking-tight">Review Your Order</h1>
+                        <p class="text-text-muted">Please check your details before confirming.</p>
+                    </div>
+                    <!-- Shipping & Payment Info Cards -->
+                    <section>
+                        <h2 class="text-xl font-bold text-text-main dark:text-white mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">local_shipping</span>
+                            Shipping &amp; Payment
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Shipping Address -->
+                            <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-sm border border-transparent dark:border-white/5 flex flex-col justify-between h-full">
+                                <div>
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex items-center gap-2 text-text-muted text-sm font-medium uppercase tracking-wider">
+                                            <span class="material-symbols-outlined text-lg">location_on</span>
+                                            Shipping Address
+                                        </div>
+                                        <button class="text-primary hover:text-primary/80 text-sm font-bold flex items-center gap-1">
+                                            Edit <span class="material-symbols-outlined text-base">edit</span>
+                                        </button>
+                                    </div>
+                                    <p class="text-text-main dark:text-white font-bold text-lg mb-1">John Doe</p>
+                                    <p class="text-text-muted text-sm leading-relaxed">
+                                        123 Market St, Apt 4B<br/>
+                                        Springfield, IL 62704<br/>
+                                        United States
+                                    </p>
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-dashed border-gray-200 dark:border-white/10">
+                                    <p class="text-text-muted text-xs">Standard Delivery (3-5 Days)</p>
+                                </div>
+                            </div>
+                            <!-- Payment Method -->
+                            <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-sm border border-transparent dark:border-white/5 flex flex-col justify-between h-full">
+                                <div>
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex items-center gap-2 text-text-muted text-sm font-medium uppercase tracking-wider">
+                                            <span class="material-symbols-outlined text-lg">credit_card</span>
+                                            Payment Method
+                                        </div>
+                                        <button class="text-primary hover:text-primary/80 text-sm font-bold flex items-center gap-1">
+                                            Edit <span class="material-symbols-outlined text-base">edit</span>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <div class="w-10 h-6 bg-blue-900 rounded flex items-center justify-center text-white text-[10px] font-bold tracking-tighter italic">VISA</div>
+                                        <p class="text-text-main dark:text-white font-bold text-lg">•••• 4242</p>
+                                    </div>
+                                    <p class="text-text-muted text-sm">Expires 12/28</p>
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-dashed border-gray-200 dark:border-white/10">
+                                    <p class="text-text-muted text-xs">Billing address same as shipping</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Order Items -->
+                    <section class="mt-4">
+                        <h2 class="text-xl font-bold text-text-main dark:text-white mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">shopping_basket</span>
+                            Your Items (3)
+                        </h2>
+                        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-transparent dark:border-white/5 overflow-hidden">
+                            <!-- Item 1 -->
+                            <div class="flex items-center gap-4 p-4 border-b border-gray-100 dark:border-white/5 last:border-0">
+                                <div class="size-20 shrink-0 bg-background-light dark:bg-background-dark rounded-lg flex items-center justify-center overflow-hidden">
+                                    <img class="w-full h-full object-cover mix-blend-multiply dark:mix-blend-normal" data-alt="Bunch of fresh organic yellow bananas" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClAmb4pPKLeqbvyf3L2aJY-v_3A8Zny2FcQVLtxOH0gEyQzTrE6A-A-4MVtxBM6d3-XFM4O0mP_6QIauFV2BRdplbS4zNU_O9fHeudf1O_ho-hHwOqnuhYPK43-WYGJdYHWBH3gzWo5cjQqaNlkiYueLP6qCWqmSalFUnAedPEyTBXLt4l6_fXjOkFoFzctkg5EcEDG2gctRes1930tuZUd9qgWsH0lHZZL5id9oT-bSmJ0t-LteiQUr_j4w_aD32H_qHk0CNe76s"/>
+                                </div>
+                                <div class="flex-grow min-w-0">
+                                    <h3 class="text-text-main dark:text-white font-bold truncate">Organic Bananas</h3>
+                                    <p class="text-text-muted text-sm">Approx. 1 bunch</p>
+                                    <div class="mt-1 flex items-center gap-2 md:hidden">
+                                        <span class="text-text-main dark:text-white font-medium">$1.49</span>
+                                        <span class="text-text-muted text-xs">x 1</span>
+                                    </div>
+                                </div>
+                                <div class="hidden md:block text-right">
+                                    <p class="text-text-muted text-sm">Qty: 1</p>
+                                    <p class="text-text-main dark:text-white font-medium">$1.49 / bunch</p>
+                                </div>
+                                <div class="text-right min-w-[80px]">
+                                    <p class="text-text-main dark:text-white font-bold text-lg">$1.49</p>
+                                </div>
+                            </div>
+                            <!-- Item 2 -->
+                            <div class="flex items-center gap-4 p-4 border-b border-gray-100 dark:border-white/5 last:border-0">
+                                <div class="size-20 shrink-0 bg-background-light dark:bg-background-dark rounded-lg flex items-center justify-center overflow-hidden">
+                                    <img class="w-full h-full object-cover mix-blend-multiply dark:mix-blend-normal" data-alt="Plastic jug of fresh whole milk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBs2zBJI4AL3csu0kJ_RpOTCUcjcLTgYbZIKqF07thY-jACVq0BeCQTUumECiHJuEqBUyIOvkEldjkRueuM7fh3xaMQg-KEMWRxSJcweBj8GMemUpJhFWbK_9DvJ2di8dVfHkGYFimxjL0FqABe_o2LyPB1RB9OV6OyYJpmJfWeOcHhBCT-BE6j3n3_aaS3iefgbuOU_GDyf5N5n-GVFKirc7vCJjQ3EEcHGgmKYK8a7bTHFBVeUI175xr5XVquBLc26GHI7taP3Q4"/>
+                                </div>
+                                <div class="flex-grow min-w-0">
+                                    <h3 class="text-text-main dark:text-white font-bold truncate">Whole Milk</h3>
+                                    <p class="text-text-muted text-sm">1 Gallon</p>
+                                    <div class="mt-1 flex items-center gap-2 md:hidden">
+                                        <span class="text-text-main dark:text-white font-medium">$3.99</span>
+                                        <span class="text-text-muted text-xs">x 2</span>
+                                    </div>
+                                </div>
+                                <div class="hidden md:block text-right">
+                                    <p class="text-text-muted text-sm">Qty: 2</p>
+                                    <p class="text-text-main dark:text-white font-medium">$3.99 / ea</p>
+                                </div>
+                                <div class="text-right min-w-[80px]">
+                                    <p class="text-text-main dark:text-white font-bold text-lg">$7.98</p>
+                                </div>
+                            </div>
+                            <!-- Item 3 -->
+                            <div class="flex items-center gap-4 p-4 border-b border-gray-100 dark:border-white/5 last:border-0">
+                                <div class="size-20 shrink-0 bg-background-light dark:bg-background-dark rounded-lg flex items-center justify-center overflow-hidden">
+                                    <img class="w-full h-full object-cover mix-blend-multiply dark:mix-blend-normal" data-alt="Loaf of fresh rustic sourdough bread" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTbemj63HxSibk6uR_K24sbjNN7EisdscSVCwmoabCfrN1yWtFrCVnSfiAYUzSoAruAnszh5w76tDTcDDeTxFeCHMIc2ld6kV12epsMg6zay8p6y1c501mZVRX4WDazWdH_TgIQud0c561pQJg3TjIWO7eYoX0wSWYVrouJxSQMuUmZD5b6i1JvkKVLTLEkEPpg0V0Yl1y4TyGS2Haqa8XR6aecZKJ935UCw5gxNsWZQUDgut1SWNsEeSF1nd0qFIUW_hrfu6oHaQ"/>
+                                </div>
+                                <div class="flex-grow min-w-0">
+                                    <h3 class="text-text-main dark:text-white font-bold truncate">Artisan Sourdough</h3>
+                                    <p class="text-text-muted text-sm">Freshly Baked</p>
+                                    <div class="mt-1 flex items-center gap-2 md:hidden">
+                                        <span class="text-text-main dark:text-white font-medium">$5.80</span>
+                                        <span class="text-text-muted text-xs">x 1</span>
+                                    </div>
+                                </div>
+                                <div class="hidden md:block text-right">
+                                    <p class="text-text-muted text-sm">Qty: 1</p>
+                                    <p class="text-text-main dark:text-white font-medium">$5.80 / ea</p>
+                                </div>
+                                <div class="text-right min-w-[80px]">
+                                    <p class="text-text-main dark:text-white font-bold text-lg">$5.80</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <!-- Right Column: Summary Sticky -->
+                <div class="w-full lg:w-1/3">
+                    <div class="sticky top-24 space-y-4">
+                        <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-xl shadow-lg border border-transparent dark:border-white/5">
+                            <h2 class="text-xl font-bold text-text-main dark:text-white mb-6">Order Summary</h2>
+                            <div class="space-y-3 pb-6 border-b border-gray-200 dark:border-white/10">
+                                <div class="flex justify-between text-text-muted">
+                                    <span>Subtotal</span>
+                                    <span class="text-text-main dark:text-white font-medium">$15.27</span>
+                                </div>
+                                <div class="flex justify-between text-text-muted">
+                                    <span>Shipping (Express)</span>
+                                    <span class="text-text-main dark:text-white font-medium">$5.00</span>
+                                </div>
+                                <div class="flex justify-between text-text-muted">
+                                    <span>Estimated Tax</span>
+                                    <span class="text-text-main dark:text-white font-medium">$0.80</span>
+                                </div>
+                                <div class="flex justify-between text-primary">
+                                    <span>Savings</span>
+                                    <span class="font-medium">-$0.00</span>
+                                </div>
+                            </div>
+                            <div class="py-6 flex justify-between items-center">
+                                <span class="text-lg font-bold text-text-main dark:text-white">Grand Total</span>
+                                <span class="text-3xl font-black text-primary">$21.07</span>
+                            </div>
+                            <!-- Promo Code -->
+                            <div class="mb-6">
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-2">Promo Code</label>
+                                <div class="flex gap-2">
+                                    <input class="flex-1 rounded-lg bg-background-light dark:bg-background-dark border-transparent focus:border-primary focus:ring-primary text-sm text-text-main dark:text-white" placeholder="Enter code" type="text"/>
+                                    <button class="px-4 py-2 bg-background-light dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-text-main dark:text-white rounded-lg text-sm font-bold transition-colors">Apply</button>
+                                </div>
+                            </div>
+                            <button class="w-full bg-primary hover:bg-green-600 text-white font-bold py-4 px-6 rounded-lg shadow-md transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 text-lg">
+                                Place Order
+                                <span class="material-symbols-outlined">arrow_forward</span>
+                            </button>
+                            <div class="mt-4 flex items-center justify-center gap-2 text-text-muted text-xs">
+                                <span class="material-symbols-outlined text-sm">lock</span>
+                                Secure SSL Encrypted Transaction
+                            </div>
+                        </div>
+                        <!-- Satisfaction Guarantee (Trust Signal) -->
+                        <div class="bg-primary/10 rounded-lg p-4 border border-primary/20 flex items-start gap-3">
+                            <div class="bg-primary/20 p-2 rounded-full text-primary shrink-0">
+                                <span class="material-symbols-outlined text-xl">verified</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-text-main dark:text-white text-sm">Freshness Guarantee</h4>
+                                <p class="text-xs text-text-muted mt-1">If you're not satisfied with the freshness of your items, we'll refund you immediately.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </ui:define>
+</ui:composition>

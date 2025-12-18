@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition template="/templates/user/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets">
+    <ui:define name="content">
+
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+            <!-- Hero Carousel / Banners -->
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Banner 1 -->
+                <div class="relative overflow-hidden rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm group cursor-pointer h-[320px]">
+                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Close up of fresh green vegetables in a wooden crate" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDbYOPBhT2fW6cAsqUeRnzQ5pKkR6HYQ3U_fCjEiMgnibbebKxc5tJaMqb9lDwhvV8zROkj6d8zOLok0ZzGlV1CfnjDWz11_f6wZx8eGEDrzwiuRf-3qSv0CMdrhYhX0BXa-J1wZL1MgaCbywAd-efYFaRdU4m8pNeykPmevVxuWEvHsmwyGivIMkaBaOPgfDQ-VppouvLY1lTLV36uNMDNvd1HJQglOWLaH1QZYlXK8glJNnhQ33YGPMkWUJunC-BW_X5bASCf4fg');">
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+                    </div>
+                    <div class="relative z-10 h-full flex flex-col justify-center p-8 max-w-lg">
+                        <span class="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider text-white uppercase bg-primary rounded-full w-fit">New Customer Offer</span>
+                        <h2 class="text-4xl font-extrabold text-white mb-2 leading-tight">Freshness Delivered <br/>to Your Door</h2>
+                        <p class="text-gray-200 mb-6 text-lg">Get 20% off your first order with code <span class="font-bold text-white">FRESH20</span></p>
+                        <button class="px-6 py-3 bg-white text-primary font-bold rounded-lg hover:bg-gray-100 transition-colors w-fit">
+                            Shop Now
+                        </button>
+                    </div>
+                </div>
+                <!-- Banner 2 -->
+                <div class="relative overflow-hidden rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm group cursor-pointer h-[320px]">
+                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Barbecue grill with meat skewers and vegetables outdoors" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDexAnIHtBLBjEdKpi6E30nLNXrVjqVOVTQIlBTnCkXkuX2S-b7i_a4HMa-6gFucb5IwjSqQoRQjosbGmEfAS8BEwLQHk6nRubSHP6OBbJd9MlMFFAdW-bv6eKf9ZJlxQ_eZwign2_IYMez2pBLHEkdoGQoExiROfYPVL0selUuff8HyMJw9vSnjNhk07Qz2LOxN0ykf4mSqEfVtBZMbPKGpETevF6KQ3Ybc36u7E0cJk3lt8O46g5e_Scq2eYTe9HdU8LXWdyM14o');">
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
+                    </div>
+                    <div class="relative z-10 h-full flex flex-col justify-center p-8 max-w-lg">
+                        <span class="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider text-white uppercase bg-orange-500 rounded-full w-fit">Seasonal</span>
+                        <h2 class="text-4xl font-extrabold text-white mb-2 leading-tight">Summer BBQ <br/>Essentials</h2>
+                        <p class="text-gray-200 mb-6 text-lg">Everything you need for the perfect weekend grill.</p>
+                        <button class="px-6 py-3 bg-white text-orange-600 font-bold rounded-lg hover:bg-gray-100 transition-colors w-fit">
+                            Explore Collection
+                        </button>
+                    </div>
+                </div>
+            </section>
+            <!-- Categories Section -->
+            <section>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Shop by Category</h2>
+                    <a class="text-primary font-bold text-sm hover:underline" href="#">View All</a>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <!-- Category Item 1 -->
+                    <a class="group flex flex-col items-center gap-3 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 hover:border-primary/50 hover:shadow-md transition-all" href="#">
+                        <div class="w-16 h-16 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center overflow-hidden mb-1">
+                            <img alt="Fresh Produce" class="w-full h-full object-cover" data-alt="Fresh red apples and oranges" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBolDTJg_ex92OdZjvQj2KbUny44O0MAiFEGOxmBjXVLy_ulxc9XF68vXyvGlKegLHLsNxqtKEECVSVlvPe6BdKUn0lwyDqD2OJ7E6OZUZUKhvaoYOvWG6lfw7-KEgtPsYXaC4pOq1Qh1hYgiQWmBUzjKSW84liJwGXy1Fuy10hMC17fn4NWHvdQS5HHxQIEAcCuWL6T4VjPyveJ_CazQ1RjQIM1zcKZP_uFSgJ8jYLgTWduS7rr_MhH1I-lN1gYExhAxJtWP8yqSU"/>
+                        </div>
+                        <span class="font-bold text-sm text-center text-gray-700 dark:text-gray-200 group-hover:text-primary">Fresh Produce</span>
+                    </a>
+                    <!-- Category Item 2 -->
+                    <a class="group flex flex-col items-center gap-3 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 hover:border-primary/50 hover:shadow-md transition-all" href="#">
+                        <div class="w-16 h-16 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center overflow-hidden mb-1">
+                            <img alt="Meat" class="w-full h-full object-cover" data-alt="Raw red meat steak on a board" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5jW8GstmJMWHl4JJJo4En-rBt4tkmVOPgMqE6vg-neQouvJ5PoEpLTVXyzbo3YT2PHzh4-3nuQqv23Hqz9QjVgmisipJGJs9NC-es1ugxcaIg4DcsSzG-3m5c54Q__Afsss1xAJePgOQ3gNXBsGIWpKJZQgBeqVPI_bfaJUwKtxf3fNrbB8goIhuudLkj07c7jlrmhr4IIgabEzxi9sm699-T3qaL9bNyGyLpkiM80jVuWbmy2ubbPXwqF--y3GZtSFbVrVdZ4bQ"/>
+                        </div>
+                        <span class="font-bold text-sm text-center text-gray-700 dark:text-gray-200 group-hover:text-primary">Meat &amp; Seafood</span>
+                    </a>
+                    <!-- Category Item 3 -->
+                    <a class="group flex flex-col items-center gap-3 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 hover:border-primary/50 hover:shadow-md transition-all" href="#">
+                        <div class="w-16 h-16 rounded-full bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center overflow-hidden mb-1">
+                            <img alt="Pantry" class="w-full h-full object-cover" data-alt="Glass jars with pasta and grains" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5XY9H3ECdVQDSQDaFtfE8BneayB4ffkqYlX3jozx6IgmtlmIOUJq6SOC0a0C_EJZV6Qura3j7mrYeJRkfaDRXD2MSBplLcY-hGXnt-WtQd3UTV6_v876FKnDWGZQ48ggEepyqN6mgp2cGwIvP95BNQqo51IFcos9JurhE-zlynZunSDrM3nIdE9B-9ZYkrHTZ5j32IxZocbvsMjxDrziyd11dCRi4pjeyVFeUWCncqm7B-C1OxikTI4t6L0N47jRJHhUFjhC717o"/>
+                        </div>
+                        <span class="font-bold text-sm text-center text-gray-700 dark:text-gray-200 group-hover:text-primary">Pantry</span>
+                    </a>
+                    <!-- Category Item 4 -->
+                    <a class="group flex flex-col items-center gap-3 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 hover:border-primary/50 hover:shadow-md transition-all" href="#">
+                        <div class="w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center overflow-hidden mb-1">
+                            <img alt="Dairy" class="w-full h-full object-cover" data-alt="Milk bottle and cheese wedge" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPNM5RJwPzLdVRMrHQjqal-5NMcpNFg1d2GxKXPa1bvcTZrP-CSbD9ntHqnYoo8gGDYR2QFAJiaeHiRlTAoI5U70Zs06KtLg6ZwgP4VcUxaVlgO8Tq14SsDveayPwg3D9sQ4Uic6q2oySmwiuGSmR8SBwWQPk3-sLk5LgB9LQRhG7SMZScoIwN1qm_f1C9CRzCarsbqVwwxmQx8exV3aBS2BUAn5tiDRxZrCeJKhnW6F4IoxysRCpqX58_yHdl7JQ41BeZX1vuUak"/>
+                        </div>
+                        <span class="font-bold text-sm text-center text-gray-700 dark:text-gray-200 group-hover:text-primary">Dairy &amp; Eggs</span>
+                    </a>
+                    <!-- Category Item 5 -->
+                    <a class="group flex flex-col items-center gap-3 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 hover:border-primary/50 hover:shadow-md transition-all" href="#">
+                        <div class="w-16 h-16 rounded-full bg-cyan-50 dark:bg-cyan-900/20 flex items-center justify-center overflow-hidden mb-1">
+                            <img alt="Frozen" class="w-full h-full object-cover" data-alt="Frozen berries and ice cream" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQW54eZV2IifYz3uYCcRqo4y2-jFVEHZeSJCpKcMnhuVDN7j8omgWow2JEs75PxgQ9mD7qNS2v_0EzAUoh6JwQNZJdsrR_1YC7PzuxUoUm824cuYZng2w8jLYvGV_cyr96PTGsct0tO24qpzkIb5FntP2Si-u9EbGyeql25G5V6A7n0mouyarhSmIRm6-eMUqWmyeA2uEvxt288DOzbL6N4QiAQNCVPNnW4UKLvKypY4GMctEDZpzunKpoRU25jRdoATeEn0IXtt0"/>
+                        </div>
+                        <span class="font-bold text-sm text-center text-gray-700 dark:text-gray-200 group-hover:text-primary">Frozen</span>
+                    </a>
+                    <!-- Category Item 6 -->
+                    <a class="group flex flex-col items-center gap-3 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 hover:border-primary/50 hover:shadow-md transition-all" href="#">
+                        <div class="w-16 h-16 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center overflow-hidden mb-1">
+                            <img alt="Bakery" class="w-full h-full object-cover" data-alt="Freshly baked bread loaves" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcq6YWZAPbRWzoOTGOBZwTIqdE8DaQgR6LMQbZdEUD_A5tQ0BJJKahD6oESB8oRu7SE6GaUNO3jCp40IhkUXBWQbqqt4TYx7k65WhdkYFWI1n7o_4hMngafhj7oHG7oLMPxbFsdhGgKQO-9af63kg5mVzek4rFc52Ib8HdYWIMhxt60ly4D60DuzL56rcxlop0Jzo3AnoGM2rnXHg6wlqU1PIFp08dFLTrbogKQa54s6pZddW_FE-bprKAQ97KDSwa5VQ4X1o-zW8"/>
+                        </div>
+                        <span class="font-bold text-sm text-center text-gray-700 dark:text-gray-200 group-hover:text-primary">Bakery</span>
+                    </a>
+                </div>
+            </section>
+            <!-- Daily Deals Section -->
+            <section>
+                <div class="flex items-end justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-2">
+                            Daily Deals
+                            <span class="material-symbols-outlined text-orange-500 fill-current">bolt</span>
+                        </h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Offers expire in <span class="text-primary font-mono font-bold">04:23:15</span></p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="p-2 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                        </button>
+                        <button class="p-2 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300">
+                            <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Product Card 1 -->
+                    <div class="group bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 hover:shadow-lg transition-all duration-300 flex flex-col overflow-hidden">
+                        <div class="relative aspect-square overflow-hidden bg-gray-50 dark:bg-gray-800/50">
+                            <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded shadow-sm z-10">-20%</span>
+                            <img alt="Bananas" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" data-alt="Bunch of ripe yellow bananas" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUj8SDWcsBoDLSAp_GWwQb8VfGf1c6wRuxkZvbwBu2X8wgGGOOkaGVAGesyNhlJy_5ZWBX6ZarvStFpgQu4J3NkK3PmkGAogDPsWL-I2v6GziJfqqNYibPfkvlU0OuLvDiouBFv2sx1jmhoAEsElcjnBvPki39PqMuYnWVU5aol-b5npiPMfLaVsh30m2rMTKg8tykyAQh8lTqki51D6Jhi5tvzdpU7bK6pous5iT1Rap8DpKw0aMf-jNxDYJVlqMRD1D9UYOXfjY"/>
+                            <button class="absolute bottom-3 right-3 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-300">
+                                <span class="material-symbols-outlined text-[20px]">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-4 flex flex-col flex-grow">
+                            <div class="mb-2">
+                                <span class="text-xs text-gray-500 uppercase font-semibold">Fruits</span>
+                                <h3 class="font-bold text-gray-900 dark:text-white text-lg leading-snug">Organic Bananas</h3>
+                            </div>
+                            <div class="mt-auto pt-2 flex items-center justify-between">
+                                <div>
+                                    <span class="text-lg font-extrabold text-primary">$1.59</span>
+                                    <span class="text-sm text-gray-400 line-through ml-1">$1.99</span>
+                                    <div class="text-xs text-gray-500 font-medium">per lb</div>
+                                </div>
+                                <button class="bg-primary hover:bg-green-600 text-white p-2.5 rounded-lg transition-colors flex items-center justify-center shadow-sm shadow-green-200 dark:shadow-none">
+                                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product Card 2 -->
+                    <div class="group bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 hover:shadow-lg transition-all duration-300 flex flex-col overflow-hidden">
+                        <div class="relative aspect-square overflow-hidden bg-gray-50 dark:bg-gray-800/50">
+                            <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded shadow-sm z-10">-15%</span>
+                            <img alt="Milk" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" data-alt="Glass bottle of fresh white milk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxQN1Z0V-Q5p-5rW5nsthQ-41uYaFppaHLKYe5CQVX_YMS8g1FlKLYqmUgjAjYP6BsWOSYV4Hl20K5bdcoM-yg5GG2T3Yj29-Ye4wa9kK6Fn0XwZlXRY0y4kiY4ff4WJvAJFRfoyV7ucY_kC1vBOMSBcfMMhUIpfxRgqb9474uGlGUNpsEZCrgtF0ipDNK3_BfZtz_fGMgVOuJVpIgCiGTQrWKHb_sg6NhF9b3yqb4l96t17es1eRrOPXZv3Qrhwv3NSGZrUBxvg0"/>
+                            <button class="absolute bottom-3 right-3 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-300">
+                                <span class="material-symbols-outlined text-[20px]">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-4 flex flex-col flex-grow">
+                            <div class="mb-2">
+                                <span class="text-xs text-gray-500 uppercase font-semibold">Dairy</span>
+                                <h3 class="font-bold text-gray-900 dark:text-white text-lg leading-snug">Fresh Whole Milk</h3>
+                            </div>
+                            <div class="mt-auto pt-2 flex items-center justify-between">
+                                <div>
+                                    <span class="text-lg font-extrabold text-primary">$3.49</span>
+                                    <span class="text-sm text-gray-400 line-through ml-1">$4.10</span>
+                                    <div class="text-xs text-gray-500 font-medium">1 Gallon</div>
+                                </div>
+                                <button class="bg-primary hover:bg-green-600 text-white p-2.5 rounded-lg transition-colors flex items-center justify-center shadow-sm shadow-green-200 dark:shadow-none">
+                                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product Card 3 -->
+                    <div class="group bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 hover:shadow-lg transition-all duration-300 flex flex-col overflow-hidden">
+                        <div class="relative aspect-square overflow-hidden bg-gray-50 dark:bg-gray-800/50">
+                            <img alt="Bread" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" data-alt="Loaf of sourdough bread" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmE41t7z5WhKNwWbMzSq_VbZ32dqB9s_JyETgMXYcTC64Bs13tQmGCpn7-RZH5alO6U91cJQ0m0T3Hn5xGYWW9oqyi0JeztAjjjDLBRFvxp9oUui1LueaKAKNdgvSdgW7YcD0uVye2Xx67_CF-yrwd36ig2w0M2HPPbMwAshIjAwOiNAI5WYtIEzeGKBZplJa6NKul_dr3_LMaevE0ACQnKwy7vWWO9KfUIOoL2qk_qHuXyeInAlBpcE9sFgMSu7_Y0PPPUPEQeU8"/>
+                            <button class="absolute bottom-3 right-3 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-300">
+                                <span class="material-symbols-outlined text-[20px]">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-4 flex flex-col flex-grow">
+                            <div class="mb-2">
+                                <span class="text-xs text-gray-500 uppercase font-semibold">Bakery</span>
+                                <h3 class="font-bold text-gray-900 dark:text-white text-lg leading-snug">Sourdough Loaf</h3>
+                            </div>
+                            <div class="mt-auto pt-2 flex items-center justify-between">
+                                <div>
+                                    <span class="text-lg font-extrabold text-primary">$4.99</span>
+                                    <div class="text-xs text-gray-500 font-medium">per unit</div>
+                                </div>
+                                <button class="bg-primary hover:bg-green-600 text-white p-2.5 rounded-lg transition-colors flex items-center justify-center shadow-sm shadow-green-200 dark:shadow-none">
+                                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product Card 4 -->
+                    <div class="group bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 hover:shadow-lg transition-all duration-300 flex flex-col overflow-hidden">
+                        <div class="relative aspect-square overflow-hidden bg-gray-50 dark:bg-gray-800/50">
+                            <span class="absolute top-3 left-3 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded shadow-sm z-10">Organic</span>
+                            <img alt="Avocados" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" data-alt="Cut and whole avocados on wooden surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5kDkLTriYJs244tQ4mNkAyC4ZoImdDkMN7IIb3zcdZF3TNXsUWJxVY8-GvS7lu4f-mB3qIRw8x-B6JwCGDQ-AWUh3hYJQMIhyaLWwDvtfveqbTGhM8cTORPrldC4Mh1UoveV5PesKQc_Db-WIBsUqOTIKq2j_ry_I613mo46dlZXDc4EnIAiFkCihyPVr6tgaWO2DDOtv6LzSrekOvUTYPGinOTKIgYR96PPvkMFfZIVCZ6KnskZ5snoE1Y46zs_vyw6JkQz67tE"/>
+                            <button class="absolute bottom-3 right-3 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-300">
+                                <span class="material-symbols-outlined text-[20px]">favorite</span>
+                            </button>
+                        </div>
+                        <div class="p-4 flex flex-col flex-grow">
+                            <div class="mb-2">
+                                <span class="text-xs text-gray-500 uppercase font-semibold">Produce</span>
+                                <h3 class="font-bold text-gray-900 dark:text-white text-lg leading-snug">Hass Avocados</h3>
+                            </div>
+                            <div class="mt-auto pt-2 flex items-center justify-between">
+                                <div>
+                                    <span class="text-lg font-extrabold text-primary">$2.29</span>
+                                    <div class="text-xs text-gray-500 font-medium">each</div>
+                                </div>
+                                <button class="bg-primary hover:bg-green-600 text-white p-2.5 rounded-lg transition-colors flex items-center justify-center shadow-sm shadow-green-200 dark:shadow-none">
+                                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Featured Collection -->
+            <section class="rounded-2xl bg-surface-light dark:bg-surface-dark p-8 md:p-12 border border-gray-100 dark:border-gray-800">
+                <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="flex-1 space-y-4">
+                        <span class="text-primary font-bold tracking-wide uppercase text-sm">Best Sellers</span>
+                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">Pantry Staples <br/>Restocked Daily</h2>
+                        <p class="text-gray-600 dark:text-gray-300 max-w-md">From pasta to spices, we ensure your kitchen is always ready for the next meal. Quality guaranteed.</p>
+                        <button class="mt-4 px-6 py-3 bg-primary text-white font-bold rounded-lg hover:bg-green-600 transition-colors inline-flex items-center gap-2">
+                            Shop Pantry
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </button>
+                    </div>
+                    <div class="flex-1 w-full relative h-64 md:h-80 rounded-xl overflow-hidden">
+                        <img alt="Pantry Items" class="absolute inset-0 w-full h-full object-cover" data-alt="Shelves filled with various cooking ingredients and spices" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDegQeW8ByPibbpLSQUO4cSODHTfKzfsISwlCaAMCCR6rlH-x7RsO0eWtS02_YzgD5a7wcfqQX_1wN-aIehtUJdVCnzQRHdrvR7w6rPKLlO4IVU-5BmhbiHpxlJgaEbYhC9VhMgIjaYbngLCKOPPkka_qkl6TD_z3CrqIUEbqpecKUTEUe3Xn0EUvfbPenrEn3ky_a8xeAd6kIYRHcs-XqLWOe9vO0_h2wuPhvJ5ukkmKLi_PmrOu_DFRK1NHxaSJXwohQT6UlNCxA"/>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </ui:define>
+</ui:composition>
+

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register - EZMart</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf54",
+                        "primary-dark": "#12a843",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#112116",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111813] dark:text-gray-100 min-h-screen flex flex-col">
+<div class="flex min-h-screen w-full bg-white dark:bg-background-dark shadow-xl overflow-hidden rounded-none sm:rounded-none">
+<!-- Left Side: Image / Hero -->
+<div class="hidden lg:flex lg:w-1/2 relative bg-gray-100 items-center justify-center overflow-hidden">
+<img alt="Fresh vegetables and fruits market stall with vibrant colors" class="absolute inset-0 h-full w-full object-cover" data-alt="Fresh vegetables and fruits market stall with vibrant colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXtrHmUxXHMGi_H6do2cpMyMJYGjGzIEIwwAeEWQNbAid-ZamI6BVD-iQqOwaPfJtMwGA-A0udOGByYX4ObdYXgx2vGBIZwnyX9Bkgf4unAsFZAbQpLagexqeddQQOLczHM_-FLbpTJt7-OUBml06esX1lyQZTjrRlqwLHR0uMwYdJ17zxNewvq_2AiUyd2FAmBCaQrv3PlyFa_ihZVuiUW82g6D-C5GsJDfMyIqx7LKkSlPvDW5LFbMVbYxgYq3GZTwPZa2Fi7v4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+<div class="relative z-10 p-12 text-white max-w-xl">
+<div class="mb-6 flex items-center gap-3">
+<div class="size-10 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-2xl">local_mall</span>
+</div>
+<h1 class="text-3xl font-bold tracking-tight">EZMart</h1>
+</div>
+<h2 class="text-4xl font-bold leading-tight mb-4">Freshness delivered to your doorstep.</h2>
+<p class="text-lg text-gray-200">Join thousands of happy customers who get their daily essentials delivered fresh and fast.</p>
+<div class="mt-8 flex gap-4">
+<div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20">
+<span class="material-symbols-outlined text-primary">verified</span>
+<span class="font-medium">Quality Guarantee</span>
+</div>
+<div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20">
+<span class="material-symbols-outlined text-primary">local_shipping</span>
+<span class="font-medium">Free Shipping</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Registration Form -->
+<div class="w-full lg:w-1/2 flex flex-col h-screen overflow-y-auto">
+<!-- Mobile Header -->
+<div class="lg:hidden flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800">
+<div class="flex items-center gap-2 text-[#111813] dark:text-white">
+<div class="size-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl">local_mall</span>
+</div>
+<span class="text-lg font-bold">EZMart</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-center px-6 py-8 sm:px-12 lg:px-20 xl:px-24">
+<div class="max-w-md w-full mx-auto space-y-8">
+<!-- Heading Section -->
+<div class="text-center sm:text-left">
+<h2 class="text-3xl font-bold tracking-tight text-[#111813] dark:text-white sm:text-4xl">
+                            Create an account
+                        </h2>
+<p class="mt-2 text-base text-[#63886f] dark:text-gray-400">
+                            Already have an account? 
+                            <a class="font-semibold text-primary hover:text-primary-dark transition-colors" href="#">Log in</a>
+</p>
+</div>
+<!-- Social Login -->
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" type="button">
+<svg aria-hidden="true" class="h-5 w-5" viewbox="0 0 24 24"><path d="M12.0003 20.45c4.6667 0 8.5342-3.2386 9.6875-7.591H12.0003V9.1636h13.2917c.1895 1.0545.2422 2.0545.2422 3.0136 0 2.6591-.9475 7.6364-5.5342 10.7455-2.6105 1.7727-5.7158 2.3727-8.0003 2.3727C5.9263 25.2954 1 20.3681 1 14.2954 1 8.2227 5.9263 3.2954 12.0003 3.2954c2.8105 0 5.4 1.0227 7.3789 2.9182l-3.3263 3.3273c-.9474-.8864-2.4842-1.7455-4.0526-1.7455-3.5264 0-6.4 2.8909-6.4 6.5 0 3.609 2.8736 6.5 6.4 6.5z" fill="currentColor"></path></svg>
+<span class="truncate">Google</span>
+</button>
+<button class="flex items-center justify-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" type="button">
+<svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewbox="0 0 24 24"><path d="M13.2657 2.00018C13.6841 2.00018 14.6549 2.08382 15.6583 2.76637C16.5916 3.39964 17.2941 4.41709 17.2941 5.90018C17.2941 7.21637 16.7916 8.35855 15.8257 9.20018C14.8091 10.0918 13.5999 10.3664 13.0657 10.3664C12.5657 10.3664 11.6649 10.2838 10.7141 9.63382C9.72906 8.95018 9.04406 7.91709 9.04406 6.41709C9.04406 5.06636 9.57739 3.84182 10.5941 2.96636C11.6266 2.08273 12.8657 1.99927 13.2657 2.00018ZM15.4891 11.2338C17.1649 11.2338 18.6324 12.2338 19.3491 13.5671C20.6991 12.0165 22.6157 11.9671 22.8657 11.9671C22.9824 11.9671 23.3324 11.9838 23.3324 12.5002C23.3324 12.6338 23.2824 12.7838 23.2157 12.9002C22.2824 14.5002 22.4157 16.4838 23.5157 17.8171C23.6324 17.9502 23.9491 18.3671 23.9491 18.8838C23.9491 19.0665 23.9157 19.3002 23.7657 19.5338C22.7824 21.0338 21.0324 23.5002 17.6491 23.5002C16.8991 23.5002 16.2991 23.2838 15.6824 23.0671C15.1157 22.8665 14.6157 22.6838 13.9824 22.6838C13.3491 22.6838 12.8324 22.8665 12.2824 23.0671C11.6657 23.2838 11.0491 23.5002 10.3157 23.5002C6.91573 23.5002 5.16573 21.0338 4.18239 19.5338C2.51573 17.0338 2.06573 13.1002 5.09906 11.3338C6.39906 10.5671 7.69906 10.5338 8.44906 10.5338C9.66573 10.5338 10.6324 10.9502 11.3324 11.2671C11.9324 11.5338 12.4491 11.7502 13.1991 11.7502C13.4324 11.7502 14.5991 11.7165 15.4891 11.2338Z"></path></svg>
+<span class="truncate">Apple</span>
+</button>
+</div>
+<div class="relative">
+<div aria-hidden="true" class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+</div>
+<div class="relative flex justify-center">
+<span class="bg-white dark:bg-background-dark px-2 text-sm text-[#63886f]">Or continue with email</span>
+</div>
+</div>
+<!-- Form -->
+<form action="#" class="space-y-5" method="POST">
+<!-- Full Name -->
+<div>
+<label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="full-name">Full Name</label>
+<div class="relative">
+<input class="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#63886f]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white dark:placeholder-gray-500 transition-shadow" id="full-name" name="name" placeholder="Enter your full name" type="text"/>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</div>
+</div>
+</div>
+<!-- Email -->
+<div>
+<label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="email">Email Address</label>
+<div class="relative">
+<input class="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#63886f]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white dark:placeholder-gray-500 transition-shadow" id="email" name="email" placeholder="you@example.com" type="email"/>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</div>
+</div>
+</div>
+<!-- Password Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+<div>
+<label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="password">Password</label>
+<div class="relative">
+<input class="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#63886f]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white dark:placeholder-gray-500 transition-shadow" id="password" name="password" placeholder="Create a password" type="password"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="confirm-password">Confirm Password</label>
+<div class="relative">
+<input class="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#63886f]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white dark:placeholder-gray-500 transition-shadow" id="confirm-password" name="confirm-password" placeholder="Confirm password" type="password"/>
+</div>
+</div>
+</div>
+<!-- Password Strength Indicator (Static for design) -->
+<div class="flex items-center gap-1.5 mt-1">
+<div class="h-1 flex-1 bg-primary rounded-full"></div>
+<div class="h-1 flex-1 bg-primary rounded-full"></div>
+<div class="h-1 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+<div class="h-1 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+<span class="text-xs text-[#63886f] ml-2">Medium</span>
+</div>
+<!-- Checkboxes -->
+<div class="space-y-4 pt-2">
+<div class="relative flex items-start">
+<div class="flex h-6 items-center">
+<input aria-describedby="marketing-description" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700" id="marketing" name="marketing" type="checkbox"/>
+</div>
+<div class="ml-3 text-sm leading-6">
+<label class="font-medium text-[#111813] dark:text-gray-200" for="marketing">Keep me updated</label>
+<p class="text-[#63886f] dark:text-gray-400" id="marketing-description">Get emails about fresh deals, new products, and offers.</p>
+</div>
+</div>
+<div class="relative flex items-start">
+<div class="flex h-6 items-center">
+<input checked="" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700" id="terms" name="terms" type="checkbox"/>
+</div>
+<div class="ml-3 text-sm leading-6">
+<label class="font-medium text-[#111813] dark:text-gray-200" for="terms">I agree to the <a class="text-primary hover:underline" href="#">Terms of Service</a> and <a class="text-primary hover:underline" href="#">Privacy Policy</a>.</label>
+</div>
+</div>
+</div>
+<!-- Submit Button -->
+<div class="pt-4">
+<button class="flex w-full justify-center rounded-lg bg-primary px-3 py-3.5 text-sm font-bold leading-6 text-white shadow-sm hover:bg-primary-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all active:scale-[0.98]" type="submit">
+                                Create Account
+                            </button>
+</div>
+</form>
+<!-- Trust Signals -->
+<div class="pt-4 flex items-center justify-center gap-2 text-xs text-[#63886f] dark:text-gray-500">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span>Your data is encrypted and secure.</span>
+</div>
+</div>
+</div>
+<!-- Simple Footer -->
+<div class="py-6 text-center text-xs text-gray-400 dark:text-gray-600">
+                © 2024 EZMart Inc. All rights reserved.
+            </div>
+</div>
+</div>
+</body></html>

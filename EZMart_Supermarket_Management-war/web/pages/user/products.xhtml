@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets">
+    <ui:define name="content">
+        <div class="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-8 py-6">
+            <!-- Breadcrumbs -->
+            <nav aria-label="Breadcrumb" class="flex mb-6">
+                <ol class="inline-flex items-center space-x-1 md:space-x-2">
+                    <li class="inline-flex items-center">
+                        <a class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-primary dark:text-slate-400" href="#">
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <span class="material-symbols-outlined text-slate-400 text-sm mx-1">chevron_right</span>
+                            <a class="ml-1 text-sm font-medium text-slate-500 hover:text-primary dark:text-slate-400" href="#">Groceries</a>
+                        </div>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center">
+                            <span class="material-symbols-outlined text-slate-400 text-sm mx-1">chevron_right</span>
+                            <span class="ml-1 text-sm font-medium text-slate-900 dark:text-white">Fresh Produce</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Sidebar Filters -->
+                <aside class="w-full lg:w-64 flex-shrink-0 space-y-8 hidden lg:block">
+                    <!-- Categories -->
+                    <div>
+                        <h3 class="font-bold text-slate-900 dark:text-white mb-4">Categories</h3>
+                        <ul class="space-y-2.5 text-sm text-slate-600 dark:text-slate-400">
+                            <li><a class="flex items-center gap-2 text-primary font-medium" href="#"><span class="material-symbols-outlined text-[18px]">check_circle</span> All Produce</a></li>
+                            <li><a class="flex items-center gap-2 hover:text-primary transition-colors" href="#"><span class="w-4 h-4 border border-slate-300 dark:border-slate-600 rounded-sm"></span> Fruits</a></li>
+                            <li><a class="flex items-center gap-2 hover:text-primary transition-colors" href="#"><span class="w-4 h-4 border border-slate-300 dark:border-slate-600 rounded-sm"></span> Vegetables</a></li>
+                            <li><a class="flex items-center gap-2 hover:text-primary transition-colors" href="#"><span class="w-4 h-4 border border-slate-300 dark:border-slate-600 rounded-sm"></span> Fresh Herbs</a></li>
+                            <li><a class="flex items-center gap-2 hover:text-primary transition-colors" href="#"><span class="w-4 h-4 border border-slate-300 dark:border-slate-600 rounded-sm"></span> Organic</a></li>
+                        </ul>
+                    </div>
+                    <!-- Price Range -->
+                    <div>
+                        <h3 class="font-bold text-slate-900 dark:text-white mb-4">Price Range</h3>
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="relative flex-1">
+                                <span class="absolute inset-y-0 left-0 pl-2 flex items-center text-slate-500 text-xs">$</span>
+                                <input class="w-full pl-5 pr-2 py-1.5 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded focus:ring-1 focus:ring-primary focus:border-primary" type="number" value="0"/>
+                            </div>
+                            <span class="text-slate-400">-</span>
+                            <div class="relative flex-1">
+                                <span class="absolute inset-y-0 left-0 pl-2 flex items-center text-slate-500 text-xs">$</span>
+                                <input class="w-full pl-5 pr-2 py-1.5 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded focus:ring-1 focus:ring-primary focus:border-primary" type="number" value="50"/>
+                            </div>
+                        </div>
+                        <div class="relative h-1 bg-slate-200 dark:bg-slate-700 rounded-full">
+                            <div class="absolute left-0 right-1/2 h-full bg-primary rounded-full"></div>
+                            <div class="absolute left-0 top-1/2 -mt-1.5 -ml-1 w-3 h-3 bg-white border-2 border-primary rounded-full shadow cursor-pointer"></div>
+                            <div class="absolute right-1/2 top-1/2 -mt-1.5 -mr-1 w-3 h-3 bg-white border-2 border-primary rounded-full shadow cursor-pointer"></div>
+                        </div>
+                    </div>
+                    <!-- Brands -->
+                    <div>
+                        <h3 class="font-bold text-slate-900 dark:text-white mb-4">Brands</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input class="rounded border-slate-300 text-primary focus:ring-primary bg-white dark:bg-slate-800 dark:border-slate-600" type="checkbox"/>
+                                <span class="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white">Dole</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input checked="" class="rounded border-slate-300 text-primary focus:ring-primary bg-white dark:bg-slate-800 dark:border-slate-600" type="checkbox"/>
+                                <span class="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white">Organic Valley</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input class="rounded border-slate-300 text-primary focus:ring-primary bg-white dark:bg-slate-800 dark:border-slate-600" type="checkbox"/>
+                                <span class="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white">Chiquita</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input class="rounded border-slate-300 text-primary focus:ring-primary bg-white dark:bg-slate-800 dark:border-slate-600" type="checkbox"/>
+                                <span class="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white">Green Giant</span>
+                            </label>
+                        </div>
+                        <button class="text-primary text-sm font-medium mt-3 hover:underline">Show more</button>
+                    </div>
+                    <!-- Rating -->
+                    <div>
+                        <h3 class="font-bold text-slate-900 dark:text-white mb-4">Customer Rating</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input class="border-slate-300 text-primary focus:ring-primary bg-white dark:bg-slate-800 dark:border-slate-600" name="rating" type="radio"/>
+                                <div class="flex text-yellow-400 text-sm">
+                                    <span class="material-symbols-outlined filled-icon text-[18px]">star</span>
+                                    <span class="material-symbols-outlined filled-icon text-[18px]">star</span>
+                                    <span class="material-symbols-outlined filled-icon text-[18px]">star</span>
+                                    <span class="material-symbols-outlined filled-icon text-[18px]">star</span>
+                                    <span class="material-symbols-outlined text-[18px]">star</span>
+                                </div>
+                                <span class="text-xs text-slate-500">&amp; Up</span>
+                            </label>
+                        </div>
+                    </div>
+                </aside>
+                <!-- Product Grid Area -->
+                <main class="flex-1 min-w-0">
+                    <!-- Header & Sort -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Fresh Produce</h1>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Showing 24 of 120 products</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <label class="text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap" for="sort">Sort by:</label>
+                            <select class="block w-full rounded-lg border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 py-2 pl-3 pr-10 text-sm focus:border-primary focus:ring-primary sm:w-44" id="sort">
+                                <option>Relevance</option>
+                                <option>Price: Low to High</option>
+                                <option>Price: High to Low</option>
+                                <option>Newest Arrivals</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Chips / Quick Filters -->
+                    <div class="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+                        <button class="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-sm font-medium whitespace-nowrap hover:bg-primary/20 transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">close</span>
+                            Organic
+                        </button>
+                        <button class="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm font-medium whitespace-nowrap hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            On Sale
+                        </button>
+                        <button class="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm font-medium whitespace-nowrap hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            In Stock
+                        </button>
+                        <button class="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm font-medium whitespace-nowrap hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">local_shipping</span>
+                            Fast Delivery
+                        </button>
+                    </div>
+                    <!-- Products Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <!-- Product Card 1 -->
+                        <div class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
+                            <div class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
+                                <img alt="Bananas" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="Bunch of ripe organic bananas" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXrw78Dqi2Y6pgqRQBi5qEr5KwvxoEX5y5BQ5v7G0YNMeE36ZYYqLrrs93IOjJsMHjJFJZ8RzFVRQ5IUAFUsc6Zh_AMMAyaXipzgbFpip70vEN4uAmMPqTh8yLrxiI7wNK_WlKLcNYSLHBsjtR81j1rNBHGyKBr0sywzq5fgetpsBXvQOJi0ZPjf-Ja0MlDl7aXw7YQxlIpWkX7HmMYqgVnUh9xIVFbmw5_KWbcXTDh8Ivc7NwxDSQvMsfsYfEJ66NpfS-9m2VxLY"/>
+                                <div class="absolute top-2 left-2 bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">Organic</div>
+                                <button class="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 dark:bg-black/50 text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
+                                    <span class="material-symbols-outlined text-[20px]">favorite</span>
+                                </button>
+                            </div>
+                            <div class="mb-2">
+                                <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">Organic Bananas</h3>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Approx. 7 per bunch</p>
+                            </div>
+                            <div class="flex items-end justify-between mt-auto">
+                                <div>
+                                    <span class="block text-xl font-bold text-slate-900 dark:text-white">$1.29</span>
+                                    <span class="text-xs text-slate-400">$0.69 / lb</span>
+                                </div>
+                                <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
+                                    <span class="material-symbols-outlined text-[20px]">add</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Product Card 2 -->
+                        <div class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
+                            <div class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
+                                <img alt="Red Apples" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="Variety of fresh red apples" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVZ00Rl5RQILWwC7tQzVrjawidW_TgPBFsFDrnTP22fZsVB5vbML2DzHWbwfe3PlVO1ZWNa1UykIAfW4fKq9VvOpZ18zJYTX78a8tyAaz7AQVhOq9Efbvk3DqkLIXEt84s3fDj8wE8yRfllrNpAX0gjwhRFVzDmAZgIDDzDbJRFgIOFf8OXSEa3l0DyAWvJsTvGE74x_Rsfma_bgEPNattCU4GxJJo12YW56tP_PXRgomZuvJYDTDudsJr3BMDjMTO_z1kPlS54wk"/>
+                            </div>
+                            <div class="mb-2">
+                                <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">Fuji Apples</h3>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Sweet &amp; Crisp</p>
+                            </div>
+                            <div class="flex items-end justify-between mt-auto">
+                                <div>
+                                    <span class="block text-xl font-bold text-slate-900 dark:text-white">$0.89</span>
+                                    <span class="text-xs text-slate-400">each</span>
+                                </div>
+                                <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
+                                    <span class="material-symbols-outlined text-[20px]">add</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Product Card 3 (Sale) -->
+                        <div class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
+                            <div class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
+                                <img alt="Avocados" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="Fresh avocado halves with pit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZ6BU2L33ovubNwqy3mGZ6Pu7i-bqIHHJSJl5zIFBWs3BwnUcgKg1Eh89TDy_XoUd_pgD-ZeBV-EM3Q0kxPhEdmen-_6wWJEPWWgOS0SCnzEiR6JnIOorZI-37hc509-sBx0uxAceMw74pVZveonKyDZ4s33j964UZXS1gzynprmy-W0uqAu-i02z6oCyWuXF5RBnOfNeKlQbDP3KHelY2ckV5IooQcgU1sStSi4b-m10SqRZM52fKTr3WWzSpBglaUzhsRvU0poY"/>
+                                <div class="absolute top-2 left-2 bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded">Sale</div>
+                            </div>
+                            <div class="mb-2">
+                                <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">Hass Avocados</h3>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Ripe &amp; Ready</p>
+                            </div>
+                            <div class="flex items-end justify-between mt-auto">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="block text-xl font-bold text-red-600">$0.99</span>
+                                        <span class="text-sm text-slate-400 line-through">$1.50</span>
+                                    </div>
+                                    <span class="text-xs text-slate-400">each</span>
+                                </div>
+                                <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
+                                    <span class="material-symbols-outlined text-[20px]">add</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Product Card 4 -->
+                        <div class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
+                            <div class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
+                                <img alt="Oranges" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="Bright orange oranges stacked" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANu6wue2NXRlkGt63uzFYUtlxnYwVjvL13r6KJNLQVc9XJaM0NDsdH4-_izhuWjbrCBl4ifM6mBKWKNdwQ2rwxEWcZJO-wd1Oy--JIj9X89EwE5CMmzPywfis1b9t2-feClLsiNyU59o5xj89uYO-A1OPpdI01jsvIzWBTLDTtY9tmKVVBQldTq-INmdGu5dIzykZCerZvCjcJMwtbXIeB0qzOcGkmgYW1kLPBaFtvZIISZl2XqairlUPNlEAOcLiJoDiV1hknclU"/>
+                            </div>
+                            <div class="mb-2">
+                                <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">Navel Oranges</h3>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Bag (3lb)</p>
+                            </div>
+                            <div class="flex items-end justify-between mt-auto">
+                                <div>
+                                    <span class="block text-xl font-bold text-slate-900 dark:text-white">$4.99</span>
+                                    <span class="text-xs text-slate-400">$1.66 / lb</span>
+                                </div>
+                                <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
+                                    <span class="material-symbols-outlined text-[20px]">add</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Product Card 5 -->
+                        <div class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
+                            <div class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
+                                <img alt="Strawberries" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="Fresh strawberries in a basket" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTyCXXvyYVrs3ABWLxEiHrpb51XUI1AyUMw-FWe0-B9P0uf_UPnM2pREfohXoroey6wgz2V1jVysPMuiYXLMUlMh742hJXUV7uTDBdks6xHpaqgKCnMIPEywQu4rllEU1sUMYc0edJbrceUIaAey_BuR2qXGdLlYneQDGMEK46Z-alGNqo6YIvvQUmV5C58CJjJYGLxnjx8jOXRv6sIl9wR-S084Fggt91Qb8b2VxxfxYTeJ6keyiZ6fdxU_EmJP62iGAiU-z00-Q"/>
+                            </div>
+                            <div class="mb-2">
+                                <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">Sweet Strawberries</h3>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">1lb Container</p>
+                            </div>
+                            <div class="flex items-end justify-between mt-auto">
+                                <div>
+                                    <span class="block text-xl font-bold text-slate-900 dark:text-white">$3.99</span>
+                                    <span class="text-xs text-slate-400">each</span>
+                                </div>
+                                <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
+                                    <span class="material-symbols-outlined text-[20px]">add</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Product Card 6 (Low Stock) -->
+                        <div class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
+                            <div class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
+                                <img alt="Watermelon" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="Whole watermelon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZ1PhodQs9yDmndN7tjrV-JiDlZrVkwXJgu-KW8jlEk1bRgoyI-GoocMsGbN_nPDc2Up2VYurfIDoVAz-cQtT5KmRd93EGrdAmdQ1Tic_GOIgX-LDpgCsEeOJb8V8Ghi9i43PHrJVhMjWnRYbG0kGX09bt3xnqshTyybCphFBfjG-_R23RAQt8BY2hzzPeXQWRmz3uRxmJ0xotAmDjcZzCNu9X1mwa6qRfaUyK35IEgYQ-soPjs5KnLZD7KPXn7DmYukv_nDd1ibY"/>
+                                <div class="absolute bottom-0 left-0 right-0 bg-yellow-500/90 text-white text-xs font-bold px-2 py-1 text-center">Low Stock: Only 3 left</div>
+                            </div>
+                            <div class="mb-2">
+                                <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">Seedless Watermelon</h3>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Large</p>
+                            </div>
+                            <div class="flex items-end justify-between mt-auto">
+                                <div>
+                                    <span class="block text-xl font-bold text-slate-900 dark:text-white">$5.99</span>
+                                    <span class="text-xs text-slate-400">each</span>
+                                </div>
+                                <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
+                                    <span class="material-symbols-outlined text-[20px]">add</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Product Card 7 -->
+                        <div class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
+                            <div class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
+                                <img alt="Broccoli" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="Close up of fresh broccoli head" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALX5ZPbq0cZn9CvYqcZ2yzbBKSbuXSEj_jfu8nptKzzGe1ASixzEjBJ_bh-DCd0hTXKKYGRH5x76j34GtNJ8iC3ODwW6LSe3kPW64bceIYcv7qJ1kNJkVO03Et_rUhGlRvIsBq3qghFAgiB4U1SPowthWv56z9gXwpJ4-mVPhPe0MGN1Ztxl453q-YboEolthZZZmKx7BwaKctKlw51vjkH4HrF69RLX4My0qxc9T23ti_VjpNt1doxWUBiggybuYIWTRAibW0Al4"/>
+                                <div class="absolute top-2 left-2 bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">Organic</div>
+                            </div>
+                            <div class="mb-2">
+                                <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">Broccoli Crowns</h3>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Per lb</p>
+                            </div>
+                            <div class="flex items-end justify-between mt-auto">
+                                <div>
+                                    <span class="block text-xl font-bold text-slate-900 dark:text-white">$1.79</span>
+                                    <span class="text-xs text-slate-400">approx 0.8lb each</span>
+                                </div>
+                                <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
+                                    <span class="material-symbols-outlined text-[20px]">add</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Product Card 8 -->
+                        <div class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
+                            <div class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
+                                <img alt="Carrots" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="Fresh orange carrots with greens" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_5UBK7PRdX8j_r_FQSIclpL2p4Uk3pnx7RkmKQxpmcz824YqHAOUL_vWGCR80MSKRN40acK-KIgZZZXsdlknJAFSDS78d84uPqfgPt7cmJTCZQpJQKDxGSDdwBcMQQ4o95pMqfIccm2hjS8MJxAR8dSYrAjukXQd5gLKmiv531arTTeJjoZ--qgnXcaC2wknMw9uMO-3nQca51JwUREnEv7xKPp1ZtyJYTGXWhDQMmwccJYES6r3DTmRe0dBqO-vsPAJ3ufqNIXA"/>
+                            </div>
+                            <div class="mb-2">
+                                <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">Whole Carrots</h3>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Bunch</p>
+                            </div>
+                            <div class="flex items-end justify-between mt-auto">
+                                <div>
+                                    <span class="block text-xl font-bold text-slate-900 dark:text-white">$1.99</span>
+                                    <span class="text-xs text-slate-400">each</span>
+                                </div>
+                                <!-- Active State Example -->
+                                <div class="flex items-center h-10 bg-white border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded-full shadow-sm overflow-hidden">
+                                    <button class="w-8 h-full flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                        <span class="material-symbols-outlined text-[16px]">remove</span>
+                                    </button>
+                                    <span class="w-8 text-center text-sm font-bold text-slate-900 dark:text-white">1</span>
+                                    <button class="w-8 h-full flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                        <span class="material-symbols-outlined text-[16px]">add</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="mt-12 flex justify-center">
+                        <nav aria-label="Pagination" class="flex items-center gap-1">
+                            <button class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 disabled:opacity-50">
+                                <span class="material-symbols-outlined">chevron_left</span>
+                            </button>
+                            <button class="px-4 py-2 rounded-lg bg-primary text-white font-medium text-sm">1</button>
+                            <button class="px-4 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium text-sm">2</button>
+                            <button class="px-4 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium text-sm">3</button>
+                            <span class="px-2 text-slate-400">...</span>
+                            <button class="px-4 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium text-sm">10</button>
+                            <button class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
+                                <span class="material-symbols-outlined">chevron_right</span>
+                            </button>
+                        </nav>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

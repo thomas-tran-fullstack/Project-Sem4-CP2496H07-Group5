@@ -1,0 +1,19 @@
+# Build
+/dist/
+/build/
+/target/
+
+# GlassFish
+/gfdeploy/
+
+# IDE
+/.idea/
+/nbproject/
+*.iml
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
