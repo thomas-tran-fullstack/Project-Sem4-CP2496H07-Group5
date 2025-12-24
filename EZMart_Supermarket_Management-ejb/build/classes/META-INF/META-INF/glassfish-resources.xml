@@ -9,4 +9,26 @@
     <property name="User" value="sa"/>
     <property name="Password" value="sa"/>
   </jdbc-connection-pool>
+  
+  <!-- Mail Session Resource for EZMart OTP Emails -->
+  <mail-resource
+      jndi-name="mail/ezmart"
+      host="smtp.gmail.com"
+      user="thomastran.fullstack@gmail.com"
+      from="thomastran.fullstack@gmail.com"
+      enabled="true">
+       <!-- Use SMTP with StartTLS (port 587) for Gmail -->
+       <property name="mail.smtp.port" value="587" />
+       <property name="mail.smtp.auth" value="true" />
+       <property name="mail.smtp.user" value="thomastran.fullstack@gmail.com" />
+       <property name="mail.smtp.password" value="knrw tcer kcjo bqej" />
+       <property name="mail.smtp.starttls.enable" value="true" />
+       <property name="mail.smtp.starttls.required" value="true" />
+       <property name="mail.smtp.ssl.trust" value="*" />
+       <property name="mail.smtp.ssl.checkserveridentity" value="false" />
+       <property name="mail.smtp.ssl.enable" value="false" />
+       <property name="mail.smtp.connectiontimeout" value="10000" />
+       <property name="mail.smtp.timeout" value="10000" />
+      <property name="mail.debug" value="true" />
+  </mail-resource>
 </resources>

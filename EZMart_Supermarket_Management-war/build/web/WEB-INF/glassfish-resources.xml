@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE resources PUBLIC "-//GlassFish//DTD GlassFish Application Server 3.1 Resource Definitions//EN"
+  "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
+<resources>
+    <!-- Mail Session Resource for EZMart -->
+    <mail-resource
+        jndi-name="mail/ezmart"
+        host="smtp.gmail.com"
+        user="thomastran.fullstack@gmail.com"
+        from="thomastran.fullstack@gmail.com"
+        enabled="true">
+        <property name="mail.smtp.port" value="587" />
+        <property name="mail.smtp.auth" value="true" />
+        <property name="mail.smtp.user" value="thomastran.fullstack@gmail.com" />
+        <property name="mail.smtp.password" value="knrw tcer kcjo bqej" />
+        <property name="mail.smtp.starttls.enable" value="true" />
+        <property name="mail.smtp.starttls.required" value="true" />
+    </mail-resource>
+</resources>

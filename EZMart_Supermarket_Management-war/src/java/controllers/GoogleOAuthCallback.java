@@ -15,6 +15,11 @@ import java.nio.charset.StandardCharsets;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
 
 /**
  * Handles OAuth callback from Google
@@ -22,6 +27,36 @@ import jakarta.json.JsonReader;
  */
 @WebServlet(name = "GoogleOAuthCallback", urlPatterns = {"/oauth-callback"})
 public class GoogleOAuthCallback extends HttpServlet {
+    
+    // Static initializer to set up trust-all SSL context for development
+    static {
+        try {
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+                    
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                        // For development only - accept all certificates
+                        System.out.println("Dev Mode: Accepting client certificate");
+                    }
+                    
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                        // For development only - accept all certificates
+                        System.out.println("Dev Mode: Accepting server certificate for " + (certs.length > 0 ? certs[0].getSubjectDN() : "unknown"));
+                    }
+                }
+            }, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        } catch (Exception e) {
+            System.err.println("Failed to initialize SSL context: " + e.getMessage());
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -47,9 +82,19 @@ public class GoogleOAuthCallback extends HttpServlet {
             String tokenResponse = exchangeCodeForToken(code);
             JsonReader reader = Json.createReader(new java.io.StringReader(tokenResponse));
             JsonObject tokenJson = reader.readObject();
-            
+
+            // token endpoint can return an error JSON when the code is invalid.
+            if (!tokenJson.containsKey("access_token")) {
+                String err = tokenJson.getString("error", "unknown_error");
+                String errDesc = tokenJson.getString("error_description", "");
+                String msg = err + (errDesc.isEmpty() ? "" : (": " + errDesc));
+                // Redirect back to login with error message
+                response.sendRedirect(request.getContextPath() + "/pages/user/login.xhtml?oauth_error=" + java.net.URLEncoder.encode(msg, java.nio.charset.StandardCharsets.UTF_8));
+                return;
+            }
+
             String accessToken = tokenJson.getString("access_token");
-            
+
             // Get user info
             String userInfo = getUserInfo(accessToken);
             JsonReader userReader = Json.createReader(new java.io.StringReader(userInfo));
@@ -61,7 +106,7 @@ public class GoogleOAuthCallback extends HttpServlet {
             
             // Store in session and redirect to verify page
             request.getSession().setAttribute("googleEmail", email);
-            request.getSession().setAttribute("googleName", name);
+            request.getSession().setAttribute("googleFullName", name);
             request.getSession().setAttribute("googlePicture", picture);
             request.getSession().setAttribute("googleAccessToken", accessToken);
             

@@ -20,8 +20,8 @@
                     <div class="max-w-md mx-auto w-full">
                         <!-- Header -->
                         <div class="mb-8 text-center md:text-left">
-                            <h1 class="text-[#111813] dark:text-white tracking-tight text-[32px] font-bold leading-tight pb-3">Welcome Back</h1>
-                            <p class="text-[#63886f] text-base font-normal leading-normal">Please sign in to your account to continue shopping.</p>
+                            <h1 class="text-[#111813] dark:text-white tracking-tight text-[32px] font-bold leading-tight pb-3">#{locale.getMessage('login.title')}</h1>
+                            <p class="text-[#63886f] text-base font-normal leading-normal">#{locale.getMessage('login.subtitle')}</p>
                         </div>
                         <!-- Error/Success Messages -->
                         <h:panelGroup layout="block" styleClass="space-y-2 mb-6">
@@ -36,10 +36,10 @@
                         <h:form class="flex flex-col gap-6">
                             <!-- Email Field -->
                             <div class="flex flex-col gap-1.5">
-                                <label class="text-[#111813] dark:text-white text-base font-medium leading-normal">Email or Username</label>
+                                <label class="text-[#111813] dark:text-white text-base font-medium leading-normal">#{locale.getMessage('login.emailLabel')}</label>
                                 <div class="flex w-full items-stretch rounded-lg group focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-1 dark:focus-within:ring-offset-[#112116]">
-                                    <h:inputText value="#{auth.identifier}" styleClass="form-input flex-1 resize-none overflow-hidden rounded-l-lg text-[#111813] border border-[#dce5df] bg-white focus:outline-none focus:border-primary focus:ring-0 h-14 placeholder:text-[#63886f] p-[15px] border-r-0 text-base">
-                                        <f:passThroughAttribute name="placeholder" value="Enter your email or username" />
+                                    <h:inputText value="#{auth.identifier}" styleClass="form-input flex-1 resize-none overflow-hidden rounded-l-lg text-[#111813] border border-[#dce5df] bg-white focus:outline-none focus:border-primary focus:ring-0 h-14 placeholder:text-[#63886f] p-[15px] border-r-0 text-base" title="#{locale.getMessage('login.emailPlaceholder')}">
+                                        <f:passThroughAttribute name="placeholder" value="#{locale.getMessage('login.emailPlaceholder')}" />
                                     </h:inputText>
                                     <div class="text-[#63886f] flex border border-[#dce5df] border-l-0 bg-white items-center justify-center pr-[15px] rounded-r-lg w-12">
                                         <span class="material-symbols-outlined">person</span>
@@ -48,10 +48,10 @@
                             </div>
                             <!-- Password Field -->
                             <div class="flex flex-col gap-1.5">
-                                <label class="text-[#111813] dark:text-white text-base font-medium leading-normal">Password</label>
+                                <label class="text-[#111813] dark:text-white text-base font-medium leading-normal">#{locale.getMessage('login.passwordLabel')}</label>
                                 <div class="flex w-full items-stretch rounded-lg group focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-1 dark:focus-within:ring-offset-[#112116]">
                                     <h:inputSecret id="login-pwd" value="#{auth.password}" styleClass="form-input flex-1 resize-none overflow-hidden rounded-l-lg text-[#111813] border border-[#dce5df] bg-white focus:outline-none focus:border-primary focus:ring-0 h-14 placeholder:text-[#63886f] p-[15px] border-r-0 text-base">
-                                        <f:passThroughAttribute name="placeholder" value="Enter your password" />
+                                        <f:passThroughAttribute name="placeholder" value="#{locale.getMessage('login.passwordPlaceholder')}" />
                                     </h:inputSecret>
                                     <div id="pwd-toggle-login" class="text-[#63886f] flex border border-[#dce5df] border-l-0 bg-white items-center justify-center pr-[15px] rounded-r-lg w-12 cursor-pointer hover:text-primary transition-colors">
                                         <span class="material-symbols-outlined pwd-icon">visibility_off</span>
@@ -62,12 +62,12 @@
                             <div class="flex items-center justify-between mt-2">
                                 <label class="flex items-center gap-2 cursor-pointer">
                                     <input class="rounded border-[#dce5df] text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
-                                    <span class="text-sm font-medium text-[#111813] dark:text-white">Remember me</span>
+                                    <span class="text-sm font-medium text-[#111813] dark:text-white">#{locale.getMessage('login.rememberMe')}</span>
                                 </label>
-                                <a class="text-sm font-bold text-primary hover:text-[#13a844] transition-colors" href="#">Forgot Password?</a>
+                                <a class="text-sm font-bold text-primary hover:text-[#13a844] transition-colors" href="#{facesContext.externalContext.requestContextPath}/pages/user/forgot_password.xhtml">#{locale.getMessage('login.forgotPassword')}</a>
                             </div>
                             <!-- Submit Button -->
-                            <h:commandButton action="#{auth.login}" value="Sign In" styleClass="mt-4 flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-primary text-[#111813] text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#13a844] transition-colors shadow-sm active:scale-[0.98]" />
+                            <h:commandButton action="#{auth.login}" value="#{locale.getMessage('login.signIn')}" styleClass="mt-4 flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-primary text-[#111813] text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#13a844] transition-colors shadow-sm active:scale-[0.98]" />
                         </h:form>
                         <!-- Divider -->
                         <div class="relative my-8">
@@ -75,7 +75,7 @@
                                 <div class="w-full border-t border-[#f0f4f2] dark:border-[#2a4034]"></div>
                             </div>
                             <div class="relative flex justify-center">
-                                <span class="bg-white dark:bg-[#112116] px-2 text-sm text-[#63886f]">Or continue with</span>
+                                <span class="bg-white dark:bg-[#112116] px-2 text-sm text-[#63886f]">#{locale.getMessage('login.continueWith')}</span>
                             </div>
                         </div>
                         <!-- Social Login -->
@@ -94,8 +94,8 @@
                     
                         <div class="mt-8 text-center">
                             <p class="text-[#111813] dark:text-white text-sm">
-                                Don't have an account? 
-                                <h:link class="font-bold text-primary hover:underline" value="Sign Up" outcome="register"/>
+                                #{locale.getMessage('login.noAccount')} 
+                                <h:link class="font-bold text-primary hover:underline" value="#{locale.getMessage('login.signUp')}" outcome="register"/>
                             </p>
                         </div>
                     </div>

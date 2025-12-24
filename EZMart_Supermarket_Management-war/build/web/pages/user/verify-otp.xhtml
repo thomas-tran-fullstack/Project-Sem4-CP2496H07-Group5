@@ -14,7 +14,7 @@
                     </h1>
                     <p class="text-[#63886f] dark:text-gray-400">
                         We sent a 4-digit verification code to<br/>
-                        <strong>#{auth.googleEmail}</strong>
+                        <strong>#{auth.passwordResetEmail != null ? auth.passwordResetEmail : auth.googleEmail}</strong>
                     </p>
                 </div>
 
@@ -29,23 +29,21 @@
                 </h:panelGroup>
 
                 <!-- Form -->
-                <h:form class="space-y-6">
+                <h:form id="verifyForm" class="space-y-6">
                     <!-- OTP Input -->
                     <div>
                         <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-3">
                             Enter 4-digit Code
                         </label>
-                        <div class="flex gap-3 justify-center">
-                            <h:inputText id="otp-input" 
-                                        value="#{auth.otpInputValue}" 
-                                        maxlength="4"
-                                        styleClass="form-input text-center text-3xl font-bold tracking-widest w-full rounded-lg border-0 py-4 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#63886f]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white dark:placeholder-gray-500 transition-shadow"
-                                        required="true">
-                                <f:passThroughAttribute name="placeholder" value="0000" />
-                                <f:passThroughAttribute name="inputmode" value="numeric" />
-                                <f:passThroughAttribute name="pattern" value="[0-9]*" />
-                            </h:inputText>
-                        </div>
+                            <div class="flex gap-3 justify-center">
+                                <input type="text" inputmode="numeric" maxlength="1" class="otp-digit w-16 h-16 text-center text-3xl font-bold rounded-lg border ring-1 ring-inset ring-[#dce5df]" autocomplete="off" />
+                                <input type="text" inputmode="numeric" maxlength="1" class="otp-digit w-16 h-16 text-center text-3xl font-bold rounded-lg border ring-1 ring-inset ring-[#dce5df]" autocomplete="off" />
+                                <input type="text" inputmode="numeric" maxlength="1" class="otp-digit w-16 h-16 text-center text-3xl font-bold rounded-lg border ring-1 ring-inset ring-[#dce5df]" autocomplete="off" />
+                                <input type="text" inputmode="numeric" maxlength="1" class="otp-digit w-16 h-16 text-center text-3xl font-bold rounded-lg border ring-1 ring-inset ring-[#dce5df]" autocomplete="off" />
+                            </div>
+                            <h:inputHidden id="otpCombined" value="#{auth.otpInputValue}" />
+                            <!-- Also include a plain hidden input with name 'otp' so a standard form submit includes the parameter -->
+                            <input type="hidden" id="otpHidden" name="otp" />
                         <p class="text-xs text-[#63886f] dark:text-gray-500 mt-2 text-center">
                             This code will expire in 10 minutes
                         </p>
@@ -53,8 +51,8 @@
 
                     <!-- Verify Button -->
                     <div class="pt-2">
-                        <h:commandButton action="#{auth.verifyGoogleOtp}" 
-                                        value="Verify &amp; Continue" 
+                        <h:commandButton id="verifyBtn" action="#{auth.verifyOtp}"
+                                        value="Verify &amp; Continue"
                                         styleClass="flex w-full justify-center rounded-lg bg-primary px-3 py-3.5 text-sm font-bold leading-6 text-white shadow-sm hover:bg-primary-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all active:scale-[0.98]" />
                     </div>
 
@@ -72,12 +70,22 @@
                     <div class="flex gap-3">
                         <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 flex-shrink-0">info</span>
                         <div class="text-sm text-blue-800 dark:text-blue-300">
-                            <p class="font-semibold">New to EZMart?</p>
-                            <p>We're creating your account with the name <strong>#{auth.googleFullName}</strong></p>
+                            <p class="font-semibold">Info</p>
+                            <p>
+                                <h:panelGroup rendered="#{auth.passwordResetEmail != null}">
+                                    You're resetting the password for <strong>#{auth.passwordResetEmail}</strong>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{auth.passwordResetEmail == null}">
+                                    New to EZMart? We're creating your account with the name <strong>#{auth.googleFullName}</strong>
+                                </h:panelGroup>
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
+            
+            <!-- Include external JS to avoid XHTML/CDATA parsing issues -->
+            <h:outputScript library="js" name="verify-otp.js" />
         </main>
     </ui:define>
 </ui:composition>

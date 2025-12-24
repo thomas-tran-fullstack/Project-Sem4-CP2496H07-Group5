@@ -18,19 +18,21 @@
                     </p>
                 </div>
                 
-                <!-- Hidden form to trigger the controller action -->
-                <h:form style="display: none;">
-                    <h:commandButton id="processOAuth" action="#{auth.processGoogleOAuth()}" immediate="true" />
-                </h:form>
-                
-                <!-- JavaScript to auto-submit the form -->
+                <!-- Redirect browser to servlet that will process Google info server-side -->
                 <script>//<![CDATA[
                     document.addEventListener('DOMContentLoaded', function() {
-                        var btn = document.getElementById('processOAuth');
-                        if (btn) {
-                            setTimeout(function() {
-                                btn.click();
-                            }, 500);
+                        try {
+                            // Compute context path (first path segment), e.g. '/EZMart_Supermarket_Management-war'
+                            var parts = window.location.pathname.split('/');
+                            var ctx = '';
+                            if (parts.length > 1 && parts[1].length > 0) {
+                                ctx = '/' + parts[1];
+                            }
+                            var proc = ctx + '/process-google';
+                            console.log('Redirecting to ' + proc);
+                            window.location.replace(proc);
+                        } catch (e) {
+                            console.error('Redirect failed', e);
                         }
                     });
                 //]]></script>

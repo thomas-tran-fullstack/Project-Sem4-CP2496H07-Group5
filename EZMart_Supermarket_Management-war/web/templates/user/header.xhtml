@@ -7,20 +7,20 @@
         <div class="w-full bg-[#f0f4f2] dark:bg-[#1a2e22] border-b border-[#e1e6e3] dark:border-[#2a3e32]">
             <div class="max-w-[1440px] mx-auto px-4 sm:px-10 h-10 flex items-center justify-between text-xs sm:text-sm font-medium text-[#111813] dark:text-gray-300">
                 <div class="hidden sm:flex gap-4">
-                    <span>Welcome to EZMart Online Store</span>
+                    <span>#{locale.getMessage('header.welcome')}</span>
                 </div>
                 <div class="flex flex-1 sm:flex-none justify-end gap-6">
                     <a class="flex items-center gap-1.5 hover:text-primary transition-colors" href="#">
                         <span class="material-symbols-outlined text-[18px]">storefront</span>
-                        <span>Store Locator</span>
+                        <span>#{locale.getMessage('header.storeLocator')}</span>
                     </a>
                     <a class="flex items-center gap-1.5 hover:text-primary transition-colors" href="#">
                         <span class="material-symbols-outlined text-[18px]">support_agent</span>
-                        <span>Customer Support</span>
+                        <span>#{locale.getMessage('header.customerSupport')}</span>
                     </a>
                     <a class="flex items-center gap-1.5 hover:text-primary transition-colors" href="#">
                         <span class="material-symbols-outlined text-[18px]">local_shipping</span>
-                        <span>Track Order</span>
+                        <span>#{locale.getMessage('header.trackOrder')}</span>
                     </a>
                 </div>
             </div>
@@ -30,27 +30,24 @@
             <div class="max-w-[1440px] mx-auto px-4 sm:px-10 py-4 flex flex-col md:flex-row items-center gap-4 md:gap-8">
                 <!-- Logo & Brand -->
                 <div class="flex items-center gap-3 shrink-0 self-start md:self-auto">
-                    <div class="size-10 flex items-center justify-center bg-primary/10 rounded-full text-primary">
-                        <svg fill="none" height="24" viewbox="0 0 48 48" width="24" xmlns="http://www.w3.org/2000/svg">
-                            <path clip-rule="evenodd" d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z" fill="currentColor" fill-rule="evenodd"></path>
-                        </svg>
-                    </div>
-                    <h2 class="text-[#111813] dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]">EZMart</h2>
+                    <a href="#{facesContext.externalContext.requestContextPath}/pages/user/index.xhtml" aria-label="Home">
+                        <img src="#{facesContext.externalContext.requestContextPath}/images/page_logo.png" alt="EZMart Logo" class="h-14 object-contain"/>
+                    </a>
                 </div>
                 <!-- Search Bar Section -->
                 <div class="flex-1 w-full max-w-[640px]">
                     <div class="relative flex w-full items-center rounded-lg bg-[#f0f4f2] dark:bg-[#14231b] border border-transparent focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all h-12">
                         <!-- Category Dropdown (Optional visual cue) -->
                         <div class="hidden sm:flex items-center pl-4 pr-3 border-r border-[#dbece4] dark:border-gray-700 h-2/3">
-                            <span class="text-sm font-medium text-[#111813] dark:text-gray-200 cursor-pointer hover:text-primary whitespace-nowrap">All Categories</span>
+                            <span class="text-sm font-medium text-[#111813] dark:text-gray-200 cursor-pointer hover:text-primary whitespace-nowrap">#{locale.getMessage('header.allCategories')}</span>
                             <span class="material-symbols-outlined text-[#111813] dark:text-gray-200 ml-1 text-[18px]">arrow_drop_down</span>
                         </div>
                         <!-- Input -->
-                        <input aria-label="Search" class="flex w-full min-w-0 flex-1 bg-transparent border-none text-[#111813] dark:text-white placeholder:text-[#63886f] dark:placeholder:text-gray-500 focus:ring-0 px-4 text-base" placeholder="Search for fresh groceries, fruits, milk..."/>
+                        <input aria-label="Search" class="flex w-full min-w-0 flex-1 bg-transparent border-none text-[#111813] dark:text-white placeholder:text-[#63886f] dark:placeholder:text-gray-500 focus:ring-0 px-4 text-base" placeholder="#{locale.getMessage('header.search')}"/>
                         <!-- Search Button -->
                         <button class="h-10 mr-1 px-5 rounded-md bg-primary hover:bg-primary/90 text-[#111813] font-bold text-sm transition-colors flex items-center justify-center">
                             <span class="material-symbols-outlined mr-0 sm:mr-2">search</span>
-                            <span class="hidden sm:inline">Search</span>
+                            <span class="hidden sm:inline">#{locale.getMessage('header.searchButton')}</span>
                         </button>
                     </div>
                 </div>
@@ -58,9 +55,9 @@
                 <div class="flex w-full md:w-auto items-center justify-between md:justify-end gap-2 md:gap-6">
                     <!-- Text Links -->
                     <nav class="hidden lg:flex items-center gap-6">
-                        <h:link class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors" value="Aisles" outcome="products"/>
-                        <h:link class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors" value="Deals"  outcome="deals"/>
-                        <h:link class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors" value="Orders" outcome="orderhistory"/>
+                        <h:link class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors" value="#{locale.getMessage('header.aisles')}" outcome="products"/>
+                        <h:link class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors" value="#{locale.getMessage('header.deals')}"  outcome="deals"/>
+                        <h:link class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors" value="#{locale.getMessage('header.orders')}" outcome="orderhistory"/>
                     </nav>
                     <!-- Icon Actions -->
                     <div class="flex items-center gap-3">
@@ -71,8 +68,8 @@
 
                                 <span class="material-symbols-outlined text-[#111813] dark:text-white mr-2">person</span>
                                 <div class="flex flex-col items-start leading-none">
-                                    <span class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Sign In</span>
-                                    <span class="text-sm text-[#111813] dark:text-white font-bold">Account</span>
+                                    <span class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">#{locale.getMessage('header.signIn')}</span>
+                                    <span class="text-sm text-[#111813] dark:text-white font-bold">#{locale.getMessage('header.account')}</span>
                                 </div>
 
                             </h:link>
@@ -99,6 +96,41 @@
                                 </div>
                             </div>
                         </h:panelGroup>
+
+                        <!-- Language Selector -->
+                        <div class="relative group">
+                            <button class="flex items-center justify-center rounded-lg h-10 px-3 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
+                                <span class="material-symbols-outlined text-[#111813] dark:text-white mr-1">language</span>
+                                <span class="hidden sm:inline text-sm font-bold text-[#111813] dark:text-white">#{locale.currentLanguage.toUpperCase()}</span>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-[#14231b] border border-[#e8ecea] dark:border-[#2a4034] rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out delay-200 z-50 max-h-96 overflow-y-auto">
+                                <h:form styleClass="flex flex-col">
+                                    <h:commandButton value="English" action="#{locale.setCurrentLanguage('en')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Tiếng Việt" action="#{locale.setCurrentLanguage('vi')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Español" action="#{locale.setCurrentLanguage('es')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Deutsch" action="#{locale.setCurrentLanguage('de')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="日本語" action="#{locale.setCurrentLanguage('ja')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Français" action="#{locale.setCurrentLanguage('fr')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Português" action="#{locale.setCurrentLanguage('pt')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Русский" action="#{locale.setCurrentLanguage('ru')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="한국어" action="#{locale.setCurrentLanguage('ko')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Italiano" action="#{locale.setCurrentLanguage('it')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="العربية" action="#{locale.setCurrentLanguage('ar')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Polski" action="#{locale.setCurrentLanguage('pl')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Türkçe" action="#{locale.setCurrentLanguage('tr')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Nederlands" action="#{locale.setCurrentLanguage('nl')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="ไทย" action="#{locale.setCurrentLanguage('th')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Bahasa Indonesia" action="#{locale.setCurrentLanguage('id')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Svenska" action="#{locale.setCurrentLanguage('sv')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="हिन्दी" action="#{locale.setCurrentLanguage('hi')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="עברית" action="#{locale.setCurrentLanguage('he')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Ελληνικά" action="#{locale.setCurrentLanguage('el')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Dansk" action="#{locale.setCurrentLanguage('da')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="Suomi" action="#{locale.setCurrentLanguage('fi')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                    <h:commandButton value="中文" action="#{locale.setCurrentLanguage('zh')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800" />
+                                </h:form>
+                            </div>
+                        </div>
 
                         <!-- Cart Button -->
                         <h:link outcome="cart"

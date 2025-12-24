@@ -57,11 +57,11 @@
                         <!-- Heading Section -->
                         <div class="text-center sm:text-left">
                             <h2 class="text-3xl font-bold tracking-tight text-[#111813] dark:text-white sm:text-4xl">
-                                Create an account
+                                #{locale.getMessage('register.createAccount')}
                             </h2>
                             <p class="mt-2 text-base text-[#63886f] dark:text-gray-400">
-                                Already have an account? 
-                                <h:link class="font-semibold text-primary hover:text-primary-dark transition-colors" value="Log in" outcome="login"/>
+                                #{locale.getMessage('register.haveAccount')} 
+                                <h:link class="font-semibold text-primary hover:text-primary-dark transition-colors" value="#{locale.getMessage('register.logIn')}" outcome="login"/>
                             </p>
                         </div>
                         <!-- Social Login -->
@@ -85,18 +85,18 @@
                                 </div>
                                 <!-- Username -->
                                 <div>
-                                    <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="username">Username</label>
+                                    <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="username">#{locale.getMessage('register.username')}</label>
                                     <div class="relative">
                                         <h:inputText id="username" value="#{auth.regUsername}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#63886f]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white dark:placeholder-gray-500 transition-shadow" />
                                     </div>
                                 </div>
                                 <div class="relative flex justify-center">
-                                    <span class="bg-white dark:bg-background-dark px-2 text-sm text-[#63886f]">Or continue with email</span>
+                                    <span class="bg-white dark:bg-background-dark px-2 text-sm text-[#63886f]">#{locale.getMessage('register.orContinueWith')}</span>
                                 </div>
                             </div>
                             <!-- First Name -->
                             <div>
-                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="first-name">First Name</label>
+                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="first-name">#{locale.getMessage('register.firstName')}</label>
                                 <div class="relative">
                                     <h:inputText id="first-name" value="#{auth.firstName}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#63886f]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white dark:placeholder-gray-500 transition-shadow" />
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
@@ -106,21 +106,21 @@
                             </div>
                             <!-- Middle Name -->
                             <div>
-                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="middle-name">Middle Name</label>
+                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="middle-name">#{locale.getMessage('register.middleName')}</label>
                                 <div class="relative">
                                     <h:inputText id="middle-name" value="#{auth.middleName}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#63886f]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white dark:placeholder-gray-500 transition-shadow" />
                                 </div>
                             </div>
                             <!-- Last Name -->
                             <div>
-                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="last-name">Last Name</label>
+                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="last-name">#{locale.getMessage('register.lastName')}</label>
                                 <div class="relative">
                                     <h:inputText id="last-name" value="#{auth.lastName}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#63886f]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white dark:placeholder-gray-500 transition-shadow" />
                                 </div>
                             </div>
                             <!-- Email -->
                             <div>
-                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="email">Email Address</label>
+                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="email">#{locale.getMessage('register.email')}</label>
                                 <div class="relative">
                                     <h:inputText id="email" value="#{auth.regEmail}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#63886f]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white dark:placeholder-gray-500 transition-shadow" />
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
@@ -131,7 +131,7 @@
                             <!-- Password Row -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
-                                    <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="pwd-field">Password</label>
+                                    <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="pwd-field">#{locale.getMessage('register.password')}</label>
                                     <div class="relative">
                                         <h:inputSecret id="pwd-field" value="#{auth.regPassword}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#63886f]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white dark:placeholder-gray-500 transition-shadow" />
                                         <button id="pwd-toggle-1" class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-auto text-gray-400 hover:text-primary transition-colors" type="button">
@@ -140,7 +140,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="confirm-password">Confirm Password</label>
+                                    <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="confirm-password">#{locale.getMessage('register.confirmPassword')}</label>
                                     <div class="relative">
                                         <h:inputSecret id="confirm-password" value="#{auth.regConfirmPassword}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#63886f]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white dark:placeholder-gray-500 transition-shadow" />
                                         <button id="pwd-toggle-2" class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-auto text-gray-400 hover:text-primary transition-colors" type="button">
@@ -164,8 +164,8 @@
                                         <input aria-describedby="marketing-description" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700" id="marketing" name="marketing" type="checkbox"/>
                                     </div>
                                     <div class="ml-3 text-sm leading-6">
-                                        <label class="font-medium text-[#111813] dark:text-gray-200" for="marketing">Keep me updated</label>
-                                        <p class="text-[#63886f] dark:text-gray-400" id="marketing-description">Get emails about fresh deals, new products, and offers.</p>
+                                        <label class="font-medium text-[#111813] dark:text-gray-200" for="marketing">#{locale.getMessage('register.keepUpdated')}</label>
+                                        <p class="text-[#63886f] dark:text-gray-400" id="marketing-description">#{locale.getMessage('register.emailAbout')}</p>
                                     </div>
                                 </div>
                                 <div class="relative flex items-start">
@@ -173,13 +173,13 @@
                                         <input checked="" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700" id="terms" name="terms" type="checkbox"/>
                                     </div>
                                     <div class="ml-3 text-sm leading-6">
-                                        <label class="font-medium text-[#111813] dark:text-gray-200" for="terms">I agree to the <a class="text-primary hover:underline" href="#">Terms of Service</a> and <a class="text-primary hover:underline" href="#">Privacy Policy</a>.</label>
+                                        <label class="font-medium text-[#111813] dark:text-gray-200" for="terms">#{locale.getMessage('register.agreeToTerms')} <a class="text-primary hover:underline" href="#">#{locale.getMessage('register.termsOfService')}</a> #{locale.getMessage('register.and')} <a class="text-primary hover:underline" href="#">#{locale.getMessage('register.privacyPolicy')}</a>.</label>
                                     </div>
                                 </div>
                             </div>
                             <!-- Submit Button -->
                             <div class="pt-4">
-                                <h:commandButton action="#{auth.register}" value="Create Account" styleClass="flex w-full justify-center rounded-lg bg-primary px-3 py-3.5 text-sm font-bold leading-6 text-white shadow-sm hover:bg-primary-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all active:scale-[0.98]" />
+                                <h:commandButton action="#{auth.register}" value="#{locale.getMessage('register.signUp')}" styleClass="flex w-full justify-center rounded-lg bg-primary px-3 py-3.5 text-sm font-bold leading-6 text-white shadow-sm hover:bg-primary-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all active:scale-[0.98]" />
                             </div>
                         </h:form>
                         <script>//<![CDATA[
@@ -261,7 +261,7 @@
                         <!-- Trust Signals -->
                         <div class="pt-4 flex items-center justify-center gap-2 text-xs text-[#63886f] dark:text-gray-500">
                             <span class="material-symbols-outlined text-[16px]">lock</span>
-                            <span>Your data is encrypted and secure.</span>
+                            <span>#{locale.getMessage('register.dataSecure')}</span>
                         </div>
                     </div>
                 </div>
