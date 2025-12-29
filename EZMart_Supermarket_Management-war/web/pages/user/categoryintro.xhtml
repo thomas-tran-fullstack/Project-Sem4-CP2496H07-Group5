@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core">
+
+    <ui:define name="content">
+        <div class="min-h-screen bg-background-light dark:bg-background-dark">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <!-- Page Header -->
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Product Categories</h1>
+                    <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                        Explore our diverse range of product categories. Each category offers unique products to meet your everyday needs.
+                    </p>
+                </div>
+
+                <!-- Categories Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <ui:repeat value="#{categoryUserMB.categories}" var="category">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <!-- Category Image/Icon -->
+                            <div class="h-48 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-6xl text-primary">category</span>
+                            </div>
+
+                            <!-- Category Content -->
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">#{category.categoryName}</h3>
+                                <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
+                                    #{category.description}
+                                </p>
+
+                                <!-- Category Stats -->
+                                <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                    <span>#{categoryUserMB.getProductCount(category.categoryID)} products</span>
+                                    <span class="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                                        #{category.status}
+                                    </span>
+                                </div>
+
+                                <!-- View Products Button -->
+                                <h:link outcome="products" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-center block">
+                                    <f:param name="categoryId" value="#{category.categoryID}" />
+                                    View Products
+                                </h:link>
+                            </div>
+                        </div>
+                    </ui:repeat>
+                </div>
+
+                <!-- Call to Action -->
+                <div class="text-center mt-16">
+                    <div class="bg-primary/5 dark:bg-primary/10 rounded-2xl p-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Can't Find What You're Looking For?</h2>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6">
+                            Browse all our products or contact us for assistance.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <h:link outcome="products" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200">
+                                Browse All Products
+                            </h:link>
+                            <h:link outcome="contact" class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 px-6 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+                                Contact Us
+                            </h:link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

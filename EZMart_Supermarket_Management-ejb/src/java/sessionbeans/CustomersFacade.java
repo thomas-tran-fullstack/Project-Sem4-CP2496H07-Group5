@@ -27,5 +27,16 @@ public class CustomersFacade extends AbstractFacade<Customers> implements Custom
     public CustomersFacade() {
         super(Customers.class);
     }
-    
+
+    @Override
+    public Customers findByUserID(Integer userID) {
+        try {
+            return em.createQuery("SELECT c FROM Customers c WHERE c.userID.userID = :userID", Customers.class)
+                    .setParameter("userID", userID)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }

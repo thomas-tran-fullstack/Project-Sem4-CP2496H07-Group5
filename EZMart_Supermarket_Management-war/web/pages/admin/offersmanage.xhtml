@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/admin/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core">
+
+    <ui:define name="content">
+        <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap gap-2 py-4 mb-4">
+                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="#">Home</a>
+                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="#">Admin</a>
+                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                <span class="text-[#111813] dark:text-white text-sm font-medium leading-normal">Offers</span>
+            </div>
+
+            <!-- Tabs -->
+            <div
+                class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] overflow-hidden">
+                <div class="border-b border-[#e5e7eb] dark:border-[#2a3e32]">
+                    <nav class="flex">
+                        <button id="offers-tab"
+                            class="tab-button active px-6 py-4 text-sm font-medium text-[#111813] dark:text-white border-b-2 border-primary">
+                            Offers
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Offers Tab Content -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <h1 class="text-3xl font-bold tracking-tight text-[#0e1b12] dark:text-white mb-2">
+                            Offers Management
+                        </h1>
+                        <p class="text-[#4e9767] dark:text-gray-400">
+                            Manage promotions, discounts, and special offers for products.
+                        </p>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button class="hidden sm:flex items-center gap-2 px-4 py-2 bg-white dark:bg-surface-dark
+                       border border-border-light dark:border-border-dark rounded-lg text-sm font-medium shadow-sm">
+                            <span class="material-symbols-outlined text-lg">download</span>
+                            Export
+                        </button>
+
+                        <h:link outcome="addoffer" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-md">
+                            <span class="material-symbols-outlined text-lg">add</span>
+                            Add New Offer
+                        </h:link>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
+                    <!-- Search -->
+                    <div class="md:col-span-6 relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#4e9767]">
+                            search
+                        </span>
+                        <h:inputText value="#{offersMB.searchTerm}" placeholder="Search offer name..." class="w-full pl-10 pr-3 py-2.5 rounded-lg bg-white dark:bg-surface-dark
+                      focus:ring-2 focus:ring-primary/50 shadow-sm" />
+                        <h:commandButton action="#{offersMB.searchOffers()}" style="display: none;" />
+                    </div>
+
+                    <!-- Status -->
+                    <div class="md:col-span-3 relative">
+                        <h:selectOneMenu class="w-full py-2.5 rounded-lg bg-white dark:bg-surface-dark shadow-sm">
+                            <f:selectItem itemLabel="All Types" itemValue="" />
+                            <f:selectItem itemLabel="Percentage" itemValue="Percentage" />
+                            <f:selectItem itemLabel="Fixed Amount" itemValue="Fixed Amount" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <!-- Active -->
+                    <div class="md:col-span-3 relative">
+                        <h:selectOneMenu class="w-full py-2.5 rounded-lg bg-white dark:bg-surface-dark shadow-sm">
+                            <f:selectItem itemLabel="All Statuses" itemValue="" />
+                            <f:selectItem itemLabel="Active" itemValue="Active" />
+                            <f:selectItem itemLabel="Inactive" itemValue="Inactive" />
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+
+
+
+                <h:form>
+                    <!-- Offers Table -->
+                    <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border overflow-hidden">
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-[#f8fcf9] dark:bg-white/5">
+                                <tr>
+                                    <th class="px-6 py-4"><input type="checkbox" /></th>
+                                    <th class="px-6 py-4 text-xs uppercase text-gray-500">Offer</th>
+                                    <th class="px-6 py-4 text-xs uppercase text-gray-500">Type</th>
+                                    <th class="px-6 py-4 text-xs uppercase text-gray-500">Discount</th>
+                                    <th class="px-6 py-4 text-xs uppercase text-gray-500">Start Date</th>
+                                    <th class="px-6 py-4 text-xs uppercase text-gray-500">End Date</th>
+                                    <th class="px-6 py-4 text-xs uppercase text-gray-500">Status</th>
+                                    <th class="px-6 py-4 text-xs uppercase text-gray-500 text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="divide-y">
+                                <ui:repeat value="#{offersMB.offersList}" var="o">
+                                    <tr class="group hover:bg-[#f6f8f6] transition-colors">
+                                        <td class="px-6 py-4"><input type="checkbox" /></td>
+
+                                        <!-- Offer -->
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                                    <span class="material-symbols-outlined">local_offer</span>
+                                                </div>
+                                                <div>
+                                                    <p class="font-semibold">#{o.offerName}</p>
+                                                    <p class="text-xs text-gray-400">ID: #{o.offerID}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <!-- Type -->
+                                        <td class="px-6 py-4">
+                                            <span class="text-gray-600">#{o.offerType}</span>
+                                        </td>
+
+                                        <!-- Discount -->
+                                        <td class="px-6 py-4">
+                                            <span class="font-medium">#{o.discountValue} #{o.offerType eq 'Percentage' ? '%' : '$'}</span>
+                                        </td>
+
+                                        <!-- Start Date -->
+                                        <td class="px-6 py-4 text-gray-600">
+                                            #{o.startDate}
+                                        </td>
+
+                                        <!-- End Date -->
+                                        <td class="px-6 py-4 text-gray-600">
+                                            #{o.endDate}
+                                        </td>
+
+                                        <!-- Status -->
+                                        <td class="px-6 py-4">
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{o.status eq 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">
+                                                #{o.status}
+                                            </span>
+                                        </td>
+
+                                        <!-- Actions -->
+                                        <td class="px-6 py-4 text-right">
+                                            <div
+                                                class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <h:link outcome="editoffer" class="p-1.5 hover:bg-green-50 rounded-md border-none bg-transparent">
+                                                    <f:param name="offerId" value="#{o.offerID}" />
+                                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                                </h:link>
+
+                                                <h:commandButton action="#{offersMB.deleteOffer(o)}"
+                                                    class="p-1.5 hover:bg-red-50 rounded-md">
+                                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                                </h:commandButton>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </ui:repeat>
+                            </tbody>
+                        </table>
+                    </div>
+                </h:form>
+
+            </div>
+        </div>
+
+        <h:messages class="fixed bottom-4 right-4 z-50" />
+    </ui:define>
+</ui:composition>

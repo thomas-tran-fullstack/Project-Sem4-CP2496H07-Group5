@@ -5,9 +5,11 @@
 package sessionbeans;
 
 import entityclass.ProductImages;
+import entityclass.Products;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  *
@@ -26,6 +28,13 @@ public class ProductImagesFacade extends AbstractFacade<ProductImages> implement
 
     public ProductImagesFacade() {
         super(ProductImages.class);
+    }
+
+    @Override
+    public List<ProductImages> findByProductID(Products productID) {
+        return em.createNamedQuery("ProductImages.findByProductID", ProductImages.class)
+                .setParameter("productID", productID)
+                .getResultList();
     }
     
 }

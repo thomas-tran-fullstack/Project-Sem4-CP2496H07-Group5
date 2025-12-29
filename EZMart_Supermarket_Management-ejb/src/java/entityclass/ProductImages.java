@@ -29,7 +29,8 @@ import java.io.Serializable;
 @NamedQueries({
     @NamedQuery(name = "ProductImages.findAll", query = "SELECT p FROM ProductImages p"),
     @NamedQuery(name = "ProductImages.findByImageID", query = "SELECT p FROM ProductImages p WHERE p.imageID = :imageID"),
-    @NamedQuery(name = "ProductImages.findByImageURL", query = "SELECT p FROM ProductImages p WHERE p.imageURL = :imageURL")})
+    @NamedQuery(name = "ProductImages.findByImageURL", query = "SELECT p FROM ProductImages p WHERE p.imageURL = :imageURL"),
+    @NamedQuery(name = "ProductImages.findByProductID", query = "SELECT p FROM ProductImages p WHERE p.productID = :productID")})
 public class ProductImages implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -100,5 +101,4 @@ public class ProductImages implements Serializable {
     public String toString() {
         return "entityclass.ProductImages[ imageID=" + imageID + " ]";
     }
-    
 }

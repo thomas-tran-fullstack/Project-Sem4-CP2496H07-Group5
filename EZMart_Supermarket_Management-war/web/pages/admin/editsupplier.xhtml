@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/admin/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core">
+
+    <f:metadata>
+        <f:viewParam name="supplierId" value="#{supplierMB.supplierId}" />
+        <f:event type="preRenderView" listener="#{supplierMB.loadSupplierForEdit}" />
+    </f:metadata>
+
+    <ui:define name="content">
+        <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap gap-2 py-4 mb-4">
+                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="suppliermanage.xhtml">Suppliers</a>
+                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                <span class="text-[#111813] dark:text-white text-sm font-medium leading-normal">Edit Supplier</span>
+            </div>
+
+            <!-- Form -->
+            <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] overflow-hidden">
+                <div class="p-6">
+                    <h1 class="text-3xl font-bold tracking-tight text-[#0e1b12] dark:text-white mb-2">
+                        Edit Supplier
+                    </h1>
+                    <p class="text-[#4e9767] dark:text-gray-400 mb-6">
+                        Update the supplier details.
+                    </p>
+
+                    <h:form class="max-w-md">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Brand Name</label>
+                                <h:inputText value="#{supplierMB.selectedSupplier.brandName}"
+                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white"
+                                    required="true" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Description</label>
+                                <h:inputTextarea value="#{supplierMB.selectedSupplier.description}"
+                                    class="w-full h-24 px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white resize-none"
+                                    rows="3" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Country</label>
+                                <h:inputText value="#{supplierMB.selectedSupplier.country}"
+                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-3 mt-6">
+                            <h:link outcome="suppliermanage" class="px-4 py-2 border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-[#25382c]">
+                                Cancel
+                            </h:link>
+                            <h:commandButton action="#{supplierMB.updateSupplier()}"
+                                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+                                Update Supplier
+                            </h:commandButton>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+
+        <h:messages class="fixed bottom-4 right-4 z-50" />
+    </ui:define>
+</ui:composition>

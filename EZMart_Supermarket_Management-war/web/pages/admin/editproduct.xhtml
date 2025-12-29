@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/admin/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core">
+
+    <ui:define name="content">
+        <f:event type="preRenderView" listener="#{productMB.loadProductById()}" />
+        <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap gap-2 py-4 mb-4">
+                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="#">Home</a>
+                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="#">Admin</a>
+                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="productsmanage">Products</a>
+                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                <span class="text-[#111813] dark:text-white text-sm font-medium leading-normal">Edit Product</span>
+            </div>
+
+            <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] overflow-hidden">
+                <div class="p-6">
+                    <h1 class="text-3xl font-bold tracking-tight text-[#0e1b12] dark:text-white mb-2">
+                        Edit Product
+                    </h1>
+                    <p class="text-[#4e9767] dark:text-gray-400 mb-6">
+                        Update product information and settings.
+                    </p>
+
+                    <h:form enctype="multipart/form-data" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Product Name -->
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Product Name</label>
+                                <h:inputText value="#{productMB.selectedProduct.productName}" required="true"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                            </div>
+
+                            <!-- Category -->
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Category</label>
+                                <h:selectOneMenu value="#{productMB.selectedProduct.categoryID}" required="true" converter="categoriesConverter"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
+                                    <f:selectItem itemValue="" itemLabel="Select Category" />
+                                    <f:selectItems value="#{productMB.categories}" var="category" itemValue="#{category}" itemLabel="#{category.categoryName}" />
+                                </h:selectOneMenu>
+                            </div>
+
+                            <!-- Brand -->
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Brand</label>
+                                <h:selectOneMenu value="#{productMB.selectedProduct.brandID}" required="true" converter="brandsConverter"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
+                                    <f:selectItem itemValue="" itemLabel="Select Brand" />
+                                    <f:selectItems value="#{productMB.brands}" var="brand" itemValue="#{brand}" itemLabel="#{brand.brandName}" />
+                                </h:selectOneMenu>
+                            </div>
+
+                            <!-- Unit Price -->
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Unit Price</label>
+                                <h:inputText value="#{productMB.selectedProduct.unitPrice}" required="true" type="number" step="0.01"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                            </div>
+
+                            <!-- Stock Quantity -->
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Stock Quantity</label>
+                                <h:inputText value="#{productMB.selectedProduct.stockQuantity}" required="true" type="number"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                            </div>
+
+                            <!-- Discount Percent -->
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Discount %</label>
+                                <h:inputText value="#{productMB.selectedProduct.discountPercent}" type="number" min="0" max="100"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                            </div>
+
+                            <!-- Status -->
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Status</label>
+                                <h:selectOneMenu value="#{productMB.selectedProduct.status}" required="true"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
+                                    <f:selectItem itemValue="Active" itemLabel="Active" />
+                                    <f:selectItem itemValue="Inactive" itemLabel="Inactive" />
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Description</label>
+                            <h:inputTextarea value="#{productMB.selectedProduct.description}" rows="4"
+                                class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white resize-none" />
+                        </div>
+
+                        <!-- Current Images -->
+                        <div>
+                            <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Current Images</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <ui:repeat value="#{productMB.productImages}" var="image">
+                                    <div class="relative">
+                                        <img src="#{facesContext.externalContext.requestContextPath}#{image.imageURL}" alt="Product Image" class="w-full h-24 object-cover rounded-lg" />
+                                        <h:commandButton type="button" action="#{productMB.removeProductImage(image)}"
+                                            onclick="return confirm('Are you sure you want to remove this image?')"
+                                            styleClass="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs border-0">
+                                            <f:ajax execute="@this" render="@form" />
+                                            ×
+                                        </h:commandButton>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </div>
+
+                        <!-- Add New Image -->
+                        <div>
+                            <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Add New Image</label>
+                            <h:inputFile value="#{productMB.uploadedFile}"
+                                class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-white hover:file:bg-primary/90" />
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex justify-end gap-3 pt-6">
+                            <h:link outcome="productsmanage" class="px-6 py-3 border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-[#25382c] font-medium">
+                                Cancel
+                            </h:link>
+                            <h:commandButton action="#{productMB.updateProduct()}" value="Update Product"
+                                class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 font-medium" />
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+
+        <h:messages class="fixed bottom-4 right-4 z-50" />
+
+
+    </ui:define>
+</ui:composition>

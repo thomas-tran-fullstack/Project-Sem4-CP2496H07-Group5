@@ -8,6 +8,7 @@ import entityclass.Products;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  *
@@ -27,5 +28,10 @@ public class ProductsFacade extends AbstractFacade<Products> implements Products
     public ProductsFacade() {
         super(Products.class);
     }
-    
+
+    public List<Products> findByProductName(String productName) {
+        return em.createNamedQuery("Products.findByProductName", Products.class)
+                .setParameter("productName", "%" + productName + "%")
+                .getResultList();
+    }
 }

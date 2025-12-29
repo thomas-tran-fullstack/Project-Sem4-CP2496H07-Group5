@@ -28,6 +28,8 @@ CREATE TABLE Customers (
     Country VARCHAR(50),
     HomePhone VARCHAR(20),
     MobilePhone VARCHAR(20),
+    Latitude DECIMAL(9,6),
+    Longitude DECIMAL(9,6),
     CreatedAt DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
@@ -249,7 +251,7 @@ CREATE TABLE Reports (
 );
 INSERT INTO Users (Username, PasswordHash, Email, Role)
 VALUES 
-('admin', 'admin123', 'admin@ezmart.vn', 'ADMIN'),
+('admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'admin@ezmart.vn', 'ADMIN'),
 ('bo', '123456', 'bo@ezmart.vn', 'CUSTOMER'),
 ('lam', '123456', 'lam@ezmart.vn', 'CUSTOMER');
 GO

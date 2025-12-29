@@ -64,10 +64,11 @@ public class AuthController implements Serializable {
     private Customers currentCustomer;
     private boolean loggedIn = false;
 
+    
     public String login() {
         String hash = hashPassword(password);
         Users u = usersFacade.findByIdentifierAndPassword(identifier, hash);
-        if (u != null) {
+        if (u != null && "ACTIVE".equals(u.getStatus())) {
             currentUser = u;
             // Try to set customer profile if exists
             if (u.getCustomersList() != null && !u.getCustomersList().isEmpty()) {
@@ -77,31 +78,53 @@ public class AuthController implements Serializable {
             FacesContext fc = FacesContext.getCurrentInstance();
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
                 jakarta.faces.application.FacesMessage.SEVERITY_INFO,
-                localeController.getMessage("success.loginSuccess"), null
+                "Login successful!", null
             ));
-            try {
-                FacesContext.getCurrentInstance().getExternalContext().redirect(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/pages/user/index.xhtml");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
+            // Role-based redirect
+           String redirectUrl;
+
+if ("admin".equalsIgnoreCase(u.getRole())) {
+    redirectUrl = "/pages/admin/dashboard.xhtml";
+} else if ("customer".equalsIgnoreCase(u.getRole())) {
+    redirectUrl = "/pages/user/index.xhtml";
+} else {
+    redirectUrl = "/pages/user/profile.xhtml";
+}
+
+try {
+    FacesContext.getCurrentInstance()
+        .getExternalContext()
+        .redirect(FacesContext.getCurrentInstance()
+        .getExternalContext()
+        .getRequestContextPath() + redirectUrl);
+} catch (Exception e) {
+    e.printStackTrace();
+}
+return null;
+
         }
         // stay on page on failure
         FacesContext fc = FacesContext.getCurrentInstance();
         fc.addMessage(null, new jakarta.faces.application.FacesMessage(
             jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-            localeController.getMessage("error.invalidCredentials"), null
+            "Invalid email/username or password", null
         ));
         return null;
     }
 
-    public String logout() {
+   public String logout() {
+        String redirectUrl;
+        if (currentUser != null && "ADMIN".equals(currentUser.getRole())) {
+            redirectUrl = "/pages/user/login.xhtml";
+        } else {
+            redirectUrl = "/pages/user/index.xhtml";
+        }
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
         loggedIn = false;
         currentUser = null;
         currentCustomer = null;
         try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/pages/user/index.xhtml");
+            FacesContext.getCurrentInstance().getExternalContext().redirect(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + redirectUrl);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -139,7 +162,7 @@ public class AuthController implements Serializable {
             u.setPasswordHash(hashPassword(regPassword));
             u.setEmail(regEmail);
             u.setRole("customer");
-            u.setStatus("active");
+            u.setStatus("ACTIVE");
             u.setCreatedAt(new Date());
             usersFacade.create(u);
 
@@ -429,7 +452,7 @@ public class AuthController implements Serializable {
             u.setUsername(username + counter);
             u.setPasswordHash(hashPassword(java.util.UUID.randomUUID().toString()));
             u.setRole("customer");
-            u.setStatus("active");
+            u.setStatus("ACTIVE");
             u.setCreatedAt(new Date());
             usersFacade.create(u);
 

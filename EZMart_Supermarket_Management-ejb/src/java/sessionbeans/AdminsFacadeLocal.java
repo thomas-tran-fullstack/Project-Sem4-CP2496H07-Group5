@@ -28,5 +28,7 @@ public interface AdminsFacadeLocal {
     List<Admins> findRange(int[] range);
 
     int count();
-    
+
+    Admins findByUserID(Integer userID);
+
 }
