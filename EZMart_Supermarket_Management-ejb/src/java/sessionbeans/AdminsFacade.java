@@ -27,5 +27,15 @@ public class AdminsFacade extends AbstractFacade<Admins> implements AdminsFacade
     public AdminsFacade() {
         super(Admins.class);
     }
-    
+
+    public Admins findByUserID(Integer userID) {
+        try {
+            return em.createQuery("SELECT a FROM Admins a WHERE a.userID.userID = :userID", Admins.class)
+                    .setParameter("userID", userID)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }

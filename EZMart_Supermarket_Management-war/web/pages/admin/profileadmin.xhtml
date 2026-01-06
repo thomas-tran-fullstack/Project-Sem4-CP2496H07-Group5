@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/admin/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core">
+    <ui:define name="content">
+
+        <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap gap-2 py-4 mb-4">
+                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="#">Home</a>
+                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="#">Admin</a>
+                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                <span class="text-[#111813] dark:text-white text-sm font-medium leading-normal">Profile</span>
+            </div>
+            <div class="flex flex-col gap-6">
+                <!-- Page Heading & Profile Header Combined -->
+                <div
+                    class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 relative overflow-hidden">
+                    <div
+                        class="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-primary/20 to-green-100 dark:from-primary/10 dark:to-[#1a2e22]">
+                    </div>
+                    <div class="relative flex flex-col md:flex-row gap-6 items-end md:items-center mt-8">
+                        <div class="relative group">
+                            <div class="bg-center bg-no-repeat bg-cover rounded-full size-28 border-4 border-white dark:border-surface-dark shadow-md"
+                                data-alt="Admin profile picture large"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCRyJuBQnXcmTT0AyQSiSfVpVuffP6kFDRA2FcJgPxLcNaNVUalP5Vh8MtgIu3kR8OOLIRX6-Cgi0MIGTuDwf0jMvff3cFYOnS-bXyjRLEtzrTy5G98E6bKvZY26T35QxSiAml9DbKk2SgY5i0eAPaJLMwS_tLu1JGy8xeuAAs_5LqMQdVPhVTVIXu2Jx7x0wArZzigUzgQQr7sYjS6qIxoKN_EljvMEDYGfM4QIYG4FPetO4B-QpVLfOJi_vnB8v0iuolJ3b9cggk");'>
+                            </div>
+                            <button
+                                class="absolute bottom-0 right-0 bg-white dark:bg-[#2a3e32] rounded-full p-2 border border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-[#111813] dark:text-white transition-colors">
+                                <span class="material-symbols-outlined text-[18px] leading-none">photo_camera</span>
+                            </button>
+                        </div>
+                        <div class="flex-1 pb-2">
+                            <h2 class="text-2xl md:text-3xl font-black text-[#111813] dark:text-white tracking-tight">
+                                <h:outputText value="#{adminProfileMB.adminName}" />
+                            </h2>
+                            <div class="flex flex-wrap gap-3 mt-1 items-center text-[#63886f]">
+                                <span class="flex items-center gap-1 text-sm"><span
+                                        class="material-symbols-outlined text-[18px]">mail</span>
+                                    <h:outputText value="#{adminProfileMB.adminEmail}" />
+                                </span>
+                                <span class="hidden md:inline text-gray-300">|</span>
+                                <span
+                                    class="flex items-center gap-1 text-sm bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 px-2 py-0.5 rounded-full font-medium">
+                                    <span class="material-symbols-outlined text-[16px] fill">admin_panel_settings</span>
+                                    <h:outputText value="#{auth.currentUser.role}" />
+                                </span>
+                            </div>
+                        </div>
+                        <button
+                            class="hidden md:flex items-center justify-center h-10 px-5 bg-[#f0f4f2] dark:bg-[#2a3e32] text-[#111813] dark:text-white text-sm font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-[#354a3d] transition-colors whitespace-nowrap">
+                            Edit Profile
+                        </button>
+                    </div>
+                </div>
+                <!-- Personal Information Form -->
+                <div
+                    class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 lg:p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-[#111813] dark:text-white">Personal Information</h3>
+                            <p class="text-[#63886f] text-sm mt-1">Manage your admin account details.</p>
+                        </div>
+                    </div>
+                    <h:form id="adminProfileForm" class="flex flex-col gap-6">
+                        <f:event type="preRenderView" listener="#{adminProfileMB.loadAdminProfile()}" />
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[#111813] dark:text-white text-sm font-medium">Username</label>
+                                <h:inputText
+                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                    value="#{adminProfileMB.adminName}" readonly="true" />
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[#111813] dark:text-white text-sm font-medium">Email Address</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-2.5 text-[#63886f]">mail</span>
+                                    <h:inputText
+                                        class="w-full h-11 pl-10 pr-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                        value="#{adminProfileMB.adminEmail}" readonly="true" />
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[#111813] dark:text-white text-sm font-medium">Admin Level</label>
+                                <h:inputText
+                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                    value="#{adminProfileMB.adminLevel}" readonly="true" />
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[#111813] dark:text-white text-sm font-medium">Member Since</label>
+                                <h:inputText
+                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                    value="#{adminProfileMB.createdAt}" readonly="true" />
+                            </div>
+                        </div>
+                        <div class="h-px bg-[#f0f4f2] dark:bg-[#2a3e32] my-2"></div>
+                        <div class="flex justify-end gap-3">
+                            <h:commandButton
+                                class="px-6 h-11 rounded-lg border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white font-bold text-sm hover:bg-gray-50 dark:hover:bg-[#25382c] transition-colors"
+                                action="#{adminProfileMB.loadAdminProfile()}" value="Refresh" />
+                        </div>
+                    </h:form>
+                </div>
+                <!-- Admin Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div
+                        class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 bg-primary/20 rounded-xl text-primary">
+                                <span class="material-symbols-outlined text-2xl">shopping_cart</span>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-[#111813] dark:text-white">1,234</h3>
+                                <p class="text-[#63886f] text-sm">Total Orders</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 bg-green-500/20 rounded-xl text-green-600">
+                                <span class="material-symbols-outlined text-2xl">people</span>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-[#111813] dark:text-white">567</h3>
+                                <p class="text-[#63886f] text-sm">Active Users</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 bg-blue-500/20 rounded-xl text-blue-600">
+                                <span class="material-symbols-outlined text-2xl">inventory</span>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-[#111813] dark:text-white">89</h3>
+                                <p class="text-[#63886f] text-sm">Products</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

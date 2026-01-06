@@ -1,0 +1,8 @@
+{
+  "California": {
+    "cities": ["Los Angeles","San Francisco","San Diego","Sacramento"]
+  },
+  "Texas": {
+    "cities": ["Houston","Dallas","Austin","San Antonio"]
+  }
+}

@@ -6,6 +6,8 @@
         var inputs = Array.prototype.slice.call(document.querySelectorAll('.otp-digit'));
         var hidden = document.getElementById('otpHidden');
         var hiddenBean = document.getElementById('otpCombined');
+        // flag set when a Resend control was clicked so submit validation can be bypassed
+        var __otpResendFlag = false;
 
         if (!inputs || inputs.length === 0) {
             console.log('No OTP inputs found');
@@ -83,12 +85,66 @@
         if (form) {
             form.addEventListener('submit', function(e){
                 var val = updateHidden();
-                if (val.length !== inputs.length) {
+
+                // Determine which element triggered the submit
+                var submitter = e.submitter || document.activeElement;
+                var isResend = false;
+
+                if (submitter) {
+                    try {
+                        // Prefer an explicit data attribute: data-resend="true"
+                        if (submitter.dataset && (submitter.dataset.resend === 'true' || submitter.dataset.action === 'resend')) {
+                            isResend = true;
+                        }
+
+                        // Fallback: inspect id/name/value/text to detect common 'resend' naming
+                        if (!isResend) {
+                            var s = (submitter.id || submitter.name || submitter.value || submitter.innerText || '').toString().toLowerCase();
+                            if (s.indexOf('resend') !== -1 || s.indexOf('send code') !== -1 || s.indexOf('send') !== -1 && s.indexOf('verify') === -1) {
+                                isResend = true;
+                            }
+                        }
+                    } catch (err) {
+                        // ignore detection errors and fall back to default validation
+                    }
+                }
+
+                // Also check hidden resend flag (set by onclick on Resend link)
+                var resendHidden = document.getElementById('resendFlag');
+                var hiddenIsResend = false;
+                try { if (resendHidden && resendHidden.value === 'true') hiddenIsResend = true; } catch (err) {}
+
+                // If this submit is NOT a resend action, enforce full-code validation
+                if (!isResend && !__otpResendFlag && !hiddenIsResend && val.length !== inputs.length) {
                     e.preventDefault();
                     alert('Please enter the full ' + inputs.length + '-digit verification code.');
                 }
+
+                // If we used the hidden resend flag, reset it so subsequent submits behave normally
+                try { if (hiddenIsResend && resendHidden) resendHidden.value = 'false'; } catch (err) {}
             });
         }
+
+        // Setup detection for Resend triggers (works for links, buttons, JSF commandLink, etc.)
+        // If user clicks an element that looks like a "resend" control, set a flag so submit handler can skip OTP validation.
+        function markResend(e) {
+            __otpResendFlag = true;
+            try { if (e && e.currentTarget && e.currentTarget.dataset) e.currentTarget.dataset.resend = 'true'; } catch (err) {}
+            setTimeout(function(){ __otpResendFlag = false; }, 2000);
+        }
+
+        // Heuristic selector: look for elements whose text/value contains 'resend'
+        var potential = Array.prototype.slice.call(document.querySelectorAll('a,button,input'));
+        potential.forEach(function(el){
+            try {
+                var txt = (el.value || el.innerText || el.textContent || '').toString().trim().toLowerCase();
+                if (txt.indexOf('resend') !== -1 || txt.indexOf('send code') !== -1) {
+                    el.addEventListener('click', markResend);
+                }
+            } catch (err) {
+                // ignore
+            }
+        });
 
         // autofocus first
         inputs[0].focus();

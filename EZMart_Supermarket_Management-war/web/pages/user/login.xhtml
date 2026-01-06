@@ -61,7 +61,7 @@
                             <!-- Options -->
                             <div class="flex items-center justify-between mt-2">
                                 <label class="flex items-center gap-2 cursor-pointer">
-                                    <input class="rounded border-[#dce5df] text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+                                    <h:selectBooleanCheckbox value="#{auth.rememberMe}" styleClass="rounded border-[#dce5df] text-primary focus:ring-primary h-4 w-4"/>
                                     <span class="text-sm font-medium text-[#111813] dark:text-white">#{locale.getMessage('login.rememberMe')}</span>
                                 </label>
                                 <a class="text-sm font-bold text-primary hover:text-[#13a844] transition-colors" href="#{facesContext.externalContext.requestContextPath}/pages/user/forgot_password.xhtml">#{locale.getMessage('login.forgotPassword')}</a>
@@ -82,13 +82,13 @@
                         <div class="grid grid-cols-2 gap-4">
                             <h:form styleClass="contents">
                                 <h:commandLink action="#{auth.redirectToGoogleOAuth()}" styleClass="flex items-center justify-center gap-3 h-12 rounded-lg border border-[#dce5df] hover:bg-gray-50 dark:hover:bg-[#1a3322] transition-colors bg-white dark:bg-[#112116] dark:border-[#2a4034] px-4">
-                                    <img alt="Google" class="w-5 h-5" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+                                    <img alt="Google" class="w-5 h-5" src="#{facesContext.externalContext.requestContextPath}/images/google.png"/>
                                     <span class="text-sm font-bold text-[#111813] dark:text-white">Google</span>
                                 </h:commandLink>
                             </h:form>
                             <button class="flex items-center justify-center gap-2 h-12 rounded-lg border border-[#dce5df] hover:bg-gray-50 dark:hover:bg-[#1a3322] transition-colors bg-white dark:bg-[#112116] dark:border-[#2a4034]">
-                                <img alt="Apple" class="w-5 h-5" data-alt="Apple logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt95QDFH8irOiy94USrDJJ0MF7mcxRCNvg_BOcxLM1BLNToTNeodr_IiejZZmGe9c9YqbHEI5hTBDlFMbRusvs2VuIOOG9KpDHhBxbpqpPI2EUqRa9pbuZOSbHewCbKdq3kFebO116Cn5YDvqPj8OoD-rJ1G-928_6YPmlTCcVO7gZI_QkpyTII-FAKtn4aoqLXIQfxyAIiKOOed2vf-wH42csihjb9oA4QaPqtQ_qQ0ICdbCLGkjMRk74Ksy6NpLYko2aDm8iY9M"/>
-                                <span class="text-sm font-bold text-[#111813] dark:text-white">Apple</span>
+                                <img alt="Facebook" class="w-5 h-5" data-alt="Facebook logo" src="#{facesContext.externalContext.requestContextPath}/images/facebook.png"/>
+                                <span class="text-sm font-bold text-[#111813] dark:text-white">Facebook</span>
                             </button>
                         </div>
                     

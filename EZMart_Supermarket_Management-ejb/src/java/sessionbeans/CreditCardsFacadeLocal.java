@@ -29,4 +29,4 @@ public interface CreditCardsFacadeLocal {
 
     int count();
     
-}
+    List<CreditCards> findByCustomer(Integer customerId);}

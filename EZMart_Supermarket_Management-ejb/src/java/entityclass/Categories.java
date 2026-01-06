@@ -141,5 +141,4 @@ public class Categories implements Serializable {
     public String toString() {
         return "entityclass.Categories[ categoryID=" + categoryID + " ]";
     }
-    
 }

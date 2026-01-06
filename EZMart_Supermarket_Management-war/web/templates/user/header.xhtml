@@ -1,7 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="jakarta.faces.html"
     xmlns:ui="jakarta.faces.facelets">
+    <h:panelGroup id="siteHeader" layout="block">
     <header class="sticky top-0 z-50 w-full flex-col shadow-sm">
         <!-- Utility Bar -->
         <div class="w-full bg-[#f0f4f2] dark:bg-[#1a2e22] border-b border-[#e1e6e3] dark:border-[#2a3e32]">
@@ -79,7 +81,7 @@
                         <h:panelGroup rendered="#{auth.loggedIn}" styleClass="relative">
                             <div class="group" id="user-dropdown-menu">
                                 <button class="flex items-center justify-center rounded-lg h-10 px-4 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
-                                    <span class="material-symbols-outlined text-[#111813] dark:text-white mr-2">person</span>
+                                    <img src="#{auth.userProfileImageUrl}" alt="avatar" class="w-8 h-8 rounded-full mr-2 object-cover"/>
                                     <div class="flex flex-col items-start leading-none">
                                         <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">#{auth.currentUser != null ? auth.currentUser.username : ''}</span>
                                         <span class="text-sm text-[#111813] dark:text-white font-bold">#{auth.displayName}</span>
@@ -106,28 +108,7 @@
                             <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-[#14231b] border border-[#e8ecea] dark:border-[#2a4034] rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out delay-200 z-50 max-h-96 overflow-y-auto">
                                 <h:form styleClass="flex flex-col">
                                     <h:commandButton value="English" action="#{locale.setCurrentLanguage('en')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Tiếng Việt" action="#{locale.setCurrentLanguage('vi')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Español" action="#{locale.setCurrentLanguage('es')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Deutsch" action="#{locale.setCurrentLanguage('de')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="日本語" action="#{locale.setCurrentLanguage('ja')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Français" action="#{locale.setCurrentLanguage('fr')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Português" action="#{locale.setCurrentLanguage('pt')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Русский" action="#{locale.setCurrentLanguage('ru')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="한국어" action="#{locale.setCurrentLanguage('ko')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Italiano" action="#{locale.setCurrentLanguage('it')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="العربية" action="#{locale.setCurrentLanguage('ar')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Polski" action="#{locale.setCurrentLanguage('pl')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Türkçe" action="#{locale.setCurrentLanguage('tr')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Nederlands" action="#{locale.setCurrentLanguage('nl')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="ไทย" action="#{locale.setCurrentLanguage('th')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Bahasa Indonesia" action="#{locale.setCurrentLanguage('id')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Svenska" action="#{locale.setCurrentLanguage('sv')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="हिन्दी" action="#{locale.setCurrentLanguage('hi')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="עברית" action="#{locale.setCurrentLanguage('he')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Ελληνικά" action="#{locale.setCurrentLanguage('el')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Dansk" action="#{locale.setCurrentLanguage('da')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="Suomi" action="#{locale.setCurrentLanguage('fi')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
-                                    <h:commandButton value="中文" action="#{locale.setCurrentLanguage('zh')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800" />
+                                    <h:commandButton value="Tiếng Việt" action="#{locale.setCurrentLanguage('vi')}" styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800" />
                                 </h:form>
                             </div>
                         </div>
@@ -170,6 +151,7 @@
             </div>
         </div>
     </header>
+    </h:panelGroup>
     <script>//<![CDATA[
         document.addEventListener('DOMContentLoaded', function() {
             // User Dropdown Menu Handler

@@ -5,6 +5,7 @@
 package sessionbeans;
 
 import entityclass.ProductImages;
+import entityclass.Products;
 import jakarta.ejb.Local;
 import java.util.List;
 
@@ -28,5 +29,6 @@ public interface ProductImagesFacadeLocal {
     List<ProductImages> findRange(int[] range);
 
     int count();
-    
+
+    public List<ProductImages> findByProductID(Products productID);
 }

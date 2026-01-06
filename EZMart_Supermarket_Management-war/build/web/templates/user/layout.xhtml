@@ -6,7 +6,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/xhtml.xhtml to edit this te
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
-      xmlns:ui="jakarta.faces.facelets">
+      xmlns:ui="jakarta.faces.facelets"
+      lang="#{facesContext.externalContext.requestLocale.language}">
 
 <h:head>
     <meta charset="UTF-8"/>
@@ -60,6 +61,49 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/xhtml.xhtml to edit this te
     </main>
 
     <ui:include src="footer.xhtml"/>
+    <script src="#{facesContext.externalContext.requestContextPath}/resources/js/modal-accessibility.js"></script>
+    <script>
+    //<![CDATA[
+        // Smooth scroll helper for sidebar links
+        document.addEventListener('click', function(e){
+            var t = e.target;
+            while (t && t !== document) {
+                if (t.matches && t.matches('a[data-scroll-to]')) {
+                    e.preventDefault();
+                    var id = t.getAttribute('data-scroll-to');
+                    var el = document.getElementById(id);
+                    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+                    return;
+                }
+                t = t.parentNode;
+            }
+        });
+    //]]>
+    </script>
+    <script>
+    //<![CDATA[
+        // Move modals to body to avoid stacking-context issues
+        document.addEventListener('DOMContentLoaded', function() {
+            ['addressModal', 'avatarViewModal', 'paymentModal'].forEach(function(id) {
+                try {
+                    var el = document.getElementById(id);
+                    if (el && el.parentNode !== document.body) {
+                        // ensure overlay/fullscreen positioning and high z-index
+                        el.style.position = 'fixed';
+                        el.style.left = '0';
+                        el.style.top = '0';
+                        el.style.width = '100%';
+                        el.style.height = '100%';
+                        el.style.zIndex = '200000';
+                        document.body.appendChild(el);
+                    }
+                } catch (e) {
+                    // ignore
+                }
+            });
+        });
+    //]]>
+    </script>
 </h:body>
 </html>
 

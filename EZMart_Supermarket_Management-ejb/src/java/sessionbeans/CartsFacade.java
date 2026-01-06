@@ -8,6 +8,7 @@ import entityclass.Carts;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  *
@@ -26,6 +27,11 @@ public class CartsFacade extends AbstractFacade<Carts> implements CartsFacadeLoc
 
     public CartsFacade() {
         super(Carts.class);
+    }
+
+    @Override
+    public List<Carts> findByCustomerID(Integer customerID) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 }

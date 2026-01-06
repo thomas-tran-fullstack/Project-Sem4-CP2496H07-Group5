@@ -8,6 +8,7 @@ import entityclass.Categories;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  *
@@ -27,5 +28,10 @@ public class CategoriesFacade extends AbstractFacade<Categories> implements Cate
     public CategoriesFacade() {
         super(Categories.class);
     }
-    
+
+    public List<Categories> findByCategoryName(String categoryName) {
+        return em.createNamedQuery("Categories.findByCategoryName", Categories.class)
+                .setParameter("categoryName", "%" + categoryName + "%")
+                .getResultList();
+    }
 }

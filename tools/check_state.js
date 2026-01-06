@@ -1,0 +1,4 @@
+const fs=require('fs');const p='C:/Users/Admin/Documents/GitHub/Project-Sem4-CP2496H07-Group5/EZMart_Supermarket_Management-war/web/resources/js/profile-address.js';const lines=fs.readFileSync(p,'utf8').split(/\r?\n/);let inS=false,inD=false,inB=false,esc=false;let pc=0;for(let i=0;i<lines.length;i++){const line=lines[i];for(let j=0;j<line.length;j++){const ch=line[j];if(esc){esc=false;continue;}if(inS){if(ch==='\\')esc=true;else if(ch==="'") inS=false;continue;}if(inD){if(ch==='\\')esc=true;else if(ch==='"') inD=false;continue;}if(inB){if(ch==='\\')esc=true;else if(ch===String.fromCharCode(96)) inB=false;continue;}if(ch==="'") { inS=true; } else if(ch==='"') { inD=true; } else if(ch===String.fromCharCode(96)) { inB=true; } else if(ch==='(') { pc++; } else if(ch===')') { pc--; } }
+ if(i+1===1072) console.log('After processing line',i+1,'inSingle',inS,'inDouble',inD,'inBack',inB,'pc',pc,'line:',line);
+}
+console.log('done');

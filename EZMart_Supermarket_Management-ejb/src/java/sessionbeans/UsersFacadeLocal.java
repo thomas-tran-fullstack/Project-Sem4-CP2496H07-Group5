@@ -32,5 +32,6 @@ public interface UsersFacadeLocal {
     Users findByUsername(String username);
     Users findByEmail(String email);
     Users findByIdentifierAndPassword(String identifier, String passwordHash);
+    Users findByUsernameAndPassword(String username, String passwordHash);
     
 }

@@ -28,5 +28,7 @@ public interface CartsFacadeLocal {
     List<Carts> findRange(int[] range);
 
     int count();
-    
+
+    List<Carts> findByCustomerID(Integer customerID);
+
 }

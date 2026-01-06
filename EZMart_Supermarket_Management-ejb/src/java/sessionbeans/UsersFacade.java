@@ -29,6 +29,18 @@ public class UsersFacade extends AbstractFacade<Users> implements UsersFacadeLoc
         super(Users.class);
     }
     
+     public Users findByUsernameAndPassword(String username, String passwordHash) {
+        try {
+            return em.createQuery("SELECT u FROM Users u WHERE u.username = :username AND u.passwordHash = :passwordHash", Users.class)
+                    .setParameter("username", username)
+                    .setParameter("passwordHash", passwordHash)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    
     public Users findByUsername(String username) {
         try {
             return em.createNamedQuery("Users.findByUsername", Users.class)

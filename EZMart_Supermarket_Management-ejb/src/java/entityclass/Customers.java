@@ -45,6 +45,8 @@ import java.util.List;
     @NamedQuery(name = "Customers.findByCountry", query = "SELECT c FROM Customers c WHERE c.country = :country"),
     @NamedQuery(name = "Customers.findByHomePhone", query = "SELECT c FROM Customers c WHERE c.homePhone = :homePhone"),
     @NamedQuery(name = "Customers.findByMobilePhone", query = "SELECT c FROM Customers c WHERE c.mobilePhone = :mobilePhone"),
+    @NamedQuery(name = "Customers.findByLatitude", query = "SELECT c FROM Customers c WHERE c.latitude = :latitude"),
+    @NamedQuery(name = "Customers.findByLongitude", query = "SELECT c FROM Customers c WHERE c.longitude = :longitude"),
     @NamedQuery(name = "Customers.findByCreatedAt", query = "SELECT c FROM Customers c WHERE c.createdAt = :createdAt")})
 public class Customers implements Serializable {
 
@@ -81,6 +83,10 @@ public class Customers implements Serializable {
     @Size(max = 20)
     @Column(name = "MobilePhone")
     private String mobilePhone;
+    @Column(name = "Latitude", precision = 9, scale = 6)
+    private Double latitude;
+    @Column(name = "Longitude", precision = 9, scale = 6)
+    private Double longitude;
     @Column(name = "CreatedAt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -183,6 +189,22 @@ public class Customers implements Serializable {
 
     public void setMobilePhone(String mobilePhone) {
         this.mobilePhone = mobilePhone;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public Date getCreatedAt() {

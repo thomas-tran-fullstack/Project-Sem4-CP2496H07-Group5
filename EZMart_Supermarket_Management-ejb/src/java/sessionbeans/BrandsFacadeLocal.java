@@ -29,4 +29,5 @@ public interface BrandsFacadeLocal {
 
     int count();
     
+    List<Brands> findByBrandName(String brandName); 
 }

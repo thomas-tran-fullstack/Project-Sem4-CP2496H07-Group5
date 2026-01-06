@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core">
+
+    <ui:define name="content">
+        <div class="min-h-screen bg-background-light dark:bg-background-dark">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <!-- Page Header -->
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Suppliers</h1>
+                    <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                        Meet the trusted partners who supply our high-quality products. We work with reliable suppliers to ensure the best for our customers.
+                    </p>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="mb-8">
+                    <div class="max-w-md mx-auto">
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                            <h:inputText value="#{supplierUserMB.searchTerm}" placeholder="Search suppliers..."
+                                class="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-transparent" />
+                            <h:commandButton action="#{supplierUserMB.searchSuppliers()}" style="display: none;" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suppliers Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <ui:repeat value="#{supplierUserMB.suppliers}" var="supplier">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <!-- Supplier Header -->
+                            <div class="bg-gradient-to-r from-primary/20 to-primary/5 p-6">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-3xl text-primary">business</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">#{supplier.supplierName}</h3>
+                                        <p class="text-gray-600 dark:text-gray-400">Supplier ID: #{supplier.supplierID}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Supplier Details -->
+                            <div class="p-6 space-y-4">
+                                <!-- Description -->
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">About</h4>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm">
+                                        #{supplier.description}
+                                    </p>
+                                </div>
+
+                                <!-- Contact Information -->
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Contact Information</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-gray-400 text-lg">location_on</span>
+                                            <span class="text-gray-600 dark:text-gray-400">#{supplier.address}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-gray-400 text-lg">phone</span>
+                                            <span class="text-gray-600 dark:text-gray-400">#{supplier.phone}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-gray-400 text-lg">email</span>
+                                            <span class="text-gray-600 dark:text-gray-400">#{supplier.email}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Status -->
+                                <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">Status</span>
+                                    <span class="px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full text-xs font-medium">
+                                        #{supplier.status}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </ui:repeat>
+                </div>
+
+                <!-- No Results Message -->
+                <ui:fragment rendered="#{empty supplierUserMB.suppliers}">
+                    <div class="text-center py-16">
+                        <span class="material-symbols-outlined text-6xl text-gray-300 mb-4">business</span>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">No Suppliers Found</h3>
+                        <p class="text-gray-600 dark:text-gray-400">Try adjusting your search criteria.</p>
+                    </div>
+                </ui:fragment>
+
+                <!-- Call to Action -->
+                <div class="text-center mt-16">
+                    <div class="bg-primary/5 dark:bg-primary/10 rounded-2xl p-8">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Interested in Becoming a Supplier?</h2>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6">
+                            Join our network of trusted suppliers and grow your business with us.
+                        </p>
+                        <h:link outcome="contact" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200">
+                            Contact Us
+                        </h:link>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
