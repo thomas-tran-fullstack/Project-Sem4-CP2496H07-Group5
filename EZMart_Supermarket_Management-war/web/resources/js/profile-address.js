@@ -298,6 +298,7 @@ function triggerEdit(event, btnId) {
         if(event && typeof event.preventDefault === 'function') event.preventDefault();
         if(event && typeof event.stopPropagation === 'function') event.stopPropagation();
     }catch(e){}
+    console.log('triggerEdit called with btnId=', btnId, 'event:', event && event.target);
     try {
         var clicked = null;
         // Prefer the clicked element's form submit input (JSF-generated)
@@ -330,6 +331,19 @@ function triggerEdit(event, btnId) {
                 }
             }
         }catch(e){ /* ignore */ }
+        // After attempting to trigger, if modal hasn't opened within 400ms, open a client-side fallback modal
+        try{
+            setTimeout(function(){
+                var modal = document.getElementById('addressModal');
+                if(modal && modal.classList.contains('hidden')){
+                    console.warn('triggerEdit fallback: modal still hidden after click, opening client-side fallback');
+                    // set edit mode and open modal (server data may update shortly after)
+                    modal.dataset.mode = 'edit';
+                    modal.classList.remove('hidden');
+                    setTimeout(populateAddressForm, 300);
+                }
+            }, 400);
+        }catch(e){ console.warn('triggerEdit fallback scheduling failed', e); }
     } catch (e) { console.error('triggerEdit error:', e); }
     return false;
 }
