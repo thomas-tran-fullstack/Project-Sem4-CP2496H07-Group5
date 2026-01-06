@@ -44,6 +44,8 @@
                             <h:inputHidden id="otpCombined" value="#{auth.otpInputValue}" />
                             <!-- Also include a plain hidden input with name 'otp' so a standard form submit includes the parameter -->
                             <input type="hidden" id="otpHidden" name="otp" />
+                            <!-- hidden flag to indicate a Resend request so client-side validation can be bypassed -->
+                            <input type="hidden" id="resendFlag" name="resendFlag" value="false" />
                         <p class="text-xs text-[#4b5563] dark:text-[#d1d5db] mt-2 text-center">
                             This code will expire in 10 minutes
                         </p>
@@ -51,7 +53,7 @@
 
                     <!-- Verify Button -->
                     <div class="pt-2">
-                        <h:commandButton id="verifyBtn" action="#{auth.verifyOtp}"
+                        <h:commandButton id="verifyBtn" action="#{auth.verifyOtp()}"
                                         value="Verify &amp; Continue"
                                         styleClass="flex w-full justify-center rounded-lg bg-primary px-3 py-3.5 text-sm font-bold leading-6 text-white shadow-sm hover:bg-primary-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all active:scale-[0.98]" />
                     </div>
@@ -59,9 +61,10 @@
                     <!-- Resend Option -->
                     <div class="text-center text-sm text-[#4b5563] dark:text-[#d1d5db]">
                         <p>Didn't receive the code?</p>
-                        <h:commandLink action="#{auth.resendOtp}" 
-                                      styleClass="text-primary hover:text-primary-dark font-semibold transition-colors" 
-                                      value="Resend Code" />
+                                <h:commandLink action="#{auth.resendOtp()}" 
+                                              styleClass="text-primary hover:text-primary-dark font-semibold transition-colors" 
+                                              value="Resend Code" 
+                                              onclick="try{document.getElementById('resendFlag').value='true'; this.dataset.resend='true';}catch(e){}" />
                     </div>
                 </h:form>
 

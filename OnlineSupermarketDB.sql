@@ -11,35 +11,82 @@ CREATE TABLE Users (
     Username VARCHAR(50) UNIQUE NOT NULL,
     PasswordHash VARCHAR(255) NOT NULL,
     Email VARCHAR(100),
-    Role VARCHAR(20) CHECK (Role IN ('GUEST','CUSTOMER','ADMIN')),
+    Role VARCHAR(20) CHECK (Role IN ('STAFF','STREAMER','CUSTOMER','ADMIN')),
     Status VARCHAR(20) DEFAULT 'ACTIVE',
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
+CREATE TABLE Roles (
+    RoleID INT IDENTITY PRIMARY KEY,
+    RoleName VARCHAR(50) UNIQUE
+);
+
+CREATE TABLE Permissions (
+    PermissionID INT IDENTITY PRIMARY KEY,
+    PermissionKey VARCHAR(100),
+    Description NVARCHAR(255)
+);
+
+CREATE TABLE RolePermissions (
+    RoleID INT,
+    PermissionID INT,
+    PRIMARY KEY (RoleID, PermissionID),
+    FOREIGN KEY (RoleID) REFERENCES Roles(RoleID),
+    FOREIGN KEY (PermissionID) REFERENCES Permissions(PermissionID)
+);
+
 CREATE TABLE Customers (
     CustomerID INT IDENTITY PRIMARY KEY,
-    UserID INT NOT NULL,
-    FirstName VARCHAR(50),
-    MiddleName VARCHAR(50),
-    LastName VARCHAR(50),
-    Street VARCHAR(100),
-    City VARCHAR(50),
-    State VARCHAR(50),
-    Country VARCHAR(50),
-    HomePhone VARCHAR(20),
-    MobilePhone VARCHAR(20),
-    Latitude DECIMAL(9,6),
-    Longitude DECIMAL(9,6),
+    UserID INT UNIQUE,
+    -- Use NVARCHAR for name fields to preserve Unicode/diacritics
+    FirstName NVARCHAR(50),
+    MiddleName NVARCHAR(50),
+    LastName NVARCHAR(50),
+    Street NVARCHAR(100),
+    City NVARCHAR(50),
+    State NVARCHAR(50),
+    Country NVARCHAR(50),
+    HomePhone NVARCHAR(20),
+    Latitude DECIMAL(9,6) NULL,
+    Longitude DECIMAL(9,6) NULL,
+    MobilePhone NVARCHAR(20),
     CreatedAt DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
 CREATE TABLE Admins (
     AdminID INT IDENTITY PRIMARY KEY,
-    UserID INT NOT NULL,
-    AdminLevel VARCHAR(20),
-    CreatedAt DATETIME DEFAULT GETDATE(),
+    UserID INT UNIQUE,
+    AdminLevel VARCHAR(30),
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+CREATE TABLE Addresses (
+    AddressID INT IDENTITY(1,1) PRIMARY KEY,
+    Label NVARCHAR(50) NULL,
+    Type NVARCHAR(20) NULL,
+    Region NVARCHAR(50) NULL,
+    Street NVARCHAR(100) NULL,
+    -- House number / unit field (mapped by entity)
+    House NVARCHAR(100) NULL,
+    City NVARCHAR(50) NULL,
+    State NVARCHAR(50) NULL,
+    Country NVARCHAR(50) NULL,
+    Latitude DECIMAL(9,6) NULL,
+    Longitude DECIMAL(9,6) NULL,
+    IsDefault BIT NULL,
+    CreatedAt DATETIME NULL,
+    CustomerID INT NOT NULL,
+    CONSTRAINT FK_Addresses_Customers FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+CREATE TABLE PersistentLogins (
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    UserID INT NOT NULL,
+    Selector NVARCHAR(64) UNIQUE NOT NULL,
+    ValidatorHash NVARCHAR(255) NOT NULL,
+    ExpiresAt DATETIME NOT NULL,
+    CONSTRAINT FK_PersistentLogins_Users FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
 CREATE TABLE CreditCards (
@@ -59,6 +106,7 @@ CREATE TABLE Categories (
     CategoryID INT IDENTITY PRIMARY KEY,
     CategoryName VARCHAR(100),
     Description TEXT,
+    ImageURL VARCHAR(255),
     Status VARCHAR(20),
     CreatedAt DATETIME DEFAULT GETDATE()
 );
@@ -67,7 +115,11 @@ CREATE TABLE Brands (
     BrandID INT IDENTITY PRIMARY KEY,
     BrandName VARCHAR(100),
     Description TEXT,
-    Country VARCHAR(50)
+    Country VARCHAR(50),
+    Email VARCHAR(100),
+    Phone VARCHAR(20),
+    Address VARCHAR(255),
+    Website VARCHAR(255)
 );
 
 CREATE TABLE Products (
@@ -78,7 +130,6 @@ CREATE TABLE Products (
     Description TEXT,
     UnitPrice DECIMAL(10,2),
     StockQuantity INT,
-    DiscountPercent INT DEFAULT 0,
     Status VARCHAR(20),
     CreatedAt DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (CategoryID) REFERENCES Categories(CategoryID),
@@ -92,6 +143,17 @@ CREATE TABLE ProductImages (
     FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
 );
 
+CREATE TABLE ProductPriceHistory (
+    PriceHistoryID INT IDENTITY PRIMARY KEY,
+    ProductID INT,
+    OldPrice DECIMAL(12,2),
+    NewPrice DECIMAL(12,2),
+    ChangeReason VARCHAR(100),
+    ChangedBy INT,
+    ChangedAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
+    FOREIGN KEY (ChangedBy) REFERENCES Users(UserID)
+);
 /* =========================
    CART & ORDER
 ========================= */
@@ -118,6 +180,7 @@ CREATE TABLE Orders (
     OrderDate DATETIME DEFAULT GETDATE(),
     TotalAmount DECIMAL(12,2),
     Status VARCHAR(20) CHECK (Status IN ('PENDING','PAID','SHIPPED','COMPLETED','CANCELLED')),
+    CreatedAt DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
 );
 
@@ -130,6 +193,47 @@ CREATE TABLE OrderDetails (
     TotalPrice DECIMAL(12,2),
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
     FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+CREATE TABLE OrderTracking (
+    TrackingID INT IDENTITY PRIMARY KEY,
+    OrderID INT,
+    Status NVARCHAR(100),
+    UpdatedAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+);
+
+
+CREATE TABLE Wallets (
+    WalletID INT IDENTITY PRIMARY KEY,
+    CustomerID INT UNIQUE,
+    Balance DECIMAL(14,2) DEFAULT 0
+);
+
+CREATE TABLE WalletTransactions (
+    TransactionID INT IDENTITY PRIMARY KEY,
+    WalletID INT,
+    Amount DECIMAL(14,2),
+    Type VARCHAR(30), -- TOPUP, PAY, REFUND
+    Status VARCHAR(20),
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE Payments (
+    PaymentID INT IDENTITY PRIMARY KEY,
+    OrderID INT,
+    PaymentMethod VARCHAR(50),
+    Amount DECIMAL(12,2),
+    PaidAt DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE Refunds (
+    RefundID INT IDENTITY PRIMARY KEY,
+    OrderID INT,
+    Amount DECIMAL(12,2),
+    Reason NVARCHAR(255),
+    Status VARCHAR(20),
+    CreatedAt DATETIME DEFAULT GETDATE()
 );
 
 CREATE TABLE Bills (
@@ -157,13 +261,40 @@ CREATE TABLE Reviews (
     FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
 );
 
+CREATE TABLE Wishlists (
+    WishlistID INT IDENTITY PRIMARY KEY,
+    CustomerID INT,
+    ProductID INT,
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+CREATE TABLE Feedbacks (
+    FeedbackID INT IDENTITY PRIMARY KEY,
+    CustomerID INT,
+    Content NVARCHAR(500),
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+
 CREATE TABLE Offers (
     OfferID INT IDENTITY PRIMARY KEY,
     OfferName VARCHAR(100),
     OfferType VARCHAR(30),
     DiscountValue INT,
     StartDate DATE,
-    EndDate DATE
+    EndDate DATE,
+    Status VARCHAR(20) DEFAULT 'ACTIVE',
+    BannerImage VARCHAR(255),
+    VoucherEnabled BIT
+);
+
+CREATE TABLE Vouchers (
+    VoucherID INT IDENTITY PRIMARY KEY,
+    VoucherCode VARCHAR(50),
+    IsUsed BIT DEFAULT 0,
+    ExpiryDate DATE,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    OfferID INT,
+    FOREIGN KEY (OfferID) REFERENCES Offers(OfferID)
 );
 
 CREATE TABLE ProductOffers (
@@ -249,6 +380,49 @@ CREATE TABLE Reports (
     CreatedBy INT,
     FOREIGN KEY (CreatedBy) REFERENCES Users(UserID)
 );
+
+CREATE TABLE SupportTickets (
+    TicketID INT IDENTITY PRIMARY KEY,
+    CustomerID INT,
+    Subject NVARCHAR(200),
+    Status VARCHAR(20),
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+/* =========================================================
+   LIVESTREAM – CHAT – COMMUNITY
+========================================================= */
+CREATE TABLE Livestreams (
+    StreamID INT IDENTITY PRIMARY KEY,
+    StreamTitle NVARCHAR(200),
+    StaffID INT,
+    Status VARCHAR(20),
+    StartedAt DATETIME
+);
+
+CREATE TABLE LiveProducts (
+    StreamID INT,
+    ProductID INT,
+    PRIMARY KEY (StreamID, ProductID)
+);
+
+CREATE TABLE Chats (
+    ChatID INT IDENTITY PRIMARY KEY,
+    SenderID INT,
+    ReceiverID INT,
+    Message NVARCHAR(500),
+    IsAI BIT DEFAULT 0,
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE CommunityPosts (
+    PostID INT IDENTITY PRIMARY KEY,
+    UserID INT,
+    Content NVARCHAR(500),
+    Status VARCHAR(20),
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
 INSERT INTO Users (Username, PasswordHash, Email, Role)
 VALUES 
 ('admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'admin@ezmart.vn', 'ADMIN'),

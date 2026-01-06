@@ -12,6 +12,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import jakarta.inject.Inject;
 import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpSession;
 import sessionbeans.CustomersFacadeLocal;
 import sessionbeans.UsersFacadeLocal;
 import services.OtpService;
@@ -63,6 +64,8 @@ public class AuthController implements Serializable {
     private Users currentUser;
     private Customers currentCustomer;
     private boolean loggedIn = false;
+    private boolean rememberMe = false;
+    private boolean editingProfile = false;
 
     
     public String login() {
@@ -73,6 +76,14 @@ public class AuthController implements Serializable {
             // Try to set customer profile if exists
             if (u.getCustomersList() != null && !u.getCustomersList().isEmpty()) {
                 currentCustomer = u.getCustomersList().get(0);
+                // Store customer ID in HttpSession for use by servlets (e.g., avatar upload)
+                FacesContext fc = FacesContext.getCurrentInstance();
+                HttpSession httpSession = (HttpSession) fc.getExternalContext().getSession(false);
+                if (httpSession != null && currentCustomer.getCustomerID() != null) {
+                    httpSession.setAttribute("currentUserId", currentCustomer.getCustomerID());
+                    httpSession.setAttribute("currentCustomer", currentCustomer);
+                    System.out.println("AuthController: Stored currentUserId=" + currentCustomer.getCustomerID() + " in HttpSession");
+                }
             }
             loggedIn = true;
             FacesContext fc = FacesContext.getCurrentInstance();
@@ -213,6 +224,9 @@ return null;
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
+    public boolean isRememberMe() { return rememberMe; }
+    public void setRememberMe(boolean rememberMe) { this.rememberMe = rememberMe; }
+
     public String getRegUsername() { return regUsername; }
     public void setRegUsername(String regUsername) { this.regUsername = regUsername; }
     public String getRegEmail() { return regEmail; }
@@ -281,7 +295,10 @@ return null;
         return tmp.trim();
     }
 
-    public String getGoogleFullName() { return normalize(googleFullName); }
+    public String getGoogleFullName() {
+        if (googleFullName == null) return null;
+        return googleFullName;
+    }
 
     // Setters to allow external code (servlets) to update session-scoped bean state
     public void setCurrentUser(Users user) { this.currentUser = user; }
@@ -695,6 +712,239 @@ return null;
         // Use the handleGoogleAuth method with real Google credentials
         System.out.println("AuthController.processGoogleOAuth: calling handleGoogleAuth for " + email);
         return handleGoogleAuth(email, name);
+    }
+
+    // ============= Profile Page Properties =============
+    // Getters to provide user info to profile.xhtml
+
+    public String getUserFullName() {
+        getCurrentUserLazy();
+        if (currentCustomer != null) {
+            StringBuilder sb = new StringBuilder();
+            if (currentCustomer.getFirstName() != null && !currentCustomer.getFirstName().isEmpty()) {
+                sb.append(currentCustomer.getFirstName()).append(' ');
+            }
+            if (currentCustomer.getMiddleName() != null && !currentCustomer.getMiddleName().isEmpty()) {
+                sb.append(currentCustomer.getMiddleName()).append(' ');
+            }
+            if (currentCustomer.getLastName() != null && !currentCustomer.getLastName().isEmpty()) {
+                sb.append(currentCustomer.getLastName());
+            }
+            String result = sb.toString().trim();
+            if (!result.isEmpty()) return result;
+        }
+        if (currentUser != null && currentUser.getUsername() != null) {
+            return normalize(currentUser.getUsername());
+        }
+        return "User";
+    }
+
+    public String getUserFirstName() {
+        getCurrentUserLazy();
+        if (currentCustomer != null && currentCustomer.getFirstName() != null) {
+            return currentCustomer.getFirstName();
+        }
+        return "";
+    }
+
+    public String getUserLastName() {
+        getCurrentUserLazy();
+        if (currentCustomer != null && currentCustomer.getLastName() != null) {
+            return currentCustomer.getLastName();
+        }
+        return "";
+    }
+
+    public String getUserEmail() {
+        getCurrentUserLazy();
+        if (currentUser != null && currentUser.getEmail() != null) {
+            return currentUser.getEmail();
+        }
+        return "";
+    }
+
+    public String getUserPhoneNumber() {
+        getCurrentUserLazy();
+        if (currentCustomer != null && currentCustomer.getMobilePhone() != null) {
+            return currentCustomer.getMobilePhone();
+        }
+        return "";
+    }
+
+    public String getUserProfileImageUrl() {
+        getCurrentUserLazy();
+        try {
+            String ctx = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+            if (currentUser != null && currentUser.getUserID() != null) {
+                Object ts = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("avatarUpdatedAt");
+                long t = ts instanceof Long ? (Long) ts : System.currentTimeMillis();
+                return ctx + "/avatar?userId=" + currentUser.getUserID() + "&t=" + t;
+            }
+            // fallback to bundled default image
+            return FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/images/user.png";
+        } catch (Exception e) {
+            return "/images/user.png";
+        }
+    }
+
+    public String getUserMemberSince() {
+        getCurrentUserLazy();
+        if (currentUser != null && currentUser.getCreatedAt() != null) {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy");
+            return sdf.format(currentUser.getCreatedAt());
+        }
+        return "";
+    }
+
+    public String getUserMembershipLevel() {
+        // Default membership level; can be extended to read from a separate column or badge
+        return "Member";
+    }
+
+    // Profile editing bindings and actions
+    public Integer getUserId() {
+        getCurrentUserLazy();
+        if (currentUser != null) return currentUser.getUserID();
+        return null;
+    }
+
+    public String getUserMiddleName() {
+        getCurrentUserLazy();
+        if (currentCustomer != null && currentCustomer.getMiddleName() != null) return currentCustomer.getMiddleName();
+        return "";
+    }
+
+    public void setUserMiddleName(String middleName) {
+        getCurrentUserLazy();
+        if (currentCustomer == null) {
+            if (currentUser != null) currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            if (currentCustomer == null && currentUser != null) {
+                currentCustomer = new Customers();
+                currentCustomer.setUserID(currentUser);
+                currentCustomer.setCreatedAt(new Date());
+            }
+        }
+        if (currentCustomer != null) currentCustomer.setMiddleName(middleName);
+    }
+
+    public String getUserHomePhone() {
+        getCurrentUserLazy();
+        if (currentCustomer != null && currentCustomer.getHomePhone() != null) return currentCustomer.getHomePhone();
+        return "";
+    }
+
+    public void setUserHomePhone(String homePhone) {
+        getCurrentUserLazy();
+        if (currentCustomer == null) {
+            if (currentUser != null) currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            if (currentCustomer == null && currentUser != null) {
+                currentCustomer = new Customers();
+                currentCustomer.setUserID(currentUser);
+                currentCustomer.setCreatedAt(new Date());
+            }
+        }
+        if (currentCustomer != null) currentCustomer.setHomePhone(homePhone);
+    }
+
+    public void setUserFirstName(String firstName) {
+        getCurrentUserLazy();
+        if (currentCustomer == null) {
+            if (currentUser != null) currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            if (currentCustomer == null && currentUser != null) {
+                currentCustomer = new Customers();
+                currentCustomer.setUserID(currentUser);
+                currentCustomer.setCreatedAt(new Date());
+            }
+        }
+        if (currentCustomer != null) currentCustomer.setFirstName(firstName);
+    }
+
+    public void setUserLastName(String lastName) {
+        getCurrentUserLazy();
+        if (currentCustomer == null) {
+            if (currentUser != null) currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            if (currentCustomer == null && currentUser != null) {
+                currentCustomer = new Customers();
+                currentCustomer.setUserID(currentUser);
+                currentCustomer.setCreatedAt(new Date());
+            }
+        }
+        if (currentCustomer != null) currentCustomer.setLastName(lastName);
+    }
+
+    public void setUserPhoneNumber(String phone) {
+        getCurrentUserLazy();
+        if (currentCustomer == null) {
+            if (currentUser != null) currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            if (currentCustomer == null && currentUser != null) {
+                currentCustomer = new Customers();
+                currentCustomer.setUserID(currentUser);
+                currentCustomer.setCreatedAt(new Date());
+            }
+        }
+        if (currentCustomer != null) currentCustomer.setMobilePhone(phone);
+    }
+
+    public boolean isEditingProfile() { return editingProfile; }
+
+    public String startEdit() {
+        editingProfile = true;
+        getCurrentUserLazy();
+        if (currentCustomer == null && currentUser != null) {
+            currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+        }
+        return null;
+    }
+
+    public String cancelEdit() {
+        editingProfile = false;
+        // reload from DB to discard unsaved changes
+        getCurrentUserLazy();
+        if (currentUser != null) {
+            currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+        }
+        return null;
+    }
+
+    public String saveProfile() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        try {
+            getCurrentUserLazy();
+            if (currentUser == null) {
+                fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, "No logged-in user", null));
+                fc.getExternalContext().getRequestMap().put("profileSaveStatus", "error");
+                fc.getExternalContext().getRequestMap().put("profileSaveMessage", "No logged-in user");
+                return null;
+            }
+            if (currentCustomer == null) {
+                currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            }
+            if (currentCustomer == null) {
+                currentCustomer = new Customers();
+                currentCustomer.setUserID(currentUser);
+                currentCustomer.setCreatedAt(new Date());
+                customersFacade.create(currentCustomer);
+            } else {
+                customersFacade.edit(currentCustomer);
+            }
+            // reload from DB to ensure latest persisted values (fix immediate UI updates)
+            try {
+                currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+                setCurrentCustomer(currentCustomer);
+            } catch (Exception ignore) {}
+            editingProfile = false;
+            String successMsg = localeController.getMessage("success.profileSaved");
+            fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_INFO, successMsg, null));
+            fc.getExternalContext().getRequestMap().put("profileSaveStatus", "success");
+            fc.getExternalContext().getRequestMap().put("profileSaveMessage", successMsg);
+        } catch (Exception e) {
+            String err = localeController.getMessage("error.saveProfileFailed");
+            fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, err, null));
+            fc.getExternalContext().getRequestMap().put("profileSaveStatus", "error");
+            fc.getExternalContext().getRequestMap().put("profileSaveMessage", err + (e.getMessage() != null ? ": " + e.getMessage() : ""));
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 

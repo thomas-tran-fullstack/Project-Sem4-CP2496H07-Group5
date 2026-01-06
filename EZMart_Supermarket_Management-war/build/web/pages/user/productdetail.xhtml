@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/xhtml.xhtml to edit this template
+-->
 <ui:composition template="/templates/user/layout.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="jakarta.faces.html"
-                xmlns:ui="jakarta.faces.facelets"
-                xmlns:f="jakarta.faces.core">
-    <f:metadata>
-        <f:viewAction action="#{productMB.loadProductById}"/>
-    </f:metadata>
+                xmlns:ui="jakarta.faces.facelets">
     <ui:define name="content">
        <div class="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-8 py-6">
             <nav aria-label="Breadcrumb" class="flex mb-8">
@@ -31,7 +30,7 @@
                     <li aria-current="page">
                         <div class="flex items-center">
                             <span class="material-symbols-outlined text-slate-400 text-sm mx-1">chevron_right</span>
-                            <span class="ml-1 text-sm font-medium text-slate-900 dark:text-white">#{productMB.selectedProduct.productName}</span>
+                            <span class="ml-1 text-sm font-medium text-[#111813] dark:text-[#111813]">Organic Bananas</span>
                         </div>
                     </li>
                 </ol>
@@ -39,14 +38,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16">
                 <div class="flex flex-col gap-4">
                     <div class="aspect-square bg-white dark:bg-surface-dark rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative group">
-                        <h:graphicImage value="#{productMB.productImageUrl(productMB.selectedProduct)}"
-                                        rendered="#{not empty productMB.productImageUrl(productMB.selectedProduct)}"
-                                        class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                                        alt="#{productMB.selectedProduct.productName}" />
-                        <div class="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"
-                             rendered="#{empty productMB.productImageUrl(productMB.selectedProduct)}">
-                            <span class="material-symbols-outlined text-6xl">image</span>
-                        </div>
+                        <img alt="Organic Bananas - Main View" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXrw78Dqi2Y6pgqRQBi5qEr5KwvxoEX5y5BQ5v7G0YNMeE36ZYYqLrrs93IOjJsMHjJFJZ8RzFVRQ5IUAFUsc6Zh_AMMAyaXipzgbFpip70vEN4uAmMPqTh8yLrxiI7wNK_WlKLcNYSLHBsjtR81j1rNBHGyKBr0sywzq5fgetpsBXvQOJi0ZPjf-Ja0MlDl7aXw7YQxlIpWkX7HmMYqgVnUh9xIVFbmw5_KWbcXTDh8Ivc7NwxDSQvMsfsYfEJ66NpfS-9m2VxLY"/>
                         <div class="absolute top-4 left-4 flex gap-2">
                             <span class="bg-green-100 text-green-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">Organic</span>
                             <span class="bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">Best Seller</span>
@@ -80,7 +72,7 @@
                     <div class="mb-2">
                         <a class="text-primary font-medium text-sm hover:underline" href="#">Chiquita Brands</a>
                     </div>
-                    <h1 class="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">#{productMB.selectedProduct.productName}</h1>
+                    <h1 class="text-3xl lg:text-4xl font-bold text-[#111813] dark:text-[#111813] mb-2 tracking-tight">Organic Bananas (Bunch)</h1>
                     <div class="flex items-center gap-4 mb-6">
                         <div class="flex items-center gap-1">
                             <div class="flex text-yellow-400 text-sm">
@@ -90,20 +82,16 @@
                                 <span class="material-symbols-outlined filled-icon text-[20px]">star</span>
                                 <span class="material-symbols-outlined filled-icon text-[20px] text-slate-300 dark:text-slate-600" style="font-variation-settings: 'FILL' 0.5;">star</span>
                             </div>
-                            <span class="font-bold text-slate-900 dark:text-white ml-2">4.8</span>
+                            <span class="font-bold text-[#111813] dark:text-[#111813] ml-2">4.8</span>
                         </div>
                         <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
                         <a class="text-sm text-slate-500 hover:text-primary dark:text-slate-400 underline decoration-slate-300 underline-offset-4" href="#reviews">1,248 Reviews</a>
                         <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
-                        <span class="text-sm text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400 px-2 py-0.5 rounded">#{productMB.selectedProduct.stockQuantity} In Stock</span>
+                        <span class="text-sm text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400 px-2 py-0.5 rounded">In Stock</span>
                     </div>
                     <div class="flex items-end gap-3 mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
                         <div class="flex flex-col">
-                            <span class="text-4xl font-bold text-slate-900 dark:text-white">$#{productMB.getDiscountedPrice(productMB.selectedProduct)}</span>
-                            <ui:fragment rendered="#{productMB.hasDiscount(productMB.selectedProduct)}">
-                                <span class="text-lg text-slate-500 dark:text-slate-400 line-through">$#{productMB.selectedProduct.unitPrice}</span>
-                                <span class="text-sm text-red-600 font-medium ml-2">-#{productMB.selectedProduct.discountPercent}% OFF</span>
-                            </ui:fragment>
+                            <span class="text-4xl font-bold text-[#111813] dark:text-[#111813]">$1.29</span>
                         </div>
                         <div class="mb-1.5 text-slate-500 dark:text-slate-400 font-medium">
                             / bunch (approx. 7 pcs)
@@ -113,38 +101,44 @@
                         </div>
                     </div>
                     <div class="prose prose-slate dark:prose-invert mb-8 text-slate-600 dark:text-slate-300">
-                        <p>#{productMB.selectedProduct.description}</p>
+                        <p>Fresh, organic bananas grown without synthetic pesticides or fertilizers. Perfect for a healthy snack on the go, slicing into cereal, or blending into smoothies. Rich in potassium and essential vitamins.</p>
+                        <ul class="list-disc pl-5 space-y-1 mt-4 text-sm">
+                            <li>Certified Organic</li>
+                            <li>Sustainably Sourced</li>
+                            <li>Rich in Potassium</li>
+                            <li>Grown in Ecuador</li>
+                        </ul>
                     </div>
                     <div class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 rounded-xl p-5 mb-8 shadow-sm">
                         <div class="flex flex-col sm:flex-row gap-4">
                             <div class="flex flex-col gap-2">
                                 <label class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">Quantity</label>
                                 <div class="flex items-center h-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg w-32">
-                                    <h:commandButton class="w-10 h-full flex items-center justify-center text-slate-500 hover:text-primary transition-colors" action="#{productMB.decreaseQuantity()}" style="background: none; border: none;">
+                                    <button class="w-10 h-full flex items-center justify-center text-slate-500 hover:text-primary transition-colors">
                                         <span class="material-symbols-outlined text-[20px]">remove</span>
-                                    </h:commandButton>
-                                    <h:inputText class="flex-1 w-full h-full bg-transparent border-none text-center text-slate-900 dark:text-white font-bold focus:ring-0 p-0" type="number" value="#{productMB.quantity}" max="#{productMB.selectedProduct.stockQuantity}" min="1"/>
-                                    <h:commandButton class="w-10 h-full flex items-center justify-center text-slate-500 hover:text-primary transition-colors" action="#{productMB.increaseQuantity()}" style="background: none; border: none;">
+                                    </button>
+                                    <input class="flex-1 w-full h-full bg-transparent border-none text-center text-[#111813] dark:text-[#111813] font-bold focus:ring-0 p-0" type="number" value="1"/>
+                                    <button class="w-10 h-full flex items-center justify-center text-slate-500 hover:text-primary transition-colors">
                                         <span class="material-symbols-outlined text-[20px]">add</span>
-                                    </h:commandButton>
+                                    </button>
                                 </div>
                             </div>
                             <div class="flex-1 flex flex-col gap-2">
                                 <label class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 opacity-0 sm:opacity-100">Action</label>
-                                <h:commandButton class="h-12 w-full bg-primary hover:bg-green-600 text-white font-bold rounded-lg shadow-lg shadow-green-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2" action="#{productMB.addToCart()}" style="background: none; border: none;">
+                                <button class="h-12 w-full bg-primary hover:bg-green-600 text-white font-bold rounded-lg shadow-lg shadow-green-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
                                     <span class="material-symbols-outlined">shopping_cart</span>
-                                    Add to Cart - $#{productMB.getDiscountedPrice(productMB.selectedProduct)}
-                                </h:commandButton>
+                                    Add to Cart - $1.29
+                                </button>
                             </div>
                         </div>
                         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-6 text-sm text-slate-500 dark:text-slate-400">
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-outlined text-green-600 text-[20px]">local_shipping</span>
-                                <span>Delivery by <span class="text-slate-900 dark:text-white font-medium">Tomorrow, 2 PM</span></span>
+                                <span>Delivery by <span class="text-[#111813] dark:text-[#111813] font-medium">Tomorrow, 2 PM</span></span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-outlined text-green-600 text-[20px]">store</span>
-                                <span>Pickup available at <span class="text-slate-900 dark:text-white font-medium">Main St. Store</span></span>
+                                <span>Pickup available at <span class="text-[#111813] dark:text-[#111813] font-medium">Main St. Store</span></span>
                             </div>
                         </div>
                     </div>
@@ -156,7 +150,7 @@
             </div>
             <section class="mb-16">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Frequently Bought Together</h2>
+                    <h2 class="text-2xl font-bold text-[#111813] dark:text-[#111813]">Frequently Bought Together</h2>
                     <div class="flex gap-2">
                         <button class="p-2 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 transition-colors">
                             <span class="material-symbols-outlined">arrow_back</span>
@@ -175,12 +169,12 @@
                             </button>
                         </div>
                         <div class="mb-2">
-                            <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">Fuji Apples</h3>
+                            <h3 class="font-bold text-[#111813] dark:text-[#111813] text-lg leading-tight group-hover:text-primary transition-colors">Fuji Apples</h3>
                             <p class="text-sm text-slate-500 dark:text-slate-400">Sweet &amp; Crisp</p>
                         </div>
                         <div class="flex items-end justify-between mt-auto">
                             <div>
-                                <span class="block text-xl font-bold text-slate-900 dark:text-white">$0.89</span>
+                                <span class="block text-xl font-bold text-[#111813] dark:text-[#111813]">$0.89</span>
                                 <span class="text-xs text-slate-400">each</span>
                             </div>
                             <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
@@ -194,7 +188,7 @@
                             <div class="absolute top-2 left-2 bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded">Sale</div>
                         </div>
                         <div class="mb-2">
-                            <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">Hass Avocados</h3>
+                            <h3 class="font-bold text-[#111813] dark:text-[#111813] text-lg leading-tight group-hover:text-primary transition-colors">Hass Avocados</h3>
                             <p class="text-sm text-slate-500 dark:text-slate-400">Ripe &amp; Ready</p>
                         </div>
                         <div class="flex items-end justify-between mt-auto">
@@ -215,12 +209,12 @@
                             <img alt="Strawberries" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="Fresh strawberries in a basket" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTyCXXvyYVrs3ABWLxEiHrpb51XUI1AyUMw-FWe0-B9P0uf_UPnM2pREfohXoroey6wgz2V1jVysPMuiYXLMUlMh742hJXUV7uTDBdks6xHpaqgKCnMIPEywQu4rllEU1sUMYc0edJbrceUIaAey_BuR2qXGdLlYneQDGMEK46Z-alGNqo6YIvvQUmV5C58CJjJYGLxnjx8jOXRv6sIl9wR-S084Fggt91Qb8b2VxxfxYTeJ6keyiZ6fdxU_EmJP62iGAiU-z00-Q"/>
                         </div>
                         <div class="mb-2">
-                            <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">Sweet Strawberries</h3>
+                            <h3 class="font-bold text-[#111813] dark:text-[#111813] text-lg leading-tight group-hover:text-primary transition-colors">Sweet Strawberries</h3>
                             <p class="text-sm text-slate-500 dark:text-slate-400">1lb Container</p>
                         </div>
                         <div class="flex items-end justify-between mt-auto">
                             <div>
-                                <span class="block text-xl font-bold text-slate-900 dark:text-white">$3.99</span>
+                                <span class="block text-xl font-bold text-[#111813] dark:text-[#111813]">$3.99</span>
                                 <span class="text-xs text-slate-400">each</span>
                             </div>
                             <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
@@ -233,12 +227,12 @@
                             <img alt="Oranges" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="Bright orange oranges stacked" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANu6wue2NXRlkGt63uzFYUtlxnYwVjvL13r6KJNLQVc9XJaM0NDsdH4-_izhuWjbrCBl4ifM6mBKWKNdwQ2rwxEWcZJO-wd1Oy--JIj9X89EwE5CMmzPywfis1b9t2-feClLsiNyU59o5xj89uYO-A1OPpdI01jsvIzWBTLDTtY9tmKVVBQldTq-INmdGu5dIzykZCerZvCjcJMwtbXIeB0qzOcGkmgYW1kLPBaFtvZIISZl2XqairlUPNlEAOcLiJoDiV1hknclU"/>
                         </div>
                         <div class="mb-2">
-                            <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">Navel Oranges</h3>
+                            <h3 class="font-bold text-[#111813] dark:text-[#111813] text-lg leading-tight group-hover:text-primary transition-colors">Navel Oranges</h3>
                             <p class="text-sm text-slate-500 dark:text-slate-400">Bag (3lb)</p>
                         </div>
                         <div class="flex items-end justify-between mt-auto">
                             <div>
-                                <span class="block text-xl font-bold text-slate-900 dark:text-white">$4.99</span>
+                                <span class="block text-xl font-bold text-[#111813] dark:text-[#111813]">$4.99</span>
                                 <span class="text-xs text-slate-400">$1.66 / lb</span>
                             </div>
                             <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
@@ -260,16 +254,16 @@
                             </nav>
                         </div>
                         <div class="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
-                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Product Description</h3>
+                            <h3 class="text-lg font-bold text-[#111813] dark:text-[#111813]">Product Description</h3>
                             <p>Our Organic Bananas are grown in the lush, tropical climates of South America, ensuring they develop the perfect balance of sweetness and creamy texture. Harvested at the optimal time, these bananas are allowed to ripen naturally, providing you with a delicious and nutritious fruit that's free from harmful chemicals.</p>
                             <p>Bananas are an incredibly versatile fruit. They come in their own natural, convenient packaging, making them the ultimate snack on the go. Mash them into banana bread, slice them over oatmeal, or freeze them for a creamy smoothie base.</p>
-                            <h4 class="text-base font-bold text-slate-900 dark:text-white mt-6">Storage Tips</h4>
+                            <h4 class="text-base font-bold text-[#111813] dark:text-[#111813] mt-6">Storage Tips</h4>
                             <p>Store at room temperature away from direct sunlight. To speed up ripening, place them in a paper bag with an apple. Once ripe, you can store them in the refrigerator to extend their shelf life (the skin may brown, but the fruit inside will remain fresh).</p>
                         </div>
                     </div>
                     <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-6" id="reviews">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Customer Reviews</h3>
+                            <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813]">Customer Reviews</h3>
                             <button class="text-primary font-medium text-sm hover:underline">Write a Review</button>
                         </div>
                         <div class="space-y-6">
@@ -277,7 +271,7 @@
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-2">
                                         <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">JD</div>
-                                        <span class="font-medium text-slate-900 dark:text-white text-sm">John Doe</span>
+                                        <span class="font-medium text-[#111813] dark:text-[#111813] text-sm">John Doe</span>
                                         <span class="text-xs text-green-600 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded ml-2">Verified Purchase</span>
                                     </div>
                                     <span class="text-xs text-slate-400">2 days ago</span>
@@ -295,7 +289,7 @@
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-2">
                                         <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-xs">AS</div>
-                                        <span class="font-medium text-slate-900 dark:text-white text-sm">Alice Smith</span>
+                                        <span class="font-medium text-[#111813] dark:text-[#111813] text-sm">Alice Smith</span>
                                         <span class="text-xs text-green-600 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded ml-2">Verified Purchase</span>
                                     </div>
                                     <span class="text-xs text-slate-400">1 week ago</span>
@@ -315,7 +309,7 @@
                 </div>
                 <div class="space-y-6">
                     <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-5">
-                        <h3 class="font-bold text-slate-900 dark:text-white mb-4 text-sm uppercase tracking-wider">Why Shop With EZMart</h3>
+                        <h3 class="font-bold text-[#111813] dark:text-[#111813] mb-4 text-sm uppercase tracking-wider">Why Shop With EZMart</h3>
                         <ul class="space-y-4">
                             <li class="flex gap-3">
                                 <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">

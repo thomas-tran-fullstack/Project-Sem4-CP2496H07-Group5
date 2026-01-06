@@ -1,0 +1,14 @@
+{
+  "Hồ Chí Minh": {
+    "districts": {
+      "Bình Thạnh": ["Phường 1","Phường 2","Phường 3"],
+      "Quận 1": ["Bến Nghé","Tân Định","Đa Kao"]
+    }
+  },
+  "Hà Nội": {
+    "districts": {
+      "Ba Đình": ["Phúc Xá","Điện Biên","Trúc Bạch"],
+      "Hoàn Kiếm": ["Hàng Bạc","Hàng Gai","Hàng Đào"]
+    }
+  }
+}
