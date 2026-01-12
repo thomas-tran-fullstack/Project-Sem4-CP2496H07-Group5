@@ -34,7 +34,7 @@ import java.util.List;
 @NamedQueries({
     @NamedQuery(name = "Categories.findAll", query = "SELECT c FROM Categories c"),
     @NamedQuery(name = "Categories.findByCategoryID", query = "SELECT c FROM Categories c WHERE c.categoryID = :categoryID"),
-    @NamedQuery(name = "Categories.findByCategoryName", query = "SELECT c FROM Categories c WHERE c.categoryName = :categoryName"),
+    @NamedQuery(name = "Categories.findByCategoryName", query = "SELECT c FROM Categories c WHERE LOWER(c.categoryName) LIKE LOWER(:categoryName)"),
     @NamedQuery(name = "Categories.findByStatus", query = "SELECT c FROM Categories c WHERE c.status = :status"),
     @NamedQuery(name = "Categories.findByCreatedAt", query = "SELECT c FROM Categories c WHERE c.createdAt = :createdAt")})
 public class Categories implements Serializable {
@@ -52,6 +52,9 @@ public class Categories implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "Description")
     private String description;
+    @Size(max = 255)
+    @Column(name = "ImageURL")
+    private String imageURL;
     @Size(max = 20)
     @Column(name = "Status")
     private String status;
@@ -90,6 +93,14 @@ public class Categories implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public String getStatus() {

@@ -30,4 +30,19 @@ public interface ProductsFacadeLocal {
     int count();
 
     public List<Products> findByProductName(String productName);
+
+    public List<Products> findByCategory(Integer categoryId);
+
+    public List<Products> findByBrand(Integer brandId);
+
+    public List<Products> findByPriceRange(java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice);
+
+    public List<Products> findFiltered(String searchTerm, Integer categoryId, Integer brandId, java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice);
+
+    public List<Products> findFiltered(String searchTerm, Integer categoryId, List<Integer> brandIds, java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice);
+    public List<Products> findFiltered(String searchTerm, List<Integer> categoryIds, List<Integer> brandIds, java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice);
+
+    public boolean hasProductsByCategory(Integer categoryId);
+
+    public boolean hasProductsByBrand(Integer brandId);
 }

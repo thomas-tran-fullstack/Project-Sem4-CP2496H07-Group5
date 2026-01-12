@@ -8,6 +8,7 @@ import entityclass.Orders;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  *
@@ -26,6 +27,13 @@ public class OrdersFacade extends AbstractFacade<Orders> implements OrdersFacade
 
     public OrdersFacade() {
         super(Orders.class);
+    }
+
+    public List<Orders> findByCustomerIDAndStatus(Integer customerId, String status) {
+        return em.createNamedQuery("Orders.findByCustomerIDAndStatus", Orders.class)
+                .setParameter("customerID", customerId)
+                .setParameter("status", status)
+                .getResultList();
     }
     
 }

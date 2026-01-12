@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>Quản lý Khuyến mãi Sản phẩm - EZMart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</h:head>
+
+<h:body>
+    <ui:composition template="/templates/admin/layout.xhtml">
+        <ui:define name="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="mt-4">Quản lý Khuyến mãi Sản phẩm</h1>
+                        <p class="mb-4">Thêm hoặc xóa khuyến mãi cho các sản phẩm</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <p:card>
+                            <h:form id="productOfferForm">
+                                <!-- Chọn sản phẩm -->
+                                <div class="form-group mb-3">
+                                    <h:outputLabel for="productSelect" value="Chọn sản phẩm:" class="form-label" />
+                                    <p:selectOneMenu id="productSelect" value="#{productOfferMB.selectedProduct}"
+                                        converter="productConverter" styleClass="form-control">
+                                        <f:selectItem itemLabel="Chọn sản phẩm..." itemValue="#{null}"
+                                            noSelectionOption="true" />
+                                        <f:selectItems value="#{productOfferMB.productsList}" var="product"
+                                            itemLabel="#{product.productName}" itemValue="#{product}" />
+                                        <p:ajax event="change" listener="#{productOfferMB.onProductChange}"
+                                            update="productOffersTable offerSelect" />
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <!-- Thêm khuyến mãi -->
+                                <div class="form-group mb-3">
+                                    <h:outputLabel for="offerSelect" value="Thêm khuyến mãi:" class="form-label" />
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <p:selectOneMenu id="offerSelect" value="#{productOfferMB.selectedOfferId}"
+                                                styleClass="form-control">
+                                                <f:selectItem itemLabel="Chọn khuyến mãi..." itemValue="#{null}"
+                                                    noSelectionOption="true" />
+                                                <f:selectItems value="#{productOfferMB.getAvailableOffersForProduct()}"
+                                                    var="offer"
+                                                    itemLabel="#{offer.offerName} - #{offer.discountValue}% (#{offer.offerType})"
+                                                    itemValue="#{offer.offerID}" />
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p:commandButton value="Thêm khuyến mãi"
+                                                action="#{productOfferMB.addOfferToProduct}" update="productOfferForm"
+                                                styleClass="btn btn-primary w-100" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Danh sách khuyến mãi hiện tại -->
+                                <h:outputLabel value="Khuyến mãi hiện tại của sản phẩm:" class="form-label" />
+                                <p:dataTable id="productOffersTable" value="#{productOfferMB.productOffersList}"
+                                    var="productOffer" emptyMessage="Chưa có khuyến mãi nào cho sản phẩm này"
+                                    styleClass="table table-striped">
+                                    <p:column headerText="Tên khuyến mãi">
+                                        <h:outputText value="#{productOffer.offerID.offerName}" />
+                                    </p:column>
+                                    <p:column headerText="Loại giảm giá">
+                                        <h:outputText value="#{productOffer.offerID.offerType}" />
+                                    </p:column>
+                                    <p:column headerText="Giá trị giảm">
+                                        <h:outputText value="#{productOffer.offerID.discountValue}" />
+                                        <h:outputText value="%"
+                                            rendered="#{productOffer.offerID.offerType == 'DISCOUNT_PERCENT'}" />
+                                        <h:outputText value=" VND"
+                                            rendered="#{productOffer.offerID.offerType == 'FIXED_AMOUNT'}" />
+                                    </p:column>
+                                    <p:column headerText="Thời gian">
+                                        <h:outputText value="#{productOffer.offerID.startDate}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                                        </h:outputText>
+                                        <h:outputText value=" - " />
+                                        <h:outputText value="#{productOffer.offerID.endDate}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Trạng thái">
+                                        <h:outputText value="#{productOffer.offerID.status}"
+                                            styleClass="#{productOffer.offerID.status == 'Active' ? 'text-success' : 'text-danger'}" />
+                                    </p:column>
+                                    <p:column headerText="Thao tác">
+                                        <p:commandButton value="Xóa"
+                                            action="#{productOfferMB.removeOfferFromProduct(productOffer)}"
+                                            update="productOfferForm" styleClass="btn btn-danger btn-sm" />
+                                    </p:column>
+                                </p:dataTable>
+                            </h:form>
+                        </p:card>
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <p:messages autoUpdate="true" closable="true" />
+            </div>
+        </ui:define>
+    </ui:composition>
+</h:body>
+
+</html>

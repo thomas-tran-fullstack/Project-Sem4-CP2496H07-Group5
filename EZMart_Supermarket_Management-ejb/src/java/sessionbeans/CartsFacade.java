@@ -31,7 +31,9 @@ public class CartsFacade extends AbstractFacade<Carts> implements CartsFacadeLoc
 
     @Override
     public List<Carts> findByCustomerID(Integer customerID) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return em.createQuery("SELECT c FROM Carts c WHERE c.customerID.customerID = :customerID", Carts.class)
+                .setParameter("customerID", customerID)
+                .getResultList();
     }
     
 }

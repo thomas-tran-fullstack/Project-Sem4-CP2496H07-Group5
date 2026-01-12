@@ -5,6 +5,7 @@
 package entityclass;
 
 import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,14 +31,18 @@ import java.util.List;
 @Entity
 @Table(name = "Offers")
 @XmlRootElement
-@NamedQueries({
+    @NamedQueries({
     @NamedQuery(name = "Offers.findAll", query = "SELECT o FROM Offers o"),
     @NamedQuery(name = "Offers.findByOfferID", query = "SELECT o FROM Offers o WHERE o.offerID = :offerID"),
     @NamedQuery(name = "Offers.findByOfferName", query = "SELECT o FROM Offers o WHERE o.offerName = :offerName"),
+    @NamedQuery(name = "Offers.findByDescription", query = "SELECT o FROM Offers o WHERE o.description = :description"),
     @NamedQuery(name = "Offers.findByOfferType", query = "SELECT o FROM Offers o WHERE o.offerType = :offerType"),
     @NamedQuery(name = "Offers.findByDiscountValue", query = "SELECT o FROM Offers o WHERE o.discountValue = :discountValue"),
     @NamedQuery(name = "Offers.findByStartDate", query = "SELECT o FROM Offers o WHERE o.startDate = :startDate"),
-    @NamedQuery(name = "Offers.findByEndDate", query = "SELECT o FROM Offers o WHERE o.endDate = :endDate")})
+    @NamedQuery(name = "Offers.findByEndDate", query = "SELECT o FROM Offers o WHERE o.endDate = :endDate"),
+    @NamedQuery(name = "Offers.findByStatus", query = "SELECT o FROM Offers o WHERE o.status = :status"),
+    @NamedQuery(name = "Offers.findByBannerImage", query = "SELECT o FROM Offers o WHERE o.bannerImage = :bannerImage"),
+    @NamedQuery(name = "Offers.findByVoucherEnabled", query = "SELECT o FROM Offers o WHERE o.voucherEnabled = :voucherEnabled")})
 public class Offers implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -49,6 +54,8 @@ public class Offers implements Serializable {
     @Size(max = 100)
     @Column(name = "OfferName")
     private String offerName;
+    @Column(name = "Description")
+    private String description;
     @Size(max = 30)
     @Column(name = "OfferType")
     private String offerType;
@@ -60,8 +67,18 @@ public class Offers implements Serializable {
     @Column(name = "EndDate")
     @Temporal(TemporalType.DATE)
     private Date endDate;
+    @Size(max = 20)
+    @Column(name = "Status")
+    private String status;
+    @Size(max = 255)
+    @Column(name = "BannerImage")
+    private String bannerImage;
+    @Column(name = "VoucherEnabled")
+    private Boolean voucherEnabled;
     @OneToMany(mappedBy = "offerID")
     private List<ProductOffers> productOffersList;
+    @OneToMany(mappedBy = "offerID")
+    private List<Vouchers> vouchersList;
 
     public Offers() {
     }
@@ -84,6 +101,14 @@ public class Offers implements Serializable {
 
     public void setOfferName(String offerName) {
         this.offerName = offerName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getOfferType() {
@@ -118,6 +143,30 @@ public class Offers implements Serializable {
         this.endDate = endDate;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getBannerImage() {
+        return bannerImage;
+    }
+
+    public void setBannerImage(String bannerImage) {
+        this.bannerImage = bannerImage;
+    }
+
+    public Boolean getVoucherEnabled() {
+        return voucherEnabled;
+    }
+
+    public void setVoucherEnabled(Boolean voucherEnabled) {
+        this.voucherEnabled = voucherEnabled;
+    }
+
     @XmlTransient
     public List<ProductOffers> getProductOffersList() {
         return productOffersList;
@@ -125,6 +174,15 @@ public class Offers implements Serializable {
 
     public void setProductOffersList(List<ProductOffers> productOffersList) {
         this.productOffersList = productOffersList;
+    }
+
+    @XmlTransient
+    public List<Vouchers> getVouchersList() {
+        return vouchersList;
+    }
+
+    public void setVouchersList(List<Vouchers> vouchersList) {
+        this.vouchersList = vouchersList;
     }
 
     @Override
@@ -151,5 +209,5 @@ public class Offers implements Serializable {
     public String toString() {
         return "entityclass.Offers[ offerID=" + offerID + " ]";
     }
-    
+
 }

@@ -4,6 +4,7 @@
 
     <ui:define name="content">
         <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6">
+
             <!-- Breadcrumbs -->
             <div class="flex flex-wrap gap-2 py-4 mb-4">
                 <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="categoriesmanage.xhtml">Categories</a>
@@ -11,45 +12,139 @@
                 <span class="text-[#111813] dark:text-white text-sm font-medium leading-normal">Add Category</span>
             </div>
 
-            <!-- Form -->
-            <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] overflow-hidden">
-                <div class="p-6">
-                    <h1 class="text-3xl font-bold tracking-tight text-[#0e1b12] dark:text-white mb-2">
+            <!-- Card -->
+            <div class="bg-white dark:bg-surface-dark
+                        border border-[#e5e7eb] dark:border-[#2a3e32]
+                        rounded-xl shadow-sm">
+
+                <div class="p-6 border-b border-[#e5e7eb] dark:border-[#2a3e32]">
+                    <h1 class="text-2xl font-bold text-[#0e1b12] dark:text-white">
                         Add New Category
                     </h1>
-                    <p class="text-[#4e9767] dark:text-gray-400 mb-6">
-                        Add a new category to the system.
+                    <p class="text-sm text-[#4e9767] dark:text-gray-400 mt-1">
+                        Create a new category for product classification.
                     </p>
+                </div>
 
-                    <h:form class="max-w-md">
-                        <div class="space-y-4">
+                <!-- Form -->
+                <div class="p-6">
+                    <h:form enctype="multipart/form-data">
+
+                        <div class="space-y-5">
+
+                            <!-- Category Name -->
                             <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Category Name</label>
-                                <h:inputText value="#{categoryMB.newCategory.categoryName}"
-                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white"
-                                    required="true" />
+                                <h:outputLabel for="name" class="block text-sm font-medium mb-1
+                                           text-[#111813] dark:text-white">
+                                    Category Name <span class="text-red-500">*</span>
+                                </h:outputLabel>
+
+                                <h:inputText id="name" value="#{categoryMB.newCategory.categoryName}"
+                                 class="w-full h-11 px-4 rounded-lg
+                                           bg-[#f0f4f2] dark:bg-[#25382c]
+                                           border border-transparent
+                                           focus:border-primary focus:bg-white
+                                           dark:focus:bg-[#1a2e22]
+                                           text-[#111813] dark:text-white" />
+
+                                <h:message for="name" class="text-sm text-red-500 mt-1 block" />
                             </div>
+
+                            <!-- Description -->
                             <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Description</label>
-                                <h:inputTextarea value="#{categoryMB.newCategory.description}"
-                                    class="w-full h-24 px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white resize-none"
-                                    rows="3" />
+                                <h:outputLabel for="desc" class="block text-sm font-medium mb-1
+                                           text-[#111813] dark:text-white">
+                                    Description
+                                </h:outputLabel>
+
+                                <h:inputTextarea id="desc" value="#{categoryMB.newCategory.description}" rows="4" class="w-full px-4 py-3 rounded-lg
+                                           bg-[#f0f4f2] dark:bg-[#25382c]
+                                           border border-transparent
+                                           focus:border-primary focus:bg-white
+                                           dark:focus:bg-[#1a2e22]
+                                           text-[#111813] dark:text-white
+                                           resize-none" />
                             </div>
+
+                            <!-- Image Upload -->
+                            <div>
+                                <h:outputLabel for="image" class="block text-sm font-medium mb-1
+                                           text-[#111813] dark:text-white">
+                                    Upload Image
+                                </h:outputLabel>
+
+                                <h:inputFile id="image" value="#{categoryMB.uploadedFile}" class="w-full h-11 px-4 rounded-lg
+                                           bg-[#f0f4f2] dark:bg-[#25382c]
+                                           border border-transparent
+                                           focus:border-primary focus:bg-white
+                                           dark:focus:bg-[#1a2e22]
+                                           text-[#111813] dark:text-white" />
+
+                                <h:message for="image" class="text-sm text-red-500 mt-1 block" />
+                            </div>
+
                         </div>
-                        <div class="flex justify-end gap-3 mt-6">
-                            <h:link outcome="categoriesmanage" class="px-4 py-2 border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-[#25382c]">
+
+                        <!-- Actions -->
+                        <div class="flex justify-end gap-3 mt-8">
+                            <h:link outcome="categoriesmanage" class="px-5 py-2.5 rounded-lg
+                                       border border-[#e5e7eb]
+                                       dark:border-[#2a3e32]
+                                       text-[#111813] dark:text-white
+                                       hover:bg-gray-50 dark:hover:bg-[#25382c]">
                                 Cancel
                             </h:link>
-                            <h:commandButton action="#{categoryMB.addCategory()}"
-                                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
-                                Add Category
-                            </h:commandButton>
+
+                            <h:commandButton action="#{categoryMB.addCategory}" value="Add Category" class="px-5 py-2.5 rounded-lg
+                                       bg-primary text-white font-medium
+                                       hover:bg-primary/90
+                                       transition" />
                         </div>
+
                     </h:form>
                 </div>
             </div>
-        </div>
 
-        <h:messages class="fixed bottom-4 right-4 z-50" />
+            <!-- Messages -->
+            <h:panelGroup id="toastContainer" layout="block"
+            styleClass="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+            <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+                <ui:repeat value="#{facesContext.messageList}" var="msg">
+                    <div class="toast-item mb-2 px-6 py-4 rounded-xl shadow-lg text-white
+            #{msg.severity == 'INFO' ? 'bg-green-600' :
+              msg.severity == 'ERROR' ? 'bg-red-600' :
+              msg.severity == 'WARN' ? 'bg-yellow-500 text-black' :
+              'bg-blue-600'}">
+
+                        <div class="font-semibold mb-1">
+                            #{msg.summary}
+                        </div>
+                        <div class="text-sm opacity-90">
+                            #{msg.detail}
+                        </div>
+                    </div>
+                </ui:repeat>
+            </div>
+        </h:panelGroup>
+
+        <script>
+            document.querySelectorAll('.toast-item').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                    el.style.transition = 'all 0.3s ease';
+                }, 100 * index);
+
+                setTimeout(() => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(-20px)';
+                    setTimeout(() => el.remove(), 300);
+                }, 3000);
+            });
+        </script>
+
+        </div>
     </ui:define>
 </ui:composition>

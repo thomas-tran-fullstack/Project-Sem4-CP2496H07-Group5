@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/admin/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core">
+    <ui:define name="content">
+        <!-- Scrollable Page Content -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
+            <div class="max-w-[1200px] mx-auto space-y-6">
+                <!-- Page Header -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-text-main dark:text-white tracking-tight">User Management
+                        </h2>
+                        <p class="text-text-sub text-sm mt-1">View, edit, and manage user accounts and permissions.</p>
+                    </div>
+                    <button
+                        class="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-sm shadow-primary/30 transition-all active:scale-95 font-medium">
+                        <span class="material-symbols-outlined text-[20px]">add</span>
+                        <span>Add New User</span>
+                    </button>
+                </div>
+                <!-- Filters & Search Toolbar -->
+                <div
+                    class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-border-color shadow-sm flex flex-col lg:flex-row gap-4 items-center justify-between">
+                    <!-- Search -->
+                    <div class="relative w-full lg:max-w-md">
+                        <span
+                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-sub pointer-events-none select-none text-[20px]">search</span>
+                        <input
+                            class="w-full pl-10 pr-4 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all dark:text-white placeholder:text-text-sub/60"
+                            placeholder="Search by name, email, or phone..." type="text" />
+                    </div>
+                    <!-- Filters -->
+                    <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                        <div class="relative group">
+                            <select
+                                class="appearance-none pl-3 pr-10 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm text-text-sub focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer min-w-[120px]">
+                                <option>All Roles</option>
+                                <option>Admin</option>
+                                <option>Customer</option>
+                                <option>Staff</option>
+                            </select>
+                            <span
+                                class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-text-sub pointer-events-none text-[18px]">expand_more</span>
+                        </div>
+                        <div class="relative group">
+                            <select
+                                class="appearance-none pl-3 pr-10 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm text-text-sub focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer min-w-[120px]">
+                                <option>Status: All</option>
+                                <option>Active</option>
+                                <option>Inactive</option>
+                                <option>Banned</option>
+                            </select>
+                            <span
+                                class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-text-sub pointer-events-none text-[18px]">expand_more</span>
+                        </div>
+                        <button
+                            class="flex items-center gap-2 px-4 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm text-text-sub hover:border-primary hover:text-primary transition-colors ml-auto lg:ml-0">
+                            <span class="material-symbols-outlined text-[18px]">filter_list</span>
+                            <span>More Filters</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Data Table Card -->
+                <div
+                    class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-color shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-background-light dark:bg-background-dark border-b border-border-color">
+                                    <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">
+                                        User</th>
+                                    <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">
+                                        Role</th>
+                                    <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">
+                                        Status</th>
+                                    <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">
+                                        Joined Date</th>
+                                    <th
+                                        class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub text-right">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border-color">
+                                <!-- Row 1 -->
+                                <tr class="group hover:bg-primary/5 transition-colors">
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-3">
+                                            <div class="size-10 rounded-full bg-cover bg-center shrink-0"
+                                                data-alt="Avatar of Nguyen Van A"
+                                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAZzEHbHyLB_v6xPXmHh_BI-nv2dJ8iuINirUdTvgIjpL9_v-F1bysrBr8qPK6-f3_KCz043a5pZ4sa7tFthD1DJ7BPFrYw87bkVWzLhLM2pLfhkLU5WEe2myfrKaabRBRdFtB0LU_I_vTX8ZsJDQuS7lXikIDqhZL5QRYQMdpOuXi8tIq7_U9L1vgbfTJc2Xo-lxtkvUC16QN4Q1NNydmFSTK3lekejAHQ3YBFKEfvW-RZ9u6ls_XFoMUYkYKrGgVx4jLi0NXk92Y");'>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-text-main dark:text-white">Nguyen Van A</p>
+                                                <p class="text-sm text-text-sub">a.nguyen@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-2 text-sm text-text-main dark:text-gray-300">
+                                            <span
+                                                class="material-symbols-outlined text-[18px] text-primary">shopping_bag</span>
+                                            Customer
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 text-sm text-text-sub">
+                                        Oct 24, 2023
+                                    </td>
+                                    <td class="py-4 px-6 text-right">
+                                        <div
+                                            class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                class="p-2 rounded-lg text-text-sub hover:text-primary hover:bg-primary/10 transition-colors"
+                                                title="Edit">
+                                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                                            </button>
+                                            <button
+                                                class="p-2 rounded-lg text-text-sub hover:text-red-500 hover:bg-red-50 transition-colors"
+                                                title="Delete">
+                                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- Row 2 -->
+                                <tr class="group hover:bg-primary/5 transition-colors">
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-3">
+                                            <div class="size-10 rounded-full bg-cover bg-center shrink-0"
+                                                data-alt="Avatar of Tran Thi B"
+                                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD8vyWlnvNICh-oz-kSj8SWiBjMieuSBXJEaZCO2Jq5jDpc4jWviIUgYVYK1elWU4tKraG4EM__zYJ51k11MlC6dp4A3ORdS1dSj1NG_RlssS6jM4NxgFTnXT3DDt1tIgBpJtC61y6_Qz1NsJ57KlqAW5OJ0LBEE2n9oS5Vxw6xJFY_a1waoNeQAysRK7NxlCJHRBeVRN8atJEw4M5Kg1ZpuvLnC3OOvH9j3inlcI_-t7DYLa1i7pGfynbCUxkqDIYfQPqIdzqnL9g");'>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-text-main dark:text-white">Tran Thi B</p>
+                                                <p class="text-sm text-text-sub">b.tran@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-2 text-sm text-text-main dark:text-gray-300">
+                                            <span
+                                                class="material-symbols-outlined text-[18px] text-purple-500">verified_user</span>
+                                            Admin
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 text-sm text-text-sub">
+                                        Sep 15, 2023
+                                    </td>
+                                    <td class="py-4 px-6 text-right">
+                                        <div
+                                            class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                class="p-2 rounded-lg text-text-sub hover:text-primary hover:bg-primary/10 transition-colors"
+                                                title="Edit">
+                                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                                            </button>
+                                            <button
+                                                class="p-2 rounded-lg text-text-sub hover:text-red-500 hover:bg-red-50 transition-colors"
+                                                title="Delete">
+                                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- Row 3 -->
+                                <tr class="group hover:bg-primary/5 transition-colors">
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-3">
+                                            <div class="size-10 rounded-full bg-cover bg-center shrink-0"
+                                                data-alt="Avatar of Le Van C"
+                                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC8ILK5JUR3SuIYfBBoDWxjtHBjgvsq7IN98g8axk2WgUEDmocLHurVEjAgL8_CGOUdxVDAb6CuxxZTFh47uNWHlgPD4MGGQbxB8XW4WiKVUgW7ELMyuxYFq1ay61z30iZzQrBw2k7X2Pp2tyhDdPus5AR662zXWvy2U4ZVQZ8_dYBkPlmX7ScRBXYj7VFw8Du3-jK9LzO6hEKMpCB5Av33B8ry0Cf_95zOex-yNF3urroxmgGpTIbaQ1aZe2gN9B12mHLlhEkFrbo");'>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-text-main dark:text-white">Le Van C</p>
+                                                <p class="text-sm text-text-sub">c.le@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-2 text-sm text-text-main dark:text-gray-300">
+                                            <span
+                                                class="material-symbols-outlined text-[18px] text-blue-500">badge</span>
+                                            Staff
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
+                                            Inactive
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 text-sm text-text-sub">
+                                        Jan 02, 2024
+                                    </td>
+                                    <td class="py-4 px-6 text-right">
+                                        <div
+                                            class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                class="p-2 rounded-lg text-text-sub hover:text-primary hover:bg-primary/10 transition-colors"
+                                                title="Edit">
+                                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                                            </button>
+                                            <button
+                                                class="p-2 rounded-lg text-text-sub hover:text-red-500 hover:bg-red-50 transition-colors"
+                                                title="Delete">
+                                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- Row 4 -->
+                                <tr class="group hover:bg-primary/5 transition-colors">
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-3">
+                                            <div class="size-10 rounded-full bg-cover bg-center shrink-0"
+                                                data-alt="Avatar of Hoang D"
+                                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA5yWEkQqozH2y9AYs8Mzb2Pnw-doLMgN9TltoRCayPn2xIvEGBs9XW-GRJkRTsJ6MGOR18DXst0Rcm3lxQmYc4-Bho9wdt0bWX6yCr1HhJRSutei9NZJjw0B88oMfbUGbG2z8lT6h9O64s90jiR44bWgMVAoMkQpyR-MTFoU12kqwFPr8a7-vPeevRtbkL9eO-u_FlrSSWiRbCOcfzS0p_d8i8Lt9SUAPY6H0sf2TcX2HhWWcYeZ5lucJ7AYsC6UFGHKf6Nadf0Yg");'>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-text-main dark:text-white">Hoang Thi D</p>
+                                                <p class="text-sm text-text-sub">d.hoang@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-2 text-sm text-text-main dark:text-gray-300">
+                                            <span
+                                                class="material-symbols-outlined text-[18px] text-primary">shopping_bag</span>
+                                            Customer
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                            Banned
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 text-sm text-text-sub">
+                                        Nov 12, 2023
+                                    </td>
+                                    <td class="py-4 px-6 text-right">
+                                        <div
+                                            class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                class="p-2 rounded-lg text-text-sub hover:text-primary hover:bg-primary/10 transition-colors"
+                                                title="Edit">
+                                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                                            </button>
+                                            <button
+                                                class="p-2 rounded-lg text-text-sub hover:text-red-500 hover:bg-red-50 transition-colors"
+                                                title="Delete">
+                                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- Row 5 -->
+                                <tr class="group hover:bg-primary/5 transition-colors">
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-3">
+                                            <div class="size-10 rounded-full bg-cover bg-center shrink-0"
+                                                data-alt="Avatar of Pham E"
+                                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD8wm-G6w4XTS46D2hfNzGtvGkOdIKvEdWYURWooDLTHd-QTc93kFUdmAoBAyjBPsmAFPXbFXhXKeYH_QzQqoBcDx2PgmxJUMsRNroEO1AQVIt5hvHpM5OQ5TV5ka-30yDC8Tk3KHmv3F9kiCBScCVruk_33Yv6l-mzKGilCbfRpJ9t1xW5i0dhBD6_R9s1eyhIAAijllAyji2J1YSO6akX8vbK9diNFzK1WVyqOxVwep1PAt0nsYKk8liW9lALoajsWbPbXsfEiRI");'>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-text-main dark:text-white">Pham Van E</p>
+                                                <p class="text-sm text-text-sub">e.pham@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-2 text-sm text-text-main dark:text-gray-300">
+                                            <span
+                                                class="material-symbols-outlined text-[18px] text-primary">shopping_bag</span>
+                                            Customer
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-6 text-sm text-text-sub">
+                                        Oct 05, 2023
+                                    </td>
+                                    <td class="py-4 px-6 text-right">
+                                        <div
+                                            class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                class="p-2 rounded-lg text-text-sub hover:text-primary hover:bg-primary/10 transition-colors"
+                                                title="Edit">
+                                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                                            </button>
+                                            <button
+                                                class="p-2 rounded-lg text-text-sub hover:text-red-500 hover:bg-red-50 transition-colors"
+                                                title="Delete">
+                                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination Footer -->
+                    <div
+                        class="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-border-color gap-4">
+                        <p class="text-sm text-text-sub">Showing <span
+                                class="font-medium text-text-main dark:text-white">1</span> to <span
+                                class="font-medium text-text-main dark:text-white">5</span> of <span
+                                class="font-medium text-text-main dark:text-white">128</span> users</p>
+                        <div class="flex items-center gap-2">
+                            <button
+                                class="p-2 rounded-lg border border-border-color text-text-sub hover:bg-background-light hover:text-primary disabled:opacity-50 transition-colors"
+                                disabled="">
+                                <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                            </button>
+                            <button
+                                class="px-3.5 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors shadow-sm shadow-primary/30">1</button>
+                            <button
+                                class="px-3.5 py-2 rounded-lg bg-transparent border border-border-color text-text-sub hover:bg-background-light hover:text-primary transition-colors text-sm font-medium">2</button>
+                            <button
+                                class="px-3.5 py-2 rounded-lg bg-transparent border border-border-color text-text-sub hover:bg-background-light hover:text-primary transition-colors text-sm font-medium">3</button>
+                            <span class="text-text-sub px-1">...</span>
+                            <button
+                                class="px-3.5 py-2 rounded-lg bg-transparent border border-border-color text-text-sub hover:bg-background-light hover:text-primary transition-colors text-sm font-medium">12</button>
+                            <button
+                                class="p-2 rounded-lg border border-border-color text-text-sub hover:bg-background-light hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

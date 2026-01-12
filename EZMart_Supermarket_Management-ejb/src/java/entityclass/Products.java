@@ -37,12 +37,13 @@ import java.util.List;
 @NamedQueries({
     @NamedQuery(name = "Products.findAll", query = "SELECT p FROM Products p"),
     @NamedQuery(name = "Products.findByProductID", query = "SELECT p FROM Products p WHERE p.productID = :productID"),
-    @NamedQuery(name = "Products.findByProductName", query = "SELECT p FROM Products p WHERE p.productName = :productName"),
+    @NamedQuery(name = "Products.findByProductName", query = "SELECT p FROM Products p WHERE LOWER(p.productName) LIKE LOWER(:productName)"),
     @NamedQuery(name = "Products.findByUnitPrice", query = "SELECT p FROM Products p WHERE p.unitPrice = :unitPrice"),
     @NamedQuery(name = "Products.findByStockQuantity", query = "SELECT p FROM Products p WHERE p.stockQuantity = :stockQuantity"),
-    @NamedQuery(name = "Products.findByDiscountPercent", query = "SELECT p FROM Products p WHERE p.discountPercent = :discountPercent"),
     @NamedQuery(name = "Products.findByStatus", query = "SELECT p FROM Products p WHERE p.status = :status"),
-    @NamedQuery(name = "Products.findByCreatedAt", query = "SELECT p FROM Products p WHERE p.createdAt = :createdAt")})
+    @NamedQuery(name = "Products.findByCreatedAt", query = "SELECT p FROM Products p WHERE p.createdAt = :createdAt"),
+    @NamedQuery(name = "Products.findByBrandID", query = "SELECT p FROM Products p WHERE p.brandID.brandID = :brandID"),
+    @NamedQuery(name = "Products.findByCategoryID", query = "SELECT p FROM Products p WHERE p.categoryID.categoryID = :categoryID")})
 public class Products implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,8 +64,6 @@ public class Products implements Serializable {
     private BigDecimal unitPrice;
     @Column(name = "StockQuantity")
     private Integer stockQuantity;
-    @Column(name = "DiscountPercent")
-    private Integer discountPercent;
     @Size(max = 20)
     @Column(name = "Status")
     private String status;
@@ -135,14 +134,6 @@ public class Products implements Serializable {
 
     public void setStockQuantity(Integer stockQuantity) {
         this.stockQuantity = stockQuantity;
-    }
-
-    public Integer getDiscountPercent() {
-        return discountPercent;
-    }
-
-    public void setDiscountPercent(Integer discountPercent) {
-        this.discountPercent = discountPercent;
     }
 
     public String getStatus() {

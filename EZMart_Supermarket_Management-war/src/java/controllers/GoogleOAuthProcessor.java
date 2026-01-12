@@ -49,6 +49,7 @@ public class GoogleOAuthProcessor extends HttpServlet {
             // mark session as logged in
             System.out.println("GoogleOAuthProcessor: existingUser found id=" + existingUser.getUserID() + ", email=" + email);
             // Update session attributes for compatibility
+            session.setAttribute("currentUser", existingUser);
             session.setAttribute("currentUserId", existingUser.getUserID());
             session.setAttribute("loggedIn", true);
             // Also update JSF session-scoped AuthController bean if present

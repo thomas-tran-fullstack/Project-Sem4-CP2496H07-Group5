@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition template="/templates/admin/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core"
-    xmlns:p="jakarta.faces.passthrough">
+    xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="content">
         <div class="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth">
@@ -29,123 +29,210 @@
                 <!-- Search and Filters -->
                 <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
                     <h:form>
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <div class="flex-1">
-                                <h:inputText value="#{productMB.searchTerm}" placeholder="Search products..."
-                                    class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-primary focus:border-transparent transition-colors" />
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="md:col-span-2">
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                                    <h:inputText value="#{productMB.searchTerm}" placeholder="Search products..."
+                                        class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-primary focus:border-transparent transition-colors" />
+                                </div>
                             </div>
-                            <div class="flex gap-2">
-                                <h:commandButton action="#{productMB.searchProducts()}" value="Search"
-                                    class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors" />
-                                <h:commandButton action="#{productMB.loadProducts()}" value="Clear"
-                                    class="px-4 py-2 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-700 dark:text-slate-300 rounded-lg font-medium transition-colors" />
+                            <div class="md:col-span-1">
+                                <h:selectOneMenu class="w-full py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                                    <f:selectItem itemLabel="All Categories" itemValue="" />
+                                    <f:selectItem itemLabel="Electronics" itemValue="electronics" />
+                                    <f:selectItem itemLabel="Clothing" itemValue="clothing" />
+                                    <f:selectItem itemLabel="Food" itemValue="food" />
+                                </h:selectOneMenu>
                             </div>
+                            <div class="md:col-span-1">
+                                <h:selectOneMenu class="w-full py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                                    <f:selectItem itemLabel="All Status" itemValue="" />
+                                    <f:selectItem itemLabel="Active" itemValue="Active" />
+                                    <f:selectItem itemLabel="Inactive" itemValue="Inactive" />
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 mt-4">
+                            <h:commandButton action="#{productMB.searchProducts()}" value="Search"
+                                class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors" />
+                            <h:commandButton action="#{productMB.loadProducts()}" value="Clear Filters"
+                                class="px-4 py-2 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-700 dark:text-slate-300 rounded-lg font-medium transition-colors" />
                         </div>
                     </h:form>
                 </div>
 
                 <!-- Products Table -->
-                <div
-                    class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <div class="overflow-x-auto">
+                <h:form>
+                    <div
+                        class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
                         <div class="overflow-x-auto">
-                            <table
-                                class="min-w-full border-collapse bg-white dark:bg-slate-800 rounded-xl overflow-hidden">
-                                <!-- HEADER -->
-                                <thead class="bg-slate-50 dark:bg-slate-700">
-                                    <tr
-                                        class="text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-300">
-                                        <th class="px-4 py-4 w-16 text-center">ID</th>
-                                        <th class="px-4 py-4 w-24 text-center">Image</th>
-                                        <th class="px-4 py-4">Name</th>
-                                        <th class="px-4 py-4">Category</th>
-                                        <th class="px-4 py-4 text-right">Price</th>
-                                        <th class="px-4 py-4 text-center">Stock</th>
-                                        <th class="px-4 py-4 text-center">Status</th>
-                                        <th class="px-4 py-4 text-center w-28">Actions</th>
-                                    </tr>
-                                </thead>
-
-                                <!-- BODY -->
-                                <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                                    <ui:repeat value="#{productMB.products}" var="product">
-                                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                                            <!-- ID -->
-                                            <td
-                                                class="px-4 py-4 text-center font-medium text-slate-900 dark:text-white">
-                                                #{product.productID}
-                                            </td>
-
-                                            <!-- IMAGE -->
-                                            <td class="px-4 py-4">
-                                                <div class="flex justify-center">
-                                                    <div
-                                                        class="w-14 h-14 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-600">
-                                                        <h:graphicImage value="#{productMB.productImageUrl(product)}"
-                                                            rendered="#{not empty productMB.productImageUrl(product)}"
-                                                            class="w-full h-full object-cover" />
-                                                    </div>
-                                                </div>
-                                            </td>
-
-                                            <!-- NAME -->
-                                            <td class="px-4 py-4 font-medium text-slate-900 dark:text-white">
-                                                #{product.productName}
-                                            </td>
-
-                                            <!-- CATEGORY -->
-                                            <td class="px-4 py-4 text-slate-600 dark:text-slate-300">
-                                                #{product.categoryID.categoryName}
-                                            </td>
-
-                                            <!-- PRICE -->
-                                            <td
-                                                class="px-4 py-4 text-right font-semibold text-slate-900 dark:text-white">
-                                                $#{product.unitPrice}
-                                            </td>
-
-                                            <!-- STOCK -->
-                                            <td class="px-4 py-4 text-center">
-                                                #{product.stockQuantity}
-                                            </td>
-
-                                            <!-- STATUS -->
-                                            <td class="px-4 py-4 text-center">
-                                                <span class="#{product.status eq 'Active'
-        ? 'px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700'
-        : 'px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700'}">
-                                                    #{product.status}
-                                                </span>
-                                            </td>
-
-                                            <!-- ACTIONS -->
-                                            <td class="px-4 py-4 text-center">
-                                                <div class="flex justify-center gap-3">
-                                                    <!-- EDIT -->
-                                                    <h:link outcome="editproduct" class="text-blue-600 hover:text-blue-800">
-                                                        <f:param name="productId" value="#{product.productID}" />
-                                                        <span class="material-symbols-outlined">edit</span>
-                                                    </h:link>
-
-                                                    <!-- DELETE -->
-                                                    <h:commandButton action="#{productMB.deleteProduct(product)}"
-                                                        onclick="return confirm('Delete this product?')"
-                                                        styleClass="text-red-600 hover:text-red-800 bg-transparent border-none">
-                                                        <span class="material-symbols-outlined">delete</span>
-                                                    </h:commandButton>
-                                                </div>
-                                            </td>
+                            <div class="overflow-x-auto">
+                                <table
+                                    class="min-w-full border-collapse bg-white dark:bg-slate-800 rounded-xl overflow-hidden">
+                                    <!-- HEADER -->
+                                    <thead class="bg-slate-50 dark:bg-slate-700">
+                                        <tr
+                                            class="text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                                            <th class="px-4 py-4 w-16 text-center">ID</th>
+                                            <th class="px-4 py-4 w-24 text-center">Image</th>
+                                            <th class="px-4 py-4">Name</th>
+                                            <th class="px-4 py-4">Category</th>
+                                            <th class="px-4 py-4 text-right">Price</th>
+                                            <th class="px-4 py-4 text-center">Stock</th>
+                                            <th class="px-4 py-4 text-center">Status</th>
+                                            <th class="px-4 py-4 text-center w-28">Actions</th>
                                         </tr>
-                                    </ui:repeat>
-                                </tbody>
-                            </table>
+                                    </thead>
+
+                                    <!-- BODY -->
+                                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                                        <ui:repeat value="#{productMB.paginatedProducts}" var="product">
+                                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                                                <!-- ID -->
+                                                <td
+                                                    class="px-4 py-4 text-center font-medium text-slate-900 dark:text-white">
+                                                    #{product.productID}
+                                                </td>
+
+                                                <!-- IMAGE -->
+                                                <td class="px-4 py-4">
+                                                    <div class="flex justify-center">
+                                                        <div
+                                                            class="w-14 h-14 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-600">
+                                                            <ui:param name="adminImgPath" value="#{not empty productMB.productImageUrl(product) ? productMB.productImageUrl(product) : '/images/no-image.png'}" />
+                                                            <img alt="#{product.productName}" class="w-full h-full object-cover"
+                                                                src="#{request.contextPath}#{adminImgPath}" />
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                                <!-- NAME -->
+                                                <td class="px-4 py-4 font-medium text-slate-900 dark:text-white">
+                                                    #{product.productName}
+                                                </td>
+
+                                                <!-- CATEGORY -->
+                                                <td class="px-4 py-4 text-slate-600 dark:text-slate-300">
+                                                    #{product.categoryID.categoryName}
+                                                </td>
+
+                                                <!-- PRICE -->
+                                                <td
+                                                    class="px-4 py-4 text-right font-semibold text-slate-900 dark:text-white">
+                                                    $#{product.unitPrice}
+                                                </td>
+
+                                                <!-- STOCK -->
+                                                <td class="px-4 py-4 text-center">
+                                                    #{product.stockQuantity}
+                                                </td>
+
+                                                <!-- STATUS -->
+                                                <td class="px-4 py-4 text-center">
+                                                    <span class="#{product.status eq 'Active'
+            ? 'px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700'
+            : 'px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700'}">
+                                                        #{product.status}
+                                                    </span>
+                                                </td>
+
+                                                <!-- ACTIONS -->
+                                                <td class="px-4 py-4 text-center">
+                                                    <div class="flex justify-center gap-3">
+                                                        <!-- EDIT -->
+                                                        <h:link outcome="editproduct" class="text-blue-600 hover:text-blue-800">
+                                                            <f:param name="productId" value="#{product.productID}" />
+                                                            <span class="material-symbols-outlined">edit</span>
+                                                        </h:link>
+                                                        
+                                                        <!-- DELETE -->
+                                                        <h:commandLink action="#{productMB.deleteProduct(product)}"
+                                                            onclick="return confirm('Delete this product?')"
+                                                            styleClass="text-red-600 hover:text-red-800 bg-transparent border-none">
+                                                            <span class="material-symbols-outlined">delete</span>
+                                                        </h:commandLink>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </ui:repeat>
+                                    </tbody>
+                                </table>
+                            </div>
+
                         </div>
 
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <!-- Pagination -->
+                        <div class="flex items-center justify-between px-6 py-4 bg-slate-50 dark:bg-slate-700/50 border-t border-slate-200 dark:border-slate-700">
+                            <div class="text-sm text-slate-600 dark:text-slate-300">
+                                Showing #{productMB.currentPage * productMB.pageSize - productMB.pageSize + 1} to
+                                #{productMB.currentPage * productMB.pageSize > productMB.totalRecords ? productMB.totalRecords : productMB.currentPage * productMB.pageSize}
+                                of #{productMB.totalRecords} entries
+                            </div>
 
+                            <div class="flex items-center gap-2">
+                                <h:commandLink action="#{productMB.previousPage()}"
+                                    disabled="#{productMB.currentPage == 1}"
+                                    styleClass="px-3 py-1 text-sm bg-white dark:bg-slate-600 border border-slate-300 dark:border-slate-500 rounded-md hover:bg-slate-50 dark:hover:bg-slate-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    Previous
+                                </h:commandLink>
+
+                                <span class="text-sm text-slate-600 dark:text-slate-300">
+                                    Page #{productMB.currentPage} of #{productMB.totalPages}
+                                </span>
+
+                                <h:commandLink action="#{productMB.nextPage()}"
+                                    disabled="#{productMB.currentPage == productMB.totalPages}"
+                                    styleClass="px-3 py-1 text-sm bg-white dark:bg-slate-600 border border-slate-300 dark:border-slate-500 rounded-md hover:bg-slate-50 dark:hover:bg-slate-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    Next
+                                </h:commandLink>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+        </div>
+    </div>
+
+
+
+     <h:panelGroup id="toastContainer" layout="block"
+            styleClass="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+            <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+                <ui:repeat value="#{facesContext.messageList}" var="msg">
+                    <div class="toast-item mb-2 px-6 py-4 rounded-xl shadow-lg text-white
+            #{msg.severity == 'INFO' ? 'bg-green-600' :
+              msg.severity == 'ERROR' ? 'bg-red-600' :
+              msg.severity == 'WARN' ? 'bg-yellow-500 text-black' :
+              'bg-blue-600'}">
+
+                        <div class="font-semibold mb-1">
+                            #{msg.summary}
+                        </div>
+                        <div class="text-sm opacity-90">
+                            #{msg.detail}
+                        </div>
+                    </div>
+                </ui:repeat>
+            </div>
+        </h:panelGroup>
+
+        <script>
+            document.querySelectorAll('.toast-item').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                    el.style.transition = 'all 0.3s ease';
+                }, 100 * index);
+
+                setTimeout(() => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(-20px)';
+                    setTimeout(() => el.remove(), 300);
+                }, 3000);
+            });
+        </script>
 
         <style>
             .table-header {

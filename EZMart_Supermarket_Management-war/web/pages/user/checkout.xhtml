@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets">
+    <ui:define name="content">
+        <div class="flex-1 w-full max-w-7xl mx-auto px-4 md:px-10 py-8">
+            <!-- Breadcrumbs -->
+            <nav class="mb-8 overflow-x-auto">
+                <div class="flex items-center text-sm font-medium whitespace-nowrap">
+                    <a class="text-gray-500 hover:text-primary transition-colors" href="#">Cart</a>
+                    <span class="mx-3 text-gray-400">/</span>
+                    <span class="text-primary font-bold">Checkout</span>
+                </div>
+            </nav>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                <!-- Left Column: Checkout Form -->
+                <div class="lg:col-span-8 space-y-8">
+                    <!-- Page Heading -->
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-black tracking-tight text-[#111813] dark:text-[#111813] mb-2">Checkout</h1>
+                        <p class="text-gray-500 dark:text-gray-400">Complete your order by filling in the details below.</p>
+                    </div>
+
+                    <!-- Shipping Information Section -->
+                    <section class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Contact Details</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">We'll use this to update you on your order.</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                            <label class="flex flex-col flex-1">
+                                <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">First Name</span>
+                                <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="e.g. John" type="text"/>
+                            </label>
+                            <label class="flex flex-col flex-1">
+                                <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">Last Name</span>
+                                <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="e.g. Doe" type="text"/>
+                            </label>
+                        </div>
+                        <div class="mb-8">
+                            <label class="flex flex-col w-full">
+                                <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">Phone Number</span>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-[20px]">call</span>
+                                    <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 pl-11 pr-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="+1 (555) 000-0000" type="tel"/>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="mb-6">
+                            <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Shipping Address</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Where should we deliver your groceries?</p>
+                        </div>
+                        <div class="space-y-5">
+                            <label class="flex flex-col w-full">
+                                <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">Address Line 1</span>
+                                <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="e.g. 123 Green St" type="text"/>
+                            </label>
+                            <label class="flex flex-col w-full">
+                                <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">Address Line 2 (Optional)</span>
+                                <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="e.g. Apt 4B" type="text"/>
+                            </label>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                <label class="flex flex-col w-full">
+                                    <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">City</span>
+                                    <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="New York" type="text"/>
+                                </label>
+                                <label class="flex flex-col w-full">
+                                    <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">State / Province</span>
+                                    <div class="relative">
+                                        <select class="form-select w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary text-[#111813] dark:text-[#111813] transition-colors appearance-none">
+                                            <option>Select State</option>
+                                            <option>California</option>
+                                            <option>New York</option>
+                                            <option>Texas</option>
+                                        </select>
+                                        <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined pointer-events-none text-gray-500">expand_more</span>
+                                    </div>
+                                </label>
+                                <label class="flex flex-col w-full">
+                                    <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">Zip Code</span>
+                                    <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="10001" type="text"/>
+                                </label>
+                            </div>
+                            <div class="flex items-center gap-3 pt-2">
+                                <div class="relative flex items-center">
+                                    <input class="peer size-5 cursor-pointer appearance-none rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#112116] checked:bg-primary checked:border-primary transition-all" id="save-address" type="checkbox"/>
+                                    <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white pointer-events-none opacity-0 peer-checked:opacity-100 material-symbols-outlined text-[16px]">check</span>
+                                </div>
+                                <label class="text-sm text-[#111813] dark:text-gray-200 cursor-pointer select-none" for="save-address">Save this address for next time</label>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Delivery Method Section -->
+                    <section class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Delivery Method</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Select your preferred shipping option.</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Standard Option -->
+                            <label class="relative cursor-pointer group">
+                                <input checked="" class="peer sr-only" name="shipping" type="radio"/>
+                                <div class="p-5 rounded-lg border-2 border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] peer-checked:border-primary peer-checked:bg-primary/5 dark:peer-checked:bg-primary/10 transition-all h-full flex flex-col justify-between">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="size-5 rounded-full border-2 border-gray-300 dark:border-gray-500 peer-checked:group-[]:border-primary peer-checked:group-[]:bg-primary flex items-center justify-center">
+                                                <div class="size-2 bg-white rounded-full opacity-0 peer-checked:group-[]:opacity-100"></div>
+                                            </div>
+                                            <span class="font-bold text-[#111813] dark:text-[#111813]">Standard Delivery</span>
+                                        </div>
+                                        <span class="font-bold text-[#111813] dark:text-[#111813]">Free</span>
+                                    </div>
+                                    <div class="pl-8">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Estimated: 3-5 Business Days</p>
+                                        <p class="text-xs text-primary font-medium">Eco-friendly option</p>
+                                    </div>
+                                </div>
+                            </label>
+                            <!-- Express Option -->
+                            <label class="relative cursor-pointer group">
+                                <input class="peer sr-only" name="shipping" type="radio"/>
+                                <div class="p-5 rounded-lg border-2 border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] peer-checked:border-primary peer-checked:bg-primary/5 dark:peer-checked:bg-primary/10 transition-all h-full flex flex-col justify-between">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="size-5 rounded-full border-2 border-gray-300 dark:border-gray-500 peer-checked:group-[]:border-primary peer-checked:group-[]:bg-primary flex items-center justify-center">
+                                                <div class="size-2 bg-white rounded-full opacity-0 peer-checked:group-[]:opacity-100"></div>
+                                            </div>
+                                            <span class="font-bold text-[#111813] dark:text-[#111813]">Express Delivery</span>
+                                        </div>
+                                        <span class="font-bold text-[#111813] dark:text-[#111813]">$15.00</span>
+                                    </div>
+                                    <div class="pl-8">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Estimated: 1-2 Business Days</p>
+                                        <p class="text-xs text-orange-500 font-medium flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">local_fire_department</span> Fastest
+                                        </p>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </section>
+
+                    <!-- Payment Details Section -->
+                    <section class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-bold text-[#111813] dark:text-[#111813] flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">credit_card</span>
+                                Payment Details
+                            </h2>
+                        </div>
+                        <div class="space-y-6">
+                            <!-- Saved Cards Section -->
+                            <div>
+                                <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Saved Cards</h3>
+                                <div class="flex flex-col gap-3">
+                                    <!-- Saved Card 1 -->
+                                    <label class="group relative flex items-center gap-4 rounded-xl border border-gray-200 dark:border-gray-700 p-4 cursor-pointer hover:border-primary/50 dark:hover:border-primary/50 transition-all bg-gray-50/50 dark:bg-gray-800/50">
+                                        <input checked="" class="radio-custom h-5 w-5 bg-transparent border-2 border-gray-300 dark:border-gray-600 text-transparent focus:ring-primary focus:ring-offset-0 checked:focus:border-primary" name="payment_method" type="radio"/>
+                                        <div class="flex items-center justify-center w-10 h-6 bg-white dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600">
+                                            <img alt="Visa Logo" class="h-3 w-auto" data-alt="Visa logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlJjWzcPgnd5Jm9gf8tx7sp7PMlTTKYh8ugYmYgCHEImnnB9tNYN6A6dh1PwY6EPuGuVb343TsZ3HvQ6SK0UqMlT79L1BDNRHzSekc2DPpUv0UOjSuxnUthXq-dd8Tj2q1iY_dU_BA-uBPi20QNhEsFS8qiboth10btiKY4k0arhgbhOPA69Ch8nqtapn0nRUsCpG3ffNNAB9gKaFVJD63xRVszhBs8S0r5AiZQEEL6ZyCfZ-lbedQSWIc01zGeF8ZNqt89PVwlLI"/>
+                                        </div>
+                                        <div class="flex flex-col grow">
+                                            <p class="text-sm font-semibold text-[#111813] dark:text-[#111813]">Visa ending in 4242</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Expires 09/25</p>
+                                        </div>
+                                        <span class="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">check_circle</span>
+                                    </label>
+                                    <!-- Saved Card 2 -->
+                                    <label class="group relative flex items-center gap-4 rounded-xl border border-gray-200 dark:border-gray-700 p-4 cursor-pointer hover:border-primary/50 dark:hover:border-primary/50 transition-all bg-gray-50/50 dark:bg-gray-800/50">
+                                        <input class="radio-custom h-5 w-5 bg-transparent border-2 border-gray-300 dark:border-gray-600 text-transparent focus:ring-primary focus:ring-offset-0 checked:focus:border-primary" name="payment_method" type="radio"/>
+                                        <div class="flex items-center justify-center w-10 h-6 bg-white dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600">
+                                            <img alt="Mastercard Logo" class="h-4 w-auto" data-alt="Mastercard logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk8Q8glZSfoIK0K-3QeUn4l6pDhpapmiFXJDf06YmfGFzMDYkLroEuk1xAWRrOGms0TuD_Yf1krUY6SEDRhh-AR89pD4F8_eeIa1UdaVfuMikqX9tJPLrfLb1NMgfbeTsKz_Ed98lp8_l_SfaGY4cplmkMSnwJk7KwRycLONVm1dLzawJMlnACsjEjQaDhNavhQFaPZSmmDI77BWNtG0lsvtJscKPcS4Ww-Uaw4jdR6UiJXCueiiDQaA4b8MuVSacDqcMbvK1Uh1Q"/>
+                                        </div>
+                                        <div class="flex flex-col grow">
+                                            <p class="text-sm font-semibold text-[#111813] dark:text-[#111813]">Mastercard ending in 8899</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Expires 11/24</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- New Payment Method Section -->
+                            <div>
+                                <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Add New Card</h3>
+                                <form class="space-y-6">
+                                    <div class="space-y-4">
+                                        <!-- Card Number -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Card Number</label>
+                                            <div class="relative">
+                                                <input class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary py-2.5 pl-10 transition-colors" placeholder="0000 0000 0000 0000" type="text"/>
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <span class="material-symbols-outlined text-gray-400">credit_card</span>
+                                                </div>
+                                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none gap-2">
+                                                    <span class="material-symbols-outlined text-gray-400 text-lg">lock</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Cardholder Name -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Cardholder Name</label>
+                                            <input class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary py-2.5 transition-colors" placeholder="John Doe" type="text"/>
+                                        </div>
+                                        <!-- Expiry & CVV -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Expiry Date</label>
+                                                <input class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary py-2.5 transition-colors" placeholder="MM / YY" type="text"/>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">CVV</label>
+                                                <div class="relative">
+                                                    <input class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary py-2.5 transition-colors" placeholder="123" type="text"/>
+                                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                        <span class="material-symbols-outlined text-gray-400 text-[20px]">help</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Billing Address Checkbox -->
+                                    <div class="flex items-center gap-3 mt-4">
+                                        <input checked="" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:bg-gray-800 dark:border-gray-600" id="billing-same" type="checkbox"/>
+                                        <label class="text-sm text-gray-700 dark:text-gray-300" for="billing-same">Billing address is same as shipping address</label>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Alternative Methods -->
+                            <div>
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">Other Payment Methods</h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <button class="flex items-center justify-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a2e22] p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                        <span class="material-symbols-outlined text-blue-600">account_balance_wallet</span>
+                                        <span class="text-sm font-bold text-gray-800 dark:text-gray-200">PayPal</span>
+                                    </button>
+                                    <button class="flex items-center justify-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a2e22] p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                        <span class="material-symbols-outlined text-black dark:text-white">smartphone</span>
+                                        <span class="text-sm font-bold text-gray-800 dark:text-gray-200">Apple Pay</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Right Column: Order Summary (Sticky) -->
+                <div class="lg:col-span-4">
+                    <div class="sticky top-24 space-y-6">
+                        <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg shadow-gray-200/50 dark:shadow-none">
+                            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Order Summary</h2>
+                            <!-- Mini Product List -->
+                            <div class="space-y-4 mb-6">
+                                <div class="flex gap-3 items-center">
+                                    <div class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
+                                        <img alt="Fresh oranges" class="h-full w-full object-cover" data-alt="Close up of fresh organic oranges" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5rLrTOmQxnKN72BPxPmP_Jk5qMd76eC-DLsOFdB3Kti_20iLMTT-KB9GYbC1pwLD1I0kX-HdEKZHH7ZtXwywAtoTbChJGQO6PHlaFEQHTFWKZMcRo-4-252qCCeYudII_m6T0JbIw7QQxw-2nvkd7luD2Aocr5zoH1nJ9oa8xU3h4it-wfR0oUUtdYrC2R6sP8At2v11BIPsftOgSXcOanDrcL-Rflxo86mqzrTrV5hNPoyRh3IP14mjye8IWzNh84ESNtLLKI2w"/>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-[#111813] dark:text-[#111813] truncate">Organic Valencia Oranges</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Qty: 2kg</p>
+                                    </div>
+                                    <p class="text-sm font-semibold text-[#111813] dark:text-[#111813]">$8.50</p>
+                                </div>
+                                <div class="flex gap-3 items-center">
+                                    <div class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
+                                        <img alt="Carton of milk" class="h-full w-full object-cover" data-alt="Carton of fresh milk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA53u-k9jYaCyfmmN7nvIySrqcS-zS34MijmFmjfsI8LxPWZFvew--LOcgKsuJiAnhzJ3dCMedJW9EzvcZPkS2wMihgtzBiWgWMPc8KlBtLv_3jfi3SjQ0flGKo6lllxIsxnxQkBfSsMcX7TOgJBmv-rfrJx0gX3T3lfDquXGysA1MfKd6ukMREiIYJ8nqQMfkFDjEJqoxiR1x_0nYxudwsPsQaLlBvmSreJrGGD4q6IzoOdVFm6IYDptmm9--UKjapoZx1Xtm-Odc"/>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-[#111813] dark:text-[#111813] truncate">Farm Fresh Whole Milk</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Qty: 2L</p>
+                                    </div>
+                                    <p class="text-sm font-semibold text-[#111813] dark:text-[#111813]">$4.20</p>
+                                </div>
+                                <div class="flex gap-3 items-center">
+                                    <div class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
+                                        <img alt="Box of cereal" class="h-full w-full object-cover" data-alt="Box of breakfast cereal" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFy4MuykMrsn28jrUCnusmhL8FT6vZouiftTz6uq3WN6EsWydhiMqpmfOml8wlh0r-fd39XHc2dYUImwFU6Qw5MtCbZvRZO_W2T1um023mQCW_rwYNV7mBIM1FU0g4AOvjnI_mCWehuVf78E_oI1FU-k8r3JmPLvKV0qiA3_mTBNA1_xQ-sJsvH6Be_NnN8YaO-wcNPKwbwRjx2azbzTfs4eDCSbsSWTsG90Xbyi5mbHs0pMpXMBsi2XlKpiIK_4PeSI7wxNYTPek"/>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-[#111813] dark:text-[#111813] truncate">Crunchy Oats Cereal</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Qty: 1 box</p>
+                                    </div>
+                                    <p class="text-sm font-semibold text-[#111813] dark:text-[#111813]">$6.80</p>
+                                </div>
+                            </div>
+                            <!-- Calculations -->
+                            <div class="border-t border-gray-100 dark:border-gray-800 pt-4 space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Subtotal</span>
+                                    <span class="font-medium text-gray-900 dark:text-white">$19.50</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Delivery Fee</span>
+                                    <span class="font-medium text-gray-900 dark:text-white">$5.00</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Tax</span>
+                                    <span class="font-medium text-gray-900 dark:text-white">$1.95</span>
+                                </div>
+                            </div>
+                            <!-- Total -->
+                            <div class="border-t border-gray-100 dark:border-gray-800 pt-4 mt-4 mb-6">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-base font-bold text-gray-900 dark:text-white">Total</span>
+                                    <span class="text-2xl font-black text-gray-900 dark:text-white">$26.45</span>
+                                </div>
+                            </div>
+                            <!-- Place Order Button -->
+                            <button class="w-full bg-primary hover:bg-green-600 text-white font-bold text-lg py-3.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">shopping_cart_checkout</span>
+                                Place Order
+                            </button>
+                            <!-- Trust Badges -->
+                            <div class="flex justify-center items-center gap-4 mt-6 text-gray-400">
+                                <div class="flex items-center gap-1 text-xs">
+                                    <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                                    <span>SSL Secure</span>
+                                </div>
+                                <div class="h-3 w-px bg-gray-300 dark:bg-gray-700"></div>
+                                <div class="flex items-center gap-1 text-xs">
+                                    <span class="material-symbols-outlined text-[18px]">shield</span>
+                                    <span>Encrypted</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

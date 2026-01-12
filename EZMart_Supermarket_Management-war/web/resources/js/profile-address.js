@@ -1488,6 +1488,12 @@ function initAddressCardMaps(){
                 mapEl.style.position = '';
                 mapEl.style.width = '';
                 mapEl.style.height = '';
+                    // remove Leaflet's internal id so a new map can be initialized on this element
+                    try{
+                        if(mapEl._leaflet_id !== undefined){ delete mapEl._leaflet_id; }
+                    }catch(_e){
+                        try{ mapEl._leaflet_id = null; }catch(__e){}
+                    }
             }
         }catch(e){ console.warn('initAddressCardMaps: cleanup of existing leaflet container failed', e); }
         console.log('initAddressCardMaps: element', mapEl, 'data-lat=', mapEl.dataset.lat, 'data-lng=', mapEl.dataset.lng, 'data-id=', mapEl.dataset.id);

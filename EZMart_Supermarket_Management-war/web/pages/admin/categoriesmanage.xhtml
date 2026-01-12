@@ -3,145 +3,189 @@
     xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core">
 
     <ui:define name="content">
-        <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6">
-            <!-- Breadcrumbs -->
-            <div class="flex flex-wrap gap-2 py-4 mb-4">
-                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="#">Home</a>
-                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
-                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="#">Admin</a>
-                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
-                <span class="text-[#111813] dark:text-white text-sm font-medium leading-normal">Categories</span>
-            </div>
+        <div class="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth">
+            <div class="max-w-7xl mx-auto space-y-8">
 
-            <!-- Tabs -->
-            <div
-                class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] overflow-hidden">
-                <div class="border-b border-[#e5e7eb] dark:border-[#2a3e32]">
-                    <nav class="flex">
-                        <button id="categories-tab"
-                            class="tab-button active px-6 py-4 text-sm font-medium text-[#111813] dark:text-white border-b-2 border-primary">
-                            Categories
-                        </button>
-                    </nav>
-                </div>
-
-                <!-- Categories Tab Content -->
-                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                <!-- Page Heading -->
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div>
-                        <h1 class="text-3xl font-bold tracking-tight text-[#0e1b12] dark:text-white mb-2">
+                        <h2 class="text-3xl font-bold text-slate-900 dark:text-white">
                             Category Management
-                        </h1>
-                        <p class="text-[#4e9767] dark:text-gray-400">
-                            Organize your product inventory, track items, and manage visibility.
+                        </h2>
+                        <p class="text-slate-600 dark:text-slate-400 mt-1">
+                            Organize your product inventory and manage categories
                         </p>
                     </div>
 
                     <div class="flex gap-3">
-                        <button class="hidden sm:flex items-center gap-2 px-4 py-2 bg-white dark:bg-surface-dark
-                       border border-border-light dark:border-border-dark rounded-lg text-sm font-medium shadow-sm">
+                        <button class="inline-flex items-center gap-2 px-4 py-2
+                                   bg-slate-100 dark:bg-white/10
+                                   hover:bg-slate-200 dark:hover:bg-white/20
+                                   text-slate-700 dark:text-slate-300
+                                   rounded-lg font-medium transition">
                             <span class="material-symbols-outlined text-lg">download</span>
-                            Export
+                            Export Data
                         </button>
 
-                        <h:link outcome="addcategory" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-md">
+                        <h:link outcome="addcategory" class="inline-flex items-center gap-2 px-4 py-2
+                                   bg-primary hover:bg-primary/90
+                                   text-white rounded-lg font-medium transition">
                             <span class="material-symbols-outlined text-lg">add</span>
-                            Add New Category
+                            Add Category
                         </h:link>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
-                    <!-- Search -->
-                    <div class="md:col-span-6 relative">
-                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#4e9767]">
-                            search
-                        </span>
-                        <h:inputText value="#{categoryMB.searchTerm}" placeholder="Search category name..." class="w-full pl-10 pr-3 py-2.5 rounded-lg bg-white dark:bg-surface-dark
-                      focus:ring-2 focus:ring-primary/50 shadow-sm" />
-                        <h:commandButton action="#{categoryMB.searchCategories()}" style="display: none;" />
-                    </div>
-
-                    <!-- Status -->
-                    <div class="md:col-span-3 relative">
-                        <h:selectOneMenu class="w-full py-2.5 rounded-lg bg-white dark:bg-surface-dark shadow-sm">
-                            <f:selectItem itemLabel="All Statuses" itemValue="" />
-                            <f:selectItem itemLabel="Active" itemValue="Active" />
-                            <f:selectItem itemLabel="Inactive" itemValue="Inactive" />
-                        </h:selectOneMenu>
-                    </div>
-
-                    <!-- Product Count -->
-                    <div class="md:col-span-3 relative">
-                        <select class="w-full py-2.5 rounded-lg bg-white dark:bg-surface-dark shadow-sm">
-                            <option>Product Count: Any</option>
-                            <option>High (&gt;100)</option>
-                            <option>Low (&lt;10)</option>
-                            <option>Empty (0)</option>
-                        </select>
-                    </div>
-                </div>
-
-
-
                 <h:form>
-                    <!-- Categories Table -->
-                    <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border overflow-hidden">
+                    <!-- Filters -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+
+                        <div class="md:col-span-6">
+                            <div class="flex items-center gap-2">
+
+                                <!-- Search input -->
+                                <div class="relative flex-1">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#4e9767]">
+                                        search
+                                    </span>
+
+                                    <h:inputText value="#{categoryMB.searchTerm}" placeholder="Search category name..."
+                                        class="w-full h-11 pl-10 pr-3 rounded-lg
+                       bg-white dark:bg-surface-dark
+                       shadow-sm focus:ring-2 focus:ring-primary/40" />
+                                </div>
+
+                                <!-- Search button -->
+                                <h:commandButton value="Search" action="#{categoryMB.searchCategories()}" class="h-11 px-4 bg-primary hover:bg-primary/90
+                   text-white rounded-lg font-medium" />
+
+                                <!-- Clear button -->
+                                <h:commandButton value="Clear" action="#{categoryMB.loadCategories()}" class="h-11 px-4 bg-slate-100 hover:bg-slate-200
+                   text-slate-700 rounded-lg font-medium" />
+                            </div>
+                        </div>
+
+
+                        <!-- Status -->
+                        <div class="md:col-span-3">
+                            <h:selectOneMenu class="w-full h-11 px-3 rounded-lg
+                                   bg-white dark:bg-surface-dark
+                                   shadow-sm">
+                                <f:selectItem itemLabel="All Statuses" itemValue="" />
+                                <f:selectItem itemLabel="Active" itemValue="Active" />
+                                <f:selectItem itemLabel="Inactive" itemValue="Inactive" />
+                            </h:selectOneMenu>
+                        </div>
+                        <!-- Product Count -->
+                        <div class="md:col-span-3">
+                            <select class="w-full h-11 px-3 rounded-lg
+                                   bg-white dark:bg-surface-dark
+                                   shadow-sm">
+                                <option>Product Count: Any</option>
+                                <option>High (&gt;100)</option>
+                                <option>Low (&lt;10)</option>
+                                <option>Empty (0)</option>
+                            </select>
+                        </div>
+                    </div>
+                </h:form>
+
+                <!-- Table -->
+                <h:form>
+                    <div class="bg-white dark:bg-surface-dark
+                               rounded-xl shadow-sm border overflow-hidden">
+
                         <table class="min-w-full text-sm">
                             <thead class="bg-[#f8fcf9] dark:bg-white/5">
                                 <tr>
-                                    <th class="px-6 py-4"><input type="checkbox" /></th>
-                                    <th class="px-6 py-4 text-xs uppercase text-gray-500">Category</th>
-                                    <th class="px-6 py-4 text-xs uppercase text-gray-500">Description</th>
-                                    <th class="px-6 py-4 text-xs uppercase text-gray-500">Status</th>
-                                    <th class="px-6 py-4 text-xs uppercase text-gray-500 text-right">Actions</th>
+
+                                    <th class="px-6 py-4 text-xs font-semibold uppercase text-gray-500">
+                                        ID
+                                    </th>
+                                    <th class="px-6 py-4 text-xs font-semibold uppercase text-gray-500">
+                                        Image
+                                    </th>
+                                    <th class="px-6 py-4 text-xs font-semibold uppercase text-gray-500">
+                                        Category Name
+                                    </th>
+                                    <th class="px-6 py-4 text-xs font-semibold uppercase text-gray-500">
+                                        Description
+                                    </th>
+                                    <th class="px-6 py-4 text-xs font-semibold uppercase text-gray-500">
+                                        Status
+                                    </th>
+                                    <th class="px-6 py-4 text-xs font-semibold uppercase text-gray-500 text-right">
+                                        Actions
+                                    </th>
                                 </tr>
                             </thead>
 
                             <tbody class="divide-y">
-                                <ui:repeat value="#{categoryMB.categoriesList}" var="c">
-                                    <tr class="group hover:bg-[#f6f8f6] transition-colors">
-                                        <td class="px-6 py-4"><input type="checkbox" /></td>
+                                <ui:repeat value="#{categoryMB.paginatedCategories}" var="c">
+                                    <tr class="group hover:bg-[#f6f8f6] dark:hover:bg-white/5 transition">
 
-                                        <!-- Category -->
+                                        <td class="px-6 py-4 font-mono text-gray-500">
+                                            #{c.categoryID}
+                                        </td>
+
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-2">
+                                                <img src="#{request.contextPath}#{c.imageURL}" alt="Category Image"
+                                                    class="w-8 h-8 rounded object-cover"
+                                                    onerror="this.style.display='none'" />
+                                                <span class="text-xs text-gray-400">
+                                                    #{c.imageURL != null and c.imageURL != '' ? 'Image' : 'No Image'}
+                                                </span>
+                                            </div>
+                                        </td>
+
                                         <td class="px-6 py-4">
                                             <div class="flex items-center gap-3">
-                                                <div
-                                                    class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                                                    <span class="material-symbols-outlined">category</span>
+                                                <div class="w-10 h-10 rounded-lg
+                                                           bg-gray-100 dark:bg-white/10
+                                                           flex items-center justify-center">
+                                                    <span class="material-symbols-outlined">
+                                                        category
+                                                    </span>
                                                 </div>
                                                 <div>
-                                                    <p class="font-semibold">#{c.categoryName}</p>
-                                                    <p class="text-xs text-gray-400">ID: #{c.categoryID}</p>
+                                                    <p class="font-semibold">
+                                                        #{c.categoryName}
+                                                    </p>                                               
                                                 </div>
                                             </div>
                                         </td>
 
-                                        <!-- Description -->
-                                        <td class="px-6 py-4 text-gray-600 truncate max-w-[220px]">
+                                        <td class="px-6 py-4 text-gray-600 truncate max-w-[240px]">
                                             #{c.description}
                                         </td>
 
-                                        <!-- Status -->
                                         <td class="px-6 py-4">
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{c.status eq 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">
+                                            <span class="inline-flex items-center px-2.5 py-0.5
+                                                       rounded-full text-xs font-medium
+                                                       #{c.status eq 'Active'
+                                                         ? 'bg-green-100 text-green-700'
+                                                         : 'bg-gray-100 text-gray-600'}">
                                                 #{c.status}
                                             </span>
                                         </td>
 
-                                        <!-- Actions -->
                                         <td class="px-6 py-4 text-right">
-                                            <div
-                                                class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <h:link outcome="editcategory" class="p-1.5 hover:bg-green-50 rounded-md border-none bg-transparent">
+                                            <div class="flex justify-end gap-2">
+                                                <h:link outcome="editcategory" class="p-2 rounded-md hover:bg-green-50">
                                                     <f:param name="categoryId" value="#{c.categoryID}" />
-                                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                                    <span class="material-symbols-outlined text-[20px]">
+                                                        edit
+                                                    </span>
                                                 </h:link>
 
-                                                <h:commandButton action="#{categoryMB.deleteCategory(c)}"
-                                                    class="p-1.5 hover:bg-red-50 rounded-md">
-                                                    <span class="material-symbols-outlined text-[20px]">delete</span>
-                                                </h:commandButton>
+                                                <h:commandLink action="#{categoryMB.deleteCategory(c)}"
+                                                    class="p-2 rounded-md hover:bg-red-50">
+                                                    <span class="material-symbols-outlined text-[20px]">
+                                                        delete
+                                                    </span>
+                                                </h:commandLink>
                                             </div>
                                         </td>
                                     </tr>
@@ -149,122 +193,72 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Pagination -->
+                    <div class="flex items-center justify-between px-6 py-4 bg-slate-50 dark:bg-slate-700/50 border-t border-slate-200 dark:border-slate-700">
+                        <div class="text-sm text-slate-600 dark:text-slate-300">
+                            Showing #{categoryMB.currentPage * categoryMB.pageSize - categoryMB.pageSize + 1} to
+                            #{categoryMB.currentPage * categoryMB.pageSize > categoryMB.totalRecords ? categoryMB.totalRecords : categoryMB.currentPage * categoryMB.pageSize}
+                            of #{categoryMB.totalRecords} entries
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <h:commandLink action="#{categoryMB.previousPage()}"
+                                disabled="#{categoryMB.currentPage == 1}"
+                                styleClass="px-3 py-1 text-sm bg-white dark:bg-slate-600 border border-slate-300 dark:border-slate-500 rounded-md hover:bg-slate-50 dark:hover:bg-slate-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                                Previous
+                            </h:commandLink>
+                            <span class="text-sm text-slate-600 dark:text-slate-300">
+                                Page #{categoryMB.currentPage} of #{categoryMB.totalPages}
+                            </span>
+
+                            <h:commandLink action="#{categoryMB.nextPage()}"
+                                disabled="#{categoryMB.currentPage == categoryMB.totalPages}"
+                                styleClass="px-3 py-1 text-sm bg-white dark:bg-slate-600 border border-slate-300 dark:border-slate-500 rounded-md hover:bg-slate-50 dark:hover:bg-slate-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                                Next
+                            </h:commandLink>
+                        </div>
+                    </div>
                 </h:form>
-
             </div>
         </div>
 
-        <!-- Add Category Modal -->
-        <div id="addCategoryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
-            <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="bg-white dark:bg-surface-dark rounded-xl shadow-lg max-w-md w-full p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold text-[#111813] dark:text-white">Add New Category</h3>
-                        <button onclick="document.getElementById('addCategoryModal').classList.add('hidden')"
-                            class="text-[#63886f] hover:text-[#111813] dark:hover:text-white">
-                            <span class="material-symbols-outlined">close</span>
-                        </button>
+         <h:panelGroup id="toastContainer" layout="block"
+            styleClass="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+            <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+                <ui:repeat value="#{facesContext.messageList}" var="msg">
+                    <div class="toast-item mb-2 px-6 py-4 rounded-xl shadow-lg text-white
+            #{msg.severity == 'INFO' ? 'bg-green-600' :
+              msg.severity == 'ERROR' ? 'bg-red-600' :
+              msg.severity == 'WARN' ? 'bg-yellow-500 text-black' :
+              'bg-blue-600'}">
+
+                        <div class="font-semibold mb-1">
+                            #{msg.summary}
+                        </div>
+                        <div class="text-sm opacity-90">
+                            #{msg.detail}
+                        </div>
                     </div>
-                    <h:form>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Category
-                                    Name</label>
-                                <h:inputText value="#{categoryMB.newCategory.categoryName}"
-                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white"
-                                    required="true" />
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Description</label>
-                                <h:inputTextarea value="#{categoryMB.newCategory.description}"
-                                    class="w-full h-24 px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white resize-none"
-                                    rows="3" />
-                            </div>
-                        </div>
-                        <div class="flex justify-end gap-3 mt-6">
-                            <button type="button"
-                                onclick="document.getElementById('addCategoryModal').classList.add('hidden')"
-                                class="px-4 py-2 border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-[#25382c]">
-                                Cancel
-                            </button>
-                            <h:commandButton action="#{categoryMB.addCategory()}"
-                                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
-                                onclick="document.getElementById('addCategoryModal').classList.add('hidden')">
-                                Add Category
-                            </h:commandButton>
-                        </div>
-                    </h:form>
-                </div>
+                </ui:repeat>
             </div>
-        </div>
-
-
-
-        <!-- Edit Category Modal -->
-        <div id="editCategoryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
-            <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="bg-white dark:bg-surface-dark rounded-xl shadow-lg max-w-md w-full p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold text-[#111813] dark:text-white">Edit Category</h3>
-                        <button onclick="document.getElementById('editCategoryModal').classList.add('hidden')"
-                            class="text-[#63886f] hover:text-[#111813] dark:hover:text-white">
-                            <span class="material-symbols-outlined">close</span>
-                        </button>
-                    </div>
-                    <h:form rendered="#{categoryMB.editCategoryMode}">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Category
-                                    Name</label>
-                                <h:inputText value="#{categoryMB.selectedCategory.categoryName}"
-                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white"
-                                    required="true" />
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Description</label>
-                                <h:inputTextarea value="#{categoryMB.selectedCategory.description}"
-                                    class="w-full h-24 px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white resize-none"
-                                    rows="3" />
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Status</label>
-                                <h:selectOneMenu value="#{categoryMB.selectedCategory.status}"
-                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
-                                    <f:selectItem itemValue="Active" itemLabel="Active" />
-                                    <f:selectItem itemValue="Inactive" itemLabel="Inactive" />
-                                </h:selectOneMenu>
-                            </div>
-                        </div>
-                        <div class="flex justify-end gap-3 mt-6">
-                            <h:commandButton action="#{categoryMB.cancelEditCategory()}"
-                                class="px-4 py-2 border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-[#25382c]"
-                                onclick="document.getElementById('editCategoryModal').classList.add('hidden')">
-                                Cancel
-                            </h:commandButton>
-                            <h:commandButton action="#{categoryMB.updateCategory()}"
-                                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
-                                onclick="document.getElementById('editCategoryModal').classList.add('hidden')">
-                                Update Category
-                            </h:commandButton>
-                        </div>
-                    </h:form>
-                </div>
-            </div>
-        </div>
-
-
+        </h:panelGroup>
 
         <script>
-            function editCategory(id) {
-                // This would need to be implemented with JSF AJAX or by setting the selected category
-                // For now, we'll use a simple approach
-                document.getElementById('editCategoryModal').classList.remove('hidden');
-            }
-        </script>
+            document.querySelectorAll('.toast-item').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                    el.style.transition = 'all 0.3s ease';
+                }, 100 * index);
 
-        <h:messages class="fixed bottom-4 right-4 z-50" />
+                setTimeout(() => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(-20px)';
+                    setTimeout(() => el.remove(), 300);
+                }, 3000);
+            });
+        </script>
     </ui:define>
 </ui:composition>

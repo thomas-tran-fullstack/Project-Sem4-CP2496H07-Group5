@@ -28,5 +28,7 @@ public interface OrdersFacadeLocal {
     List<Orders> findRange(int[] range);
 
     int count();
-    
+
+    List<Orders> findByCustomerIDAndStatus(Integer customerId, String status);
+
 }

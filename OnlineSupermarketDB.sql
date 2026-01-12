@@ -257,16 +257,17 @@ CREATE TABLE Reviews (
     Rating INT CHECK (Rating BETWEEN 1 AND 5),
     Comment TEXT,
     CreatedAt DATETIME DEFAULT GETDATE(),
+    Status VARCHAR(20) DEFAULT 'PENDING',
+    ModeratorID INT NULL,
+    ModeratorNote NVARCHAR(MAX) NULL,
+    IsFlagged BIT DEFAULT 0,
+    Reply NVARCHAR(MAX) NULL,
+    ReplyAt DATETIME NULL,
+    UpdatedAt DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
     FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
 );
 
-CREATE TABLE Wishlists (
-    WishlistID INT IDENTITY PRIMARY KEY,
-    CustomerID INT,
-    ProductID INT,
-    CreatedAt DATETIME DEFAULT GETDATE()
-);
 CREATE TABLE Feedbacks (
     FeedbackID INT IDENTITY PRIMARY KEY,
     CustomerID INT,
@@ -274,10 +275,10 @@ CREATE TABLE Feedbacks (
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
-
 CREATE TABLE Offers (
     OfferID INT IDENTITY PRIMARY KEY,
     OfferName VARCHAR(100),
+    Description TEXT,
     OfferType VARCHAR(30),
     DiscountValue INT,
     StartDate DATE,
@@ -292,8 +293,11 @@ CREATE TABLE Vouchers (
     VoucherCode VARCHAR(50),
     IsUsed BIT DEFAULT 0,
     ExpiryDate DATE,
+    DiscountValue DECIMAL(12,2),
     CreatedAt DATETIME DEFAULT GETDATE(),
+    CustomerID INT,
     OfferID INT,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
     FOREIGN KEY (OfferID) REFERENCES Offers(OfferID)
 );
 
@@ -423,10 +427,97 @@ CREATE TABLE CommunityPosts (
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
+/*=========================
+   ADDITIONAL FEATURES
+
+========================= */
+CREATE TABLE Wishlists (
+        WishlistID INT IDENTITY PRIMARY KEY,
+        CustomerID INT NULL,
+        Name NVARCHAR(200) DEFAULT 'My Wishlist',
+        IsDefault BIT DEFAULT 0,
+        CreatedAt DATETIME DEFAULT GETDATE(),
+        UpdatedAt DATETIME DEFAULT GETDATE(),
+        FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+    );
+
+ CREATE TABLE WishlistItems (
+        WishlistItemID INT IDENTITY PRIMARY KEY,
+        WishlistID INT NOT NULL,
+        ProductID INT NULL,
+        Quantity INT DEFAULT 1,
+        Note NVARCHAR(500) NULL,
+        AddedAt DATETIME DEFAULT GETDATE(),
+        FOREIGN KEY (WishlistID) REFERENCES Wishlists(WishlistID),
+        FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+    );
+
+
+/* =========================
+   VIDEO COOKING GUIDES
+   (merged from database/videocooking_guides.sql, converted to T-SQL)
+========================= */
+CREATE TABLE VideoCookingGuides (
+    VideoID INT IDENTITY PRIMARY KEY,
+    Title NVARCHAR(255) NOT NULL,
+    Description NVARCHAR(MAX),
+    ThumbnailURL NVARCHAR(500),
+    VideoURL NVARCHAR(500),
+    DurationSeconds INT NULL,
+    DurationText VARCHAR(32) NULL,
+    Difficulty VARCHAR(10) NULL,
+    Calories INT NULL,
+    Category VARCHAR(100) NULL,
+    Tags NVARCHAR(255) NULL,
+    Ingredients NVARCHAR(MAX) NULL,
+    IsFeatured BIT DEFAULT 0,
+    Views BIGINT DEFAULT 0,
+    Likes INT DEFAULT 0, 
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE UserSpendingSummary (
+        UserSpendingID INT IDENTITY PRIMARY KEY,
+        CustomerID INT NULL,
+        PeriodType VARCHAR(10) NULL, -- WEEK, MONTH, YEAR
+        PeriodStart DATE NULL,
+        PeriodEnd DATE NULL,
+        TotalSpent DECIMAL(12,2) DEFAULT 0,
+        TransactionsCount INT DEFAULT 0,
+        AverageOrderValue DECIMAL(12,2) DEFAULT 0,
+        LoyaltyPointsEarned INT DEFAULT 0,
+        EstimatedSavings DECIMAL(12,2) DEFAULT 0,
+        CreatedAt DATETIME DEFAULT GETDATE(),
+        UpdatedAt DATETIME DEFAULT GETDATE(),
+        FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+    );
+
+CREATE TABLE UserLoyalty (
+        LoyaltyID INT IDENTITY PRIMARY KEY,
+        CustomerID INT NOT NULL,
+        PointsBalance INT DEFAULT 0,
+        PointsEarnedLifetime INT DEFAULT 0,
+        LastUpdated DATETIME DEFAULT GETDATE(),
+        FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+    );
+
+CREATE TABLE FrequentPurchases (
+        FrequentID INT IDENTITY PRIMARY KEY,
+        CustomerID INT NULL,
+        ProductID INT NULL,
+        PurchaseCount INT DEFAULT 0,
+        LastPurchasedAt DATETIME NULL,
+        FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+        FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+    );
+-- Sample Data Insertions
+
 INSERT INTO Users (Username, PasswordHash, Email, Role)
-VALUES 
+VALUES
 ('admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'admin@ezmart.vn', 'ADMIN'),
 ('bo', '123456', 'bo@ezmart.vn', 'CUSTOMER'),
+('toan', '123456', 'toan@ezmart.vn', 'STAFF'),
 ('lam', '123456', 'lam@ezmart.vn', 'CUSTOMER');
 GO
 
@@ -461,9 +552,10 @@ VALUES
 (3, 3, 'Bột giặt Omo 3kg', 95000, 50, 'ACTIVE');
 GO
 
-INSERT INTO Offers (OfferName, OfferType, DiscountValue, StartDate, EndDate)
+INSERT INTO Offers (OfferName, OfferType, DiscountValue, StartDate, EndDate, Status, BannerImage, VoucherEnabled)
 VALUES
-('Giảm giá sữa', 'DISCOUNT_PERCENT', 10, '2025-01-01', '2025-12-31');
+('Giảm giá sữa', 'Percentage', 10, '2024-01-01', '2026-12-31', 'active', NULL, 0),
+('Khuyến mãi đồ gia dụng', 'Fixed Amount', 50000, '2024-01-01', '2026-12-31', 'active', NULL, 1);
 GO
 
 INSERT INTO ProductOffers (ProductID, OfferID)
@@ -498,10 +590,12 @@ VALUES
 (1, 1, 159000, 'CREDIT_CARD');
 GO
 
-INSERT INTO Reviews (ProductID, CustomerID, Rating, Comment)
+INSERT INTO Reviews (ProductID, CustomerID, Rating, Comment, CreatedAt, Status, IsFlagged)
 VALUES
-(1, 1, 5, N'Sữa ngon, dễ uống'),
-(3, 1, 4, N'Sạch, giặt tốt');
+(1, 1, 5, N'The spinach was incredibly fresh and crisp. Delivery was faster than expected. Will definitely order again for my weekly meal prep!', GETDATE(), 'PUBLISHED', 0),
+(2, 1, 3, N'Some strawberries were a bit bruised at the bottom of the box. Tastes good though.', GETDATE(), 'PENDING', 0),
+(3, 2, 5, N'Perfect condition, very creamy. Makes great guacamole!', GETDATE(), 'PUBLISHED', 0),
+(3, 2, 1, N'[Spam content removed by system] Visit my website for free coupons...', GETDATE(), 'REJECTED', 1);
 GO
 
 INSERT INTO Pages (PageKey, Title, Content, PageType)
@@ -525,4 +619,34 @@ GO
 INSERT INTO Reports (ReportType, FromDate, ToDate, CreatedBy)
 VALUES
 ('SALES', '2025-01-01', '2025-12-31', 1);
+GO
+
+INSERT INTO UserLoyalty (CustomerID, PointsBalance, PointsEarnedLifetime)
+VALUES
+(1, 1250, 5120),
+(2, 300, 890);
+
+INSERT INTO UserSpendingSummary (CustomerID, PeriodType, PeriodStart, PeriodEnd, TotalSpent, TransactionsCount, AverageOrderValue, LoyaltyPointsEarned, EstimatedSavings)
+VALUES
+(1, 'MONTH', '2025-09-01', '2025-09-30', 4500000, 8, 562500, 120, 320000),
+(2, 'MONTH', '2025-09-01', '2025-09-30', 1250000, 3, 416667, 30, 50000);
+
+INSERT INTO FrequentPurchases (CustomerID, ProductID, PurchaseCount, LastPurchasedAt)
+VALUES
+(1, 1, 5, DATEADD(day, -3, GETDATE())),
+(1, 2, 12, DATEADD(day, -7, GETDATE())),
+(1, 3, 3, DATEADD(day, -10, GETDATE()));
+GO
+
+-- Sample data (from the videocooking_guides.sql file)
+INSERT INTO VideoCookingGuides (Title, Description, ThumbnailURL, VideoURL, DurationSeconds, DurationText, Difficulty, Calories, Category, Tags, Ingredients, IsFeatured)
+VALUES
+(N'Grilled Salmon with Lemon Asparagus', N'Grilled salmon served with lemon asparagus - quick and delicious.', N'https://lh3.googleusercontent.com/aida-public/AB6AXuAFI5usTisj3SQ_i0ucZl7SZ5BtROx0syOd9sY9TDV_zGikFcHplmkU3hIB23Dd8HrrEbgnPMlKqEEgpddHr36iADLBDAFqQrNrhMnp7TSo3CJhOPoNZE-dsPgRwI6F3rRiAqnPKzmChIdONd0Q49_kOByV_8EValUX3xehsxCFwIkI_An1FMMmkGwII4Fj66P80cA6nM-jf-1Te3WlHzb5QeniJ7ejPAf44X-fgoYlBgTavDqFbp4GQZNk6bEbFoqmbH8antNe_gI', N'', 900, '15:00', 'Medium', 450, 'Dinner', N'salmon,asparagus,quick', N'salmon,asparagus,lemon,olive oil,salt,pepper', 0),
+(N'Traditional Pho at Home: Step by Step', N'Make authentic Vietnamese Pho at home with rich broth and fresh herbs.', N'https://lh3.googleusercontent.com/aida-public/AB6AXuAuu-CTA15HgCRK0yLxaRZ64ji9GHcD5i5iZwPMjkY_vdZFKSYliKKlMUTvzN369kUf1hO2lWyXNZ_aUxwdhE4alZq-IRk2yxTx0EuErQSs4EeKg-UmG1c75DYxUqUJOGaBM31J_q5SpPmriFq7R_xQBzaHoH_RXsP_FGITS6wzjABfF0mVQRNqkomDpppszWhAg6OUo-bE64paEzox-XQMqdfWGGvlJRR2gdTacYC6PjmwpxzQEaiKnzI7QCOx8jmb1YrBHRRtonM', N'', 2730, '45:30', 'Hard', 520, 'Lunch', N'pho,noodles,broth', N'beef bones,ginger,onion,star anise,cinnamon,fish sauce,vermicelli', 0),
+(N'5-Minute Creamy Avocado Smoothie', N'Quick and healthy avocado smoothie, perfect for breakfast.', N'https://lh3.googleusercontent.com/aida-public/AB6AXuAEAY9KL85OpZDTN_xxHQleaug7QGLUXU1apRs6PaOUwoJDJ2Yn7WEim5rhd719IFkx6bBBmPsgazxomGqSw4OrLG50clU9TyaItFtY3MKvrxVwRkjx_BxF_9m5LtApjCK7fqG4_pLnas65Z0CKmzLSweu34OldGL8Et03cDmtiZDrCbiMWbTba3YHcJHJf4W_lYlPHXc9OLI9khI6ikP5qrStvhDFGjxVoRpuGEX0zHG4FUwZnHrw9uzRDvPSjiSvLdhAX7Zig0tA', N'', 200, '03:20', 'Easy', 210, 'Breakfast', N'smoothie,avocado,quick', N'avocado,milk,honey,ice', 0),
+(N'Spicy Beef Stir-Fry', N'Quick spicy beef stir-fry with vegetables.', N'https://lh3.googleusercontent.com/aida-public/AB6AXuCBmO5uvM64v9aKYE1sBi7YH-hRWQDGNDPPa7m141_NwleU8_LehV55Er6wYyb-5OZmzpyBhQmUly9y5yQ5ytkxL9LK_yCAkl1h6Mvr-xFRa6fGIwBA740RskncI4B2H0xENiOEwmq0bWGXjqzF-PuRNGlLZUOuS0rjrjN5yDz1giMsqWBgZIGs0hMEoVAPxdVzHbs77fO95gvpYimAShu1Niyt6YvEXHt9AyYKvvDJ8Mw0VQHI4O8upBLqrcQ70XP_xZbrR-Mzt9I', N'', 1200, '20:00', 'Medium', 380, 'Dinner', N'beef,stir-fry,spicy', N'beef,soy sauce,chili,vegetables', 0),
+(N'The Ultimate Vegan Burger', N'Plant-based burger with all the fixings.', N'https://lh3.googleusercontent.com/aida-public/AB6AXuDCFxbzjnDnCJ49deK29RSdWePjKFFiynWpCHsB-y5FL8CNMHbNPyS-Mv1Z2ZA5mwz7CGkY1gtaNgIxfHZhcPfphLrSkajI_HdM9aDEegoxxznNg_6n7p64JYAexWK5YKjGklR0Hnu7bmigpysXufGIqSHJnOirBwlZpC0CuW6tNMg9hmQzq23PrSuq7rTTAZ4i7AWGvBBQU8jvrIIMPmzQaCz-ToY1wGz7Qyo61kULGKBog_0aXmJiWqg5lDXDUmG1vbwm5bJ5qwQ', N'', 1500, '25:00', 'Medium', 420, 'Lunch', N'vegan,burger,plant-based', N'vegan patty,bun,lettuce,tomato', 0),
+(N'Classic Pasta Carbonara', N'Creamy carbonara with pancetta and parmesan.', N'https://lh3.googleusercontent.com/aida-public/AB6AXuBiKS8X6R3609hav3Bk0s0cgCqfZqpWhiBb7tKtEBR5N4t_TNehGsW6_vNtNA-eKUis1u5XA8fAyDkvy41z5j96Gvk9O8ngg-9VniyynczAIOT_jcxudz-8NVx_8PBUnBaiPRmkYwrmdHS1n6WbvNm5J6LCg-Z6dbU9g1K-3JqxDvb5Jyyt8SWU1H3Ou6MjajNA-Hp4k3GvYUbWTdQixLYyxYnIWV-UFHCkA9K6j7vgYoG-345R_Zl9BHlHb7YJABD3DIUOG9QDox0', N'', 1080, '18:00', 'Easy', 600, 'Dinner', N'pasta,carbonara', N'spaghetti,eggs,pancetta,parmesan', 0),
+(N'Thai Mango Salad (Som Tum)', N'Tangy and spicy Thai mango salad.', N'https://lh3.googleusercontent.com/aida-public/AB6AXuD3qVIzN9SUbyDf4-IG_RL1TXguGr63xA7EXdnhG15QrERGmnEaO7Xr2Z6G5tGbXiyMwjYy8P7jl8odaDzDMiQ2LhJ1prAF1VydQ8BsJ_6LGiFkg_mVXke3ICPBxH1vMDv4NKFGNwwZQFLF9MhfIqo5t8wzOQnMYonOMVjXCVi8maEEGI8hJ56qKaII7D2gEMnkqxfXAP6OQFtTlPmPm9I5irr_8G7SK7SpOS2yI5YUThggnkPjxTr-HU5yL0kum3Q6ncFzs_MUyUA', N'', 600, '10:00', 'Easy', 150, 'Lunch', N'salad,mango,thai', N'mango,chili,fish sauce,lime', 0),
+(N'Homemade Chicken Tikka Masala', N'Rich and creamy chicken tikka masala from scratch.', N'https://lh3.googleusercontent.com/aida-public/AB6AXuBYFW3LMxNz5GQrU8HQOk_NTMXRbFLINqU25JvId-TRKe94-lc7SKosliLemenGlvZeMUvY9YFJOfQcmGZffTqjMp0-mfoW9E214iCsElQMv7uz4TZNiH5Vm6ubH-CFtVEf9IiZkDhXqXJb4hNzP690odBjR0grCKB9mFavMn-yKJCxpiM_TAMkBVG6PhpNIvc7oolHQk5M5GcJpAnIKiiAYclooH1yFagn6zBRn4tlnO6j-Wh3l3r8bGXCZ3C3LHsa4DDzXU8zDJQ', N'', 2400, '40:00', 'Hard', 550, 'Dinner', N'curry,chicken,indian', N'chicken,yogurt,tomato,garam masala', 0);
 GO

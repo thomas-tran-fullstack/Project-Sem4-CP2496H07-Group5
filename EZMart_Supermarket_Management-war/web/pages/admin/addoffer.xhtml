@@ -24,7 +24,7 @@
                         Create a new promotional offer for products.
                     </p>
 
-                    <h:form class="space-y-6">
+                    <h:form class="space-y-6" enctype="multipart/form-data">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Offer Name -->
                             <div>
@@ -41,11 +41,12 @@
                                     <f:selectItem itemValue="" itemLabel="Select Type" />
                                     <f:selectItem itemValue="Percentage" itemLabel="Percentage Discount" />
                                     <f:selectItem itemValue="Fixed Amount" itemLabel="Fixed Amount Discount" />
+                                    <f:ajax event="change" execute="@this" listener="#{offersMB.onOfferTypeChange}" render="discountDiv voucherDiv @form" />
                                 </h:selectOneMenu>
                             </div>
 
                             <!-- Discount Value -->
-                            <div>
+                            <div id="discountDiv" rendered="#{offersMB.newOffer.offerType != 'Fixed Amount'}">
                                 <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Discount Value</label>
                                 <h:inputText value="#{offersMB.newOffer.discountValue}" required="true" type="number" step="0.01"
                                     class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
@@ -61,18 +62,36 @@
                                 </h:selectOneMenu>
                             </div>
 
+                            <!-- Voucher Enabled -->
+                            <div id="voucherDiv" rendered="#{offersMB.newOffer.offerType == 'Fixed Amount'}">
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Voucher Enabled</label>
+                                <h:selectBooleanCheckbox value="#{offersMB.newOffer.voucherEnabled}" disabled="true" />
+                            </div>
+
                             <!-- Start Date -->
                             <div>
                                 <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Start Date</label>
                                 <h:inputText value="#{offersMB.newOffer.startDate}" required="true" type="date"
-                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </h:inputText>
                             </div>
 
                             <!-- End Date -->
                             <div>
                                 <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">End Date</label>
                                 <h:inputText value="#{offersMB.newOffer.endDate}" required="true" type="date"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </h:inputText>
+                            </div>
+
+                            <!-- Banner Image -->
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Banner Image</label>
+                                <h:inputFile value="#{offersMB.bannerFile}"
                                     class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                                <p class="text-xs text-gray-500 mt-1">Select a banner image file to upload</p>
                             </div>
                         </div>
 
@@ -82,6 +101,21 @@
                             <h:inputTextarea value="#{offersMB.newOffer.description}" rows="4"
                                 class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white resize-none" />
                         </div>
+
+                        <!-- Product Selection -->
+                        <h:panelGroup rendered="#{offersMB.newOffer.offerType != 'Fixed Amount'}">
+                            <div id="productSelection">
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Select Products for this Offer</label>
+                                <div class="max-h-60 overflow-y-auto border border-[#e5e7eb] dark:border-[#2a3e32] rounded-lg p-4 bg-[#f0f4f2] dark:bg-[#25382c]">
+                                    <h:selectManyCheckbox value="#{offersMB.selectedProducts}" layout="pageDirection"
+                                        class="space-y-2">
+                                        <f:selectItems value="#{offersMB.availableProducts}" var="product"
+                                            itemValue="#{product}" itemLabel="#{product.productName}" />
+                                    </h:selectManyCheckbox>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Select the products that will be included in this offer</p>
+                            </div>
+                        </h:panelGroup>
 
                         <!-- Buttons -->
                         <div class="flex justify-end gap-3 pt-6">

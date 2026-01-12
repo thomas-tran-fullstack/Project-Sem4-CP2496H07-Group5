@@ -31,7 +31,7 @@ import java.util.List;
 @NamedQueries({
     @NamedQuery(name = "Brands.findAll", query = "SELECT b FROM Brands b"),
     @NamedQuery(name = "Brands.findByBrandID", query = "SELECT b FROM Brands b WHERE b.brandID = :brandID"),
-    @NamedQuery(name = "Brands.findByBrandName", query = "SELECT b FROM Brands b WHERE b.brandName = :brandName"),
+    @NamedQuery(name = "Brands.findByBrandName", query = "SELECT b FROM Brands b WHERE LOWER(b.brandName) LIKE LOWER(:brandName)"),
     @NamedQuery(name = "Brands.findByCountry", query = "SELECT b FROM Brands b WHERE b.country = :country")})
 public class Brands implements Serializable {
 
@@ -51,6 +51,18 @@ public class Brands implements Serializable {
     @Size(max = 50)
     @Column(name = "Country")
     private String country;
+    @Size(max = 100)
+    @Column(name = "Email")
+    private String email;
+    @Size(max = 20)
+    @Column(name = "Phone")
+    private String phone;
+    @Size(max = 255)
+    @Column(name = "Address")
+    private String address;
+    @Size(max = 255)
+    @Column(name = "Website")
+    private String website;
     @OneToMany(mappedBy = "brandID")
     private List<Products> productsList;
 
@@ -91,6 +103,38 @@ public class Brands implements Serializable {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 
     @XmlTransient

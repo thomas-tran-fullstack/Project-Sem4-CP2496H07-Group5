@@ -26,43 +26,91 @@
                         Update the category details.
                     </p>
 
-                    <h:form class="max-w-md">
-                        <div class="space-y-4">
+                    <h:form enctype="multipart/form-data" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Category Name -->
                             <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Category Name</label>
-                                <h:inputText value="#{categoryMB.selectedCategory.categoryName}"
-                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white"
-                                    required="true" />
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Category Name</label>
+                                <h:inputText id="categoryName" value="#{categoryMB.selectedCategory.categoryName}"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                                <h:message for="categoryName" class="text-sm text-red-500 mt-1 block" />
                             </div>
+
+                            <!-- Status -->
                             <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Description</label>
-                                <h:inputTextarea value="#{categoryMB.selectedCategory.description}"
-                                    class="w-full h-24 px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white resize-none"
-                                    rows="3" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Status</label>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Status</label>
                                 <h:selectOneMenu value="#{categoryMB.selectedCategory.status}"
-                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
                                     <f:selectItem itemValue="Active" itemLabel="Active" />
                                     <f:selectItem itemValue="Inactive" itemLabel="Inactive" />
                                 </h:selectOneMenu>
                             </div>
                         </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Description</label>
+                            <h:inputTextarea value="#{categoryMB.selectedCategory.description}" rows="4"
+                                class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white resize-none" />
+                        </div>
+
+                        <!-- Upload Image -->
+                        <div>
+                            <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Upload Image</label>
+                            <h:inputFile value="#{categoryMB.uploadedFile}"
+                                class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-white hover:file:bg-primary/90" />
+                        </div>
                         <div class="flex justify-end gap-3 mt-6">
                             <h:link outcome="categoriesmanage" class="px-4 py-2 border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-[#25382c]">
                                 Cancel
                             </h:link>
-                            <h:commandButton action="#{categoryMB.updateCategory()}"
+                            <h:commandLink action="#{categoryMB.updateCategory()}"
                                 class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
                                 Update Category
-                            </h:commandButton>
+                            </h:commandLink> 
                         </div>
                     </h:form>
                 </div>
             </div>
         </div>
 
-        <h:messages class="fixed bottom-4 right-4 z-50" />
+        <h:panelGroup id="toastContainer" layout="block"
+            styleClass="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+            <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+                <ui:repeat value="#{facesContext.messageList}" var="msg">
+                    <div class="toast-item mb-2 px-6 py-4 rounded-xl shadow-lg text-white
+            #{msg.severity == 'INFO' ? 'bg-green-600' :
+              msg.severity == 'ERROR' ? 'bg-red-600' :
+              msg.severity == 'WARN' ? 'bg-yellow-500 text-black' :
+              'bg-blue-600'}">
+
+                        <div class="font-semibold mb-1">
+                            #{msg.summary}
+                        </div>
+                        <div class="text-sm opacity-90">
+                            #{msg.detail}
+                        </div>
+                    </div>
+                </ui:repeat>
+            </div>
+        </h:panelGroup>
+
+        <script>
+            document.querySelectorAll('.toast-item').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                    el.style.transition = 'all 0.3s ease';
+                }, 100 * index);
+
+                setTimeout(() => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(-20px)';
+                    setTimeout(() => el.remove(), 300);
+                }, 3000);
+            });
+        </script>
     </ui:define>
 </ui:composition>

@@ -26,34 +26,66 @@
                         Update the supplier details.
                     </p>
 
-                    <h:form class="max-w-md">
-                        <div class="space-y-4">
+                    <h:form class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Brand Name -->
                             <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Brand Name</label>
-                                <h:inputText value="#{supplierMB.selectedSupplier.brandName}"
-                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white"
-                                    required="true" />
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Brand Name</label>
+                                <h:inputText id="brandName" value="#{supplierMB.selectedSupplier.brandName}" 
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                                <h:message for="brandName" class="text-sm text-red-500 mt-1 block" />
                             </div>
+
+                            <!-- Country -->
                             <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Description</label>
-                                <h:inputTextarea value="#{supplierMB.selectedSupplier.description}"
-                                    class="w-full h-24 px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white resize-none"
-                                    rows="3" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Country</label>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Country</label>
                                 <h:inputText value="#{supplierMB.selectedSupplier.country}"
-                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
                             </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Email</label>
+                                <h:inputText value="#{supplierMB.selectedSupplier.email}"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                            </div>
+
+                            <!-- Phone -->
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Phone</label>
+                                <h:inputText value="#{supplierMB.selectedSupplier.phone}"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                            </div>
+
+                            <!-- Website -->
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Website</label>
+                                <h:inputText value="#{supplierMB.selectedSupplier.website}"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Description</label>
+                            <h:inputTextarea value="#{supplierMB.selectedSupplier.description}" rows="4"
+                                class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white resize-none" />
+                        </div>
+
+                        <!-- Address -->
+                        <div>
+                            <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Address</label>
+                            <h:inputTextarea value="#{supplierMB.selectedSupplier.address}" rows="3"
+                                class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white resize-none" />
                         </div>
                         <div class="flex justify-end gap-3 mt-6">
                             <h:link outcome="suppliermanage" class="px-4 py-2 border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-[#25382c]">
                                 Cancel
                             </h:link>
-                            <h:commandButton action="#{supplierMB.updateSupplier()}"
+                            <h:commandLink action="#{supplierMB.updateSupplier()}"
                                 class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
                                 Update Supplier
-                            </h:commandButton>
+                            </h:commandLink>
                         </div>
                     </h:form>
                 </div>

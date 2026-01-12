@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/admin/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core"
+    xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        <div class="flex-grow w-full max-w-[1400px] mx-auto px-4 lg:px-8 py-6">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-[#0e1b12] dark:text-white">
+                        Price History Management
+                    </h1>
+                    <p class="text-[#4e9767] dark:text-gray-400 mt-1">
+                        Dynamic Price Management || Price Comparison Over Time
+                    </p>
+                </div>
+                <h:commandButton action="#{priceHistoryMB.prepareCreate()}"
+                    value="Add Price Change"
+                    class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-medium"
+                    onclick="PF('priceHistoryDialog').show()" />
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3e32] rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-[#4e9767] dark:text-gray-400">Total Changes</p>
+                            <p class="text-2xl font-bold text-[#0e1b12] dark:text-white">#{priceHistoryMB.totalPriceChanges}</p>
+                        </div>
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+                            <i class="fas fa-chart-line text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3e32] rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-[#4e9767] dark:text-gray-400">Total Increases</p>
+                            <p class="text-2xl font-bold text-green-600">$#{priceHistoryMB.totalPriceIncrease}</p>
+                        </div>
+                        <div class="p-3 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                            <i class="fas fa-arrow-up text-green-600 dark:text-green-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3e32] rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-[#4e9767] dark:text-gray-400">Total Decreases</p>
+                            <p class="text-2xl font-bold text-red-600">$#{priceHistoryMB.totalPriceDecrease}</p>
+                        </div>
+                        <div class="p-3 bg-red-100 dark:bg-red-900/20 rounded-lg">
+                            <i class="fas fa-arrow-down text-red-600 dark:text-red-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3e32] rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-[#4e9767] dark:text-gray-400">Avg Change</p>
+                            <p class="text-2xl font-bold text-[#0e1b12] dark:text-white">$#{priceHistoryMB.averagePriceChange}</p>
+                        </div>
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+                            <i class="fas fa-calculator text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Chart -->
+            <div class="bg-white dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3e32] rounded-xl p-6 mb-6">
+                <h3 class="text-lg font-semibold text-[#0e1b12] dark:text-white mb-4">Price Comparison Chart</h3>
+                <div class="chart-container">
+                    <h:outputText value="#{priceHistoryMB.priceChartHtml}" escape="false" />
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="bg-white dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3e32] rounded-xl p-6 mb-6">
+                <h3 class="text-lg font-semibold text-[#0e1b12] dark:text-white mb-4">Filters</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Start Date</label>
+                        <p:calendar value="#{priceHistoryMB.startDate}" pattern="yyyy-MM-dd"
+                            class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">End Date</label>
+                        <p:calendar value="#{priceHistoryMB.endDate}" pattern="yyyy-MM-dd"
+                            class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Product</label>
+                        <h:selectOneMenu value="#{priceHistoryMB.filterProductId}"
+                            class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary">
+                            <f:selectItem itemLabel="All Products" itemValue="#{null}" />
+                            <f:selectItems value="#{priceHistoryMB.allProducts}" var="product"
+                                itemLabel="#{product.productName}" itemValue="#{product.productID}" />
+                        </h:selectOneMenu>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Change Type</label>
+                        <h:selectOneMenu value="#{priceHistoryMB.priceChangeType}"
+                            class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary">
+                            <f:selectItem itemLabel="All Changes" itemValue="ALL" />
+                            <f:selectItem itemLabel="Price Increases" itemValue="INCREASE" />
+                            <f:selectItem itemLabel="Price Decreases" itemValue="DECREASE" />
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+                <div class="flex justify-end mt-4">
+                    <h:commandButton action="#{priceHistoryMB.applyFilters()}"
+                        value="Apply Filters"
+                        class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-medium" />
+                </div>
+            </div>
+
+            <!-- Price History Table -->
+            <div class="bg-white dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3e32] rounded-xl overflow-hidden">
+                <div class="p-6 border-b border-[#e5e7eb] dark:border-[#2a3e32]">
+                    <h3 class="text-lg font-semibold text-[#0e1b12] dark:text-white">Price History Records</h3>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <p:dataTable value="#{priceHistoryMB.filteredPriceHistories}" var="history"
+                        paginator="true" rows="10" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                        class="w-full">
+
+                        <p:column headerText="Product" sortBy="#{history.productID.productName}">
+                            <h:outputText value="#{history.productID.productName}" />
+                        </p:column>
+
+                        <p:column headerText="Old Price" sortBy="#{history.oldPrice}">
+                            <h:outputText value="$#{history.oldPrice}" rendered="#{history.oldPrice != null}" />
+                            <span class="text-gray-400" rendered="#{history.oldPrice == null}">N/A</span>
+                        </p:column>
+
+                        <p:column headerText="New Price" sortBy="#{history.newPrice}">
+                            <h:outputText value="$#{history.newPrice}" rendered="#{history.newPrice != null}" />
+                            <span class="text-gray-400" rendered="#{history.newPrice == null}">N/A</span>
+                        </p:column>
+
+                        <p:column headerText="Change %" sortBy="#{priceHistoryMB.getPriceChangePercentage(history)}">
+                            <span class="#{priceHistoryMB.getPriceChangeDirection(history) == 'increase' ? 'text-green-600' :
+                                         priceHistoryMB.getPriceChangeDirection(history) == 'decrease' ? 'text-red-600' : 'text-gray-400'}">
+                                #{priceHistoryMB.getPriceChangePercentage(history)}
+                            </span>
+                        </p:column>
+
+                        <p:column headerText="Change Reason" sortBy="#{history.changeReason}">
+                            <h:outputText value="#{history.changeReason}" rendered="#{history.changeReason != null and not empty history.changeReason}" />
+                            <span class="text-gray-400" rendered="#{history.changeReason == null or empty history.changeReason}">No reason provided</span>
+                        </p:column>
+
+                        <p:column headerText="Changed By" sortBy="#{history.changedBy.username}">
+                            <h:outputText value="#{history.changedBy.username}" />
+                        </p:column>
+
+                        <p:column headerText="Changed At" sortBy="#{history.changedAt}">
+                            <h:outputText value="#{priceHistoryMB.formatDate(history.changedAt)}" />
+                        </p:column>
+
+                        <p:column headerText="Actions" style="width: 120px">
+                            <div class="flex gap-2">
+                                <h:commandButton action="#{priceHistoryMB.prepareEdit(history)}"
+                                    value="Edit"
+                                    class="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                                    onclick="PF('priceHistoryDialog').show()" />
+                                <h:commandButton action="#{priceHistoryMB.deletePriceHistory(history)}"
+                                    value="Delete"
+                                    class="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
+                                    onclick="return confirm('Are you sure you want to delete this price history record?')" />
+                            </div>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+
+
+
+            <!-- Price History Dialog -->
+            <p:dialog header="#{priceHistoryMB.selectedPriceHistory.priceHistoryID == null ? 'Add Price Change' : 'Edit Price Change'}"
+                widgetVar="priceHistoryDialog" modal="true" draggable="false" resizable="false">
+
+                <h:form>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Product *</label>
+                            <h:selectOneMenu value="#{priceHistoryMB.selectedProductId}" required="true"
+                                class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary">
+                                <f:selectItem itemLabel="Select Product" itemValue="#{null}" />
+                                <f:selectItems value="#{priceHistoryMB.allProducts}" var="product"
+                                    itemLabel="#{product.productName}" itemValue="#{product.productID}" />
+                            </h:selectOneMenu>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Old Price</label>
+                                <h:inputText value="#{priceHistoryMB.selectedPriceHistory.oldPrice}"
+                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary"
+                                    converter="jakarta.faces.BigDecimal" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">New Price *</label>
+                                <h:inputText value="#{priceHistoryMB.selectedPriceHistory.newPrice}" required="true"
+                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary"
+                                    converter="jakarta.faces.BigDecimal" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Change Reason</label>
+                            <h:inputTextarea value="#{priceHistoryMB.selectedPriceHistory.changeReason}" rows="3"
+                                class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary resize-none" />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Change Date</label>
+                            <p:calendar value="#{priceHistoryMB.selectedPriceHistory.changedAt}" pattern="yyyy-MM-dd HH:mm"
+                                class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary" />
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 mt-6">
+                        <p:commandButton value="Cancel" onclick="PF('priceHistoryDialog').hide()"
+                            class="px-4 py-2 border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-[#25382c]" />
+                        <h:commandButton action="#{priceHistoryMB.savePriceHistory()}"
+                            value="#{priceHistoryMB.selectedPriceHistory.priceHistoryID == null ? 'Add Change' : 'Update Change'}"
+                            class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+                            onclick="PF('priceHistoryDialog').hide()" />
+                    </div>
+                </h:form>
+            </p:dialog>
+
+            <!-- Messages -->
+            <h:messages globalOnly="true" layout="table" class="fixed bottom-4 right-4
+                       bg-white dark:bg-[#1a2e22]
+                       border border-[#e5e7eb]
+                       dark:border-[#2a3e32]
+                       rounded-lg shadow-lg
+                       px-4 py-3 text-sm z-50" />
+
+        </div>
+    </ui:define>
+</ui:composition>

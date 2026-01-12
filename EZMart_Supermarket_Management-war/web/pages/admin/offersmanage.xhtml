@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition template="/templates/admin/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core">
+    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core"
+    xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="content">
         <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6">
@@ -19,14 +20,16 @@
                 <div class="border-b border-[#e5e7eb] dark:border-[#2a3e32]">
                     <nav class="flex">
                         <button id="offers-tab"
-                            class="tab-button active px-6 py-4 text-sm font-medium text-[#111813] dark:text-white border-b-2 border-primary">
+                            class="tab-button active px-6 py-4 text-sm font-medium text-[#111813] dark:text-white border-b-2 border-primary"
+                            onclick="showTab('offers')">
                             Offers
                         </button>
                     </nav>
                 </div>
 
                 <!-- Offers Tab Content -->
-                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                <div id="offers-content">
+                    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
                     <div>
                         <h1 class="text-3xl font-bold tracking-tight text-[#0e1b12] dark:text-white mb-2">
                             Offers Management
@@ -84,14 +87,16 @@
 
                 <h:form>
                     <!-- Offers Table -->
-                    <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border overflow-hidden">
+                    <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border overflow-x-auto">
                         <table class="min-w-full text-sm">
                             <thead class="bg-[#f8fcf9] dark:bg-white/5">
                                 <tr>
                                     <th class="px-6 py-4"><input type="checkbox" /></th>
                                     <th class="px-6 py-4 text-xs uppercase text-gray-500">Offer</th>
+                                    <th class="px-6 py-4 text-xs uppercase text-gray-500">Description</th>
                                     <th class="px-6 py-4 text-xs uppercase text-gray-500">Type</th>
                                     <th class="px-6 py-4 text-xs uppercase text-gray-500">Discount</th>
+                                    <th class="px-6 py-4 text-xs uppercase text-gray-500">Banner</th>
                                     <th class="px-6 py-4 text-xs uppercase text-gray-500">Start Date</th>
                                     <th class="px-6 py-4 text-xs uppercase text-gray-500">End Date</th>
                                     <th class="px-6 py-4 text-xs uppercase text-gray-500">Status</th>
@@ -118,6 +123,11 @@
                                             </div>
                                         </td>
 
+                                        <!-- Description -->
+                                        <td class="px-6 py-4">
+                                            <span class="text-gray-600">#{o.description}</span>
+                                        </td>
+
                                         <!-- Type -->
                                         <td class="px-6 py-4">
                                             <span class="text-gray-600">#{o.offerType}</span>
@@ -126,6 +136,21 @@
                                         <!-- Discount -->
                                         <td class="px-6 py-4">
                                             <span class="font-medium">#{o.discountValue} #{o.offerType eq 'Percentage' ? '%' : '$'}</span>
+                                        </td>
+
+                                        <!-- Banner -->
+                                        <td class="px-6 py-4">
+                                            <ui:fragment rendered="#{o.bannerImage != null and o.bannerImage != ''}">
+                                                <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                                                    <img src="#{request.contextPath}/uploads/banners/#{o.bannerImage}"
+                                                         alt="Banner" class="w-full h-full object-cover" />
+                                                </div>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{o.bannerImage == null or o.bannerImage == ''}">
+                                                <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                                                    <span class="material-symbols-outlined text-gray-400 text-lg">image</span>
+                                                </div>
+                                            </ui:fragment>
                                         </td>
 
                                         <!-- Start Date -->
@@ -148,17 +173,15 @@
 
                                         <!-- Actions -->
                                         <td class="px-6 py-4 text-right">
-                                            <div
-                                                class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <h:link outcome="editoffer" class="p-1.5 hover:bg-green-50 rounded-md border-none bg-transparent">
+                                            <div class="flex justify-end gap-2">
+                                                <h:link outcome="editoffer" class="p-1.5 hover:bg-blue-50 rounded-md">
                                                     <f:param name="offerId" value="#{o.offerID}" />
                                                     <span class="material-symbols-outlined text-[20px]">edit</span>
                                                 </h:link>
-
-                                                <h:commandButton action="#{offersMB.deleteOffer(o)}"
+                                                <h:commandLink action="#{offersMB.deleteOffer(o)}"
                                                     class="p-1.5 hover:bg-red-50 rounded-md">
                                                     <span class="material-symbols-outlined text-[20px]">delete</span>
-                                                </h:commandButton>
+                                                </h:commandLink>
                                             </div>
                                         </td>
                                     </tr>
@@ -167,10 +190,42 @@
                         </table>
                     </div>
                 </h:form>
-
+                </div>
             </div>
         </div>
 
         <h:messages class="fixed bottom-4 right-4 z-50" />
+        <script>
+            function showTab(tabName) {
+                // Hide all tab contents
+                document.querySelectorAll('[id$="-content"]').forEach(content => {
+                    content.classList.add('hidden');
+                });
+
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab-button').forEach(tab => {
+                    tab.classList.remove('active', 'text-[#111813]', 'dark:text-white', 'border-primary');
+                    tab.classList.add('text-slate-600', 'dark:text-slate-400', 'border-transparent');
+                });
+
+                // Show selected tab content and activate tab
+                const selectedContent = document.getElementById(tabName + '-content');
+                const selectedTab = document.getElementById(tabName + '-tab');
+
+                if (selectedContent) {
+                    selectedContent.classList.remove('hidden');
+                }
+
+                if (selectedTab) {
+                    selectedTab.classList.add('active', 'text-[#111813]', 'dark:text-white', 'border-primary');
+                    selectedTab.classList.remove('text-slate-600', 'dark:text-slate-400', 'border-transparent');
+                }
+            }
+
+            // Initialize with offers tab active
+            document.addEventListener('DOMContentLoaded', function() {
+                showTab('offers');
+            });
+        </script>
     </ui:define>
 </ui:composition>

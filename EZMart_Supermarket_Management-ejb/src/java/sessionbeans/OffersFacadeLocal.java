@@ -28,5 +28,7 @@ public interface OffersFacadeLocal {
     List<Offers> findRange(int[] range);
 
     int count();
-    
+
+    List<Offers> findByOfferName(String offerName);
+
 }

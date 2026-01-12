@@ -67,62 +67,62 @@ public class AuthController implements Serializable {
     private boolean rememberMe = false;
     private boolean editingProfile = false;
 
-    
-    public String login() {
+     public String login() {
+        System.out.println("AuthController.login: identifier=" + identifier + ", password provided=" + (password != null ? "yes" : "no"));
         String hash = hashPassword(password);
+        System.out.println("AuthController.login: hashed password=" + hash);
         Users u = usersFacade.findByIdentifierAndPassword(identifier, hash);
-        if (u != null && "ACTIVE".equals(u.getStatus())) {
+        System.out.println("AuthController.login: user found=" + (u != null));
+        if (u != null) {
+            System.out.println("AuthController.login: user status=" + u.getStatus() + ", role=" + u.getRole());
+        }
+        if (u != null) {
             currentUser = u;
             // Try to set customer profile if exists
             if (u.getCustomersList() != null && !u.getCustomersList().isEmpty()) {
                 currentCustomer = u.getCustomersList().get(0);
-                // Store customer ID in HttpSession for use by servlets (e.g., avatar upload)
-                FacesContext fc = FacesContext.getCurrentInstance();
-                HttpSession httpSession = (HttpSession) fc.getExternalContext().getSession(false);
-                if (httpSession != null && currentCustomer.getCustomerID() != null) {
-                    httpSession.setAttribute("currentUserId", currentCustomer.getCustomerID());
-                    httpSession.setAttribute("currentCustomer", currentCustomer);
-                    System.out.println("AuthController: Stored currentUserId=" + currentCustomer.getCustomerID() + " in HttpSession");
-                }
             }
             loggedIn = true;
+            // Store in session for filter access
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("currentUser", currentUser);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("loggedIn", loggedIn);
             FacesContext fc = FacesContext.getCurrentInstance();
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-                jakarta.faces.application.FacesMessage.SEVERITY_INFO,
-                "Login successful!", null
+                    jakarta.faces.application.FacesMessage.SEVERITY_INFO,
+                    "Login successful!", null
             ));
             // Role-based redirect
-           String redirectUrl;
+            String redirectUrl;
 
-if ("admin".equalsIgnoreCase(u.getRole())) {
-    redirectUrl = "/pages/admin/dashboard.xhtml";
-} else if ("customer".equalsIgnoreCase(u.getRole())) {
-    redirectUrl = "/pages/user/index.xhtml";
-} else {
-    redirectUrl = "/pages/user/profile.xhtml";
-}
+            if ("admin".equalsIgnoreCase(u.getRole())) {
+                redirectUrl = "/pages/admin/dashboard.xhtml";
+            } else if ("customer".equalsIgnoreCase(u.getRole())) {
+                redirectUrl = "/pages/user/index.xhtml";
+            } else {
+                redirectUrl = "/pages/user/profile.xhtml";
+            }
 
-try {
-    FacesContext.getCurrentInstance()
-        .getExternalContext()
-        .redirect(FacesContext.getCurrentInstance()
-        .getExternalContext()
-        .getRequestContextPath() + redirectUrl);
-} catch (Exception e) {
-    e.printStackTrace();
-}
-return null;
+            try {
+                FacesContext.getCurrentInstance()
+                        .getExternalContext()
+                        .redirect(FacesContext.getCurrentInstance()
+                                .getExternalContext()
+                                .getRequestContextPath() + redirectUrl);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
 
         }
         // stay on page on failure
         FacesContext fc = FacesContext.getCurrentInstance();
         fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-            jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-            "Invalid email/username or password", null
+                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                "Invalid email/username or password", null
         ));
         return null;
-    }
-
+    } 
+    
    public String logout() {
         String redirectUrl;
         if (currentUser != null && "ADMIN".equals(currentUser.getRole())) {
@@ -338,6 +338,9 @@ return null;
                 currentCustomer = existingUser.getCustomersList().get(0);
             }
             loggedIn = true;
+            // Store in session for filter access
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("currentUser", currentUser);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("loggedIn", loggedIn);
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
                 jakarta.faces.application.FacesMessage.SEVERITY_INFO,
                 localeController.getMessage("success.googleLoginSuccess"), null
@@ -495,6 +498,9 @@ return null;
             currentUser = u;
             currentCustomer = c;
             loggedIn = true;
+            // Store in session for filter access
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("currentUser", currentUser);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("loggedIn", loggedIn);
 
             try {
                 emailService.sendWelcomeEmail(email, fullName);
@@ -559,7 +565,7 @@ return null;
         }
         return null;
     }
-    
+     
     // Getters and setters for Google OAuth and password reset
     public String getGoogleEmail() { return googleEmail; }
     public void setGoogleEmail(String googleEmail) { this.googleEmail = googleEmail; }
@@ -808,7 +814,7 @@ return null;
         return null;
     }
 
-    public String getUserMiddleName() {
+    public String getUserMiddleName() { 
         getCurrentUserLazy();
         if (currentCustomer != null && currentCustomer.getMiddleName() != null) return currentCustomer.getMiddleName();
         return "";

@@ -8,6 +8,7 @@ import entityclass.Offers;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  *
@@ -27,5 +28,12 @@ public class OffersFacade extends AbstractFacade<Offers> implements OffersFacade
     public OffersFacade() {
         super(Offers.class);
     }
-    
+
+    @Override
+    public List<Offers> findByOfferName(String offerName) {
+        return em.createQuery("SELECT o FROM Offers o WHERE o.offerName LIKE :offerName", Offers.class)
+                .setParameter("offerName", "%" + offerName + "%")
+                .getResultList();
+    }
+
 }

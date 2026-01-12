@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/admin/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core">
+
+    <f:metadata>
+        <f:viewParam name="offerId" value="#{offersMB.offerId}" />
+        <f:event type="preRenderView" listener="#{offersMB.loadOfferForEdit}" />
+    </f:metadata>
+
+    <ui:define name="content">
+        <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap gap-2 py-4 mb-4">
+                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline"
+                    href="offersmanage.xhtml">Offers</a>
+                <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                <span class="text-[#111813] dark:text-white text-sm font-medium leading-normal">Edit Offer</span>
+            </div>
+
+            <!-- Form -->
+            <div
+                class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] overflow-hidden">
+                <div class="p-6">
+                    <h1 class="text-3xl font-bold tracking-tight text-[#0e1b12] dark:text-white mb-2">
+                        Edit Offer
+                    </h1>
+                    <p class="text-[#4e9767] dark:text-gray-400 mb-6">
+                        Update the offer details.
+                    </p>
+
+                    <h:form class="max-w-md" enctype="multipart/form-data">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Offer
+                                    Name</label>
+                                <h:inputText value="#{offersMB.selectedOffer.offerName}"
+                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white"
+                                    required="true" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Offer
+                                    Type</label>
+                                <h:selectOneMenu value="#{offersMB.selectedOffer.offerType}"
+                                    class="w-full h-11 px-4 rounded-lg bg-gray-100 dark:bg-gray-600 border-transparent text-[#111813] dark:text-white cursor-not-allowed"
+                                    disabled="true">
+                                    <f:selectItem itemValue="Percentage" itemLabel="Percentage Discount" />
+                                    <f:selectItem itemValue="Fixed Amount" itemLabel="Fixed Amount Discount" />
+                                </h:selectOneMenu>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Discount
+                                    Value</label>
+                                <h:inputText value="#{offersMB.selectedOffer.discountValue}"
+                                    class="w-full h-11 px-4 rounded-lg bg-gray-100 dark:bg-gray-600 border-transparent text-[#111813] dark:text-white cursor-not-allowed"
+                                    readonly="true" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Start
+                                    Date</label>
+                                <h:inputText value="#{offersMB.selectedOffer.startDate}"
+                                    class="w-full h-11 px-4 rounded-lg bg-gray-100 dark:bg-gray-600 border-transparent text-[#111813] dark:text-white cursor-not-allowed"
+                                    readonly="true">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </h:inputText>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">End
+                                    Date</label>
+                                <h:inputText value="#{offersMB.selectedOffer.endDate}"
+                                    class="w-full h-11 px-4 rounded-lg bg-gray-100 dark:bg-gray-600 border-transparent text-[#111813] dark:text-white cursor-not-allowed"
+                                    readonly="true">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </h:inputText>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Status</label>
+                                <h:selectOneMenu value="#{offersMB.selectedOffer.status}"
+                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white"
+                                    required="true">
+                                    <f:selectItem itemValue="Active" itemLabel="Active" />
+                                    <f:selectItem itemValue="Inactive" itemLabel="Inactive" />
+                                </h:selectOneMenu>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Banner
+                                    Image</label>
+                                <h:inputFile value="#{offersMB.bannerFile}"
+                                    class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                                <p class="text-xs text-gray-500 mt-1">Select a banner image file to upload</p>
+                            </div>
+                        </div>
+
+                        <!-- Debug: Offer Type: -->
+                        <ui:fragment
+                            rendered="#{offersMB.selectedOffer != null and offersMB.selectedOffer.offerType ne 'Fixed Amount'}">
+                            <!-- Product Management -->
+                            <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">
+                                Manage Products for this Offer
+                            </label>
+
+                            <!-- Current Products -->
+                            <div class="mb-4">
+                                <h3 class="text-sm font-medium text-[#111813] dark:text-white mb-2">Current Products
+                                </h3>
+                                <div
+                                    class="max-h-40 overflow-y-auto border border-[#e5e7eb] dark:border-[#2a3e32] rounded-lg p-4 bg-[#f0f4f2] dark:bg-[#25382c]">
+                                    <ui:repeat value="#{offersMB.offerProductOffers}" var="po">
+                                        <div
+                                            class="flex items-center justify-between py-2 px-3 bg-white dark:bg-[#1a2e22] rounded-md mb-2">
+                                            <span class="text-sm text-[#111813] dark:text-white">
+                                                #{po.productID.productName}
+                                            </span>
+                                            <h:commandLink action="#{offersMB.removeProductFromOffer(po)}"
+                                                class="text-red-500 hover:text-red-700 p-1">
+                                                <span class="material-symbols-outlined text-sm">delete</span>
+                                            </h:commandLink>
+                                        </div>
+                                    </ui:repeat>
+
+                                    <ui:fragment rendered="#{empty offersMB.offerProductOffers}">
+                                        <p class="text-sm text-gray-500">No products assigned to this offer</p>
+                                    </ui:fragment>
+                                </div>
+                            </div>
+
+                            <!-- Add Products -->
+                            <h3 class="text-sm font-medium text-[#111813] dark:text-white mb-2">Add Products</h3>
+                            <div
+                                class="max-h-60 overflow-y-auto border border-[#e5e7eb] dark:border-[#2a3e32] rounded-lg p-4 bg-[#f0f4f2] dark:bg-[#25382c]">
+                                <h:selectManyCheckbox value="#{offersMB.selectedProducts}" layout="pageDirection"
+                                    class="space-y-2">
+                                    <f:selectItems value="#{offersMB.availableProducts}" var="product"
+                                        itemValue="#{product}" itemLabel="#{product.productName}" />
+                                </h:selectManyCheckbox>
+                            </div>
+
+                            <div class="flex justify-end mt-3">
+                                <h:commandButton action="#{offersMB.addSelectedProductsToOffer}"
+                                    value="Add Selected Products"
+                                    class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-medium" />
+                            </div>
+
+                        </ui:fragment>
+
+                        <div class="flex justify-end gap-3 mt-6">
+                            <h:link outcome="offersmanage"
+                                class="px-4 py-2 border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-[#25382c]">
+                                Cancel
+                            </h:link>
+                            <h:commandLink action="#{offersMB.updateOffer()}"
+                                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+                                Update Offer
+                            </h:commandLink>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+
+        <h:messages class="fixed bottom-4 right-4 z-50" />
+    </ui:define>
+</ui:composition>
