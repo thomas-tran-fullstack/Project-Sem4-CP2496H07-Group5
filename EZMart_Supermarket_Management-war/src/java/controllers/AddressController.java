@@ -35,9 +35,14 @@ public class AddressController implements Serializable {
 
     @PostConstruct
     public void init() {
-        // PostConstruct might run before AuthController is fully injected
-        // So we use lazy loading in getAddresses() instead
+//        saveResultMessage = null;
+//        saveResultSeverity = null;
     }
+    public void clearSaveResult() {
+        saveResultMessage = null;
+        saveResultSeverity = null;
+    }
+
 
     public void loadForCurrentUser() {
         try {
@@ -277,8 +282,8 @@ public class AddressController implements Serializable {
             }
             // reset temporary map flag
             mapSelected = "0";
-            
-            loadForCurrentUser();
+            loadForCurrentUser();              // ✅ reload DB
+            editingAddress = new Addresses();  // ✅ reset object
             FacesContext ctx = FacesContext.getCurrentInstance();
             String successMsg = ctx.getApplication().evaluateExpressionGet(ctx, "#{msg['profile.addedSuccessfully']}", String.class);
             if (successMsg == null || successMsg.isEmpty()) {

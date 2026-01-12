@@ -1,27 +1,23 @@
-<ui:composition template="/templates/user/layout.xhtml"
-                xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
-                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition template="/templates/user/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:p="http://primefaces.org/ui">
     <!-- Load i18n message bundle -->
-    <f:loadBundle basename="messages.messages" var="msg"/>
+    <f:loadBundle basename="messages.messages" var="msg" />
     <ui:define name="content">
 
-        <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6" data-user-id="#{auth.userId}">
+        <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6"
+            data-user-id="#{auth.userId}">
             <!-- i18n Messages (hidden) for JavaScript access -->
-            <div id="i18nMessages" style="display:none;" 
-                 data-confirm-delete="#{msg['address.confirmDelete']}"
-                 data-delete-success="#{msg['address.deleteSuccess']}"
-                 data-confirm-btn="#{msg['address.deleteConfirm']}"
-                 data-cancel-btn="#{msg['address.deleteCancel']}"></div>
-            
+            <div id="i18nMessages" style="display:none;" data-confirm-delete="#{msg['address.confirmDelete']}"
+                data-delete-success="#{msg['address.deleteSuccess']}" data-confirm-btn="#{msg['address.deleteConfirm']}"
+                data-cancel-btn="#{msg['address.deleteCancel']}"></div>
+
             <!-- Breadcrumbs -->
             <div class="flex flex-wrap gap-2 py-4 mb-4">
-                <a class="text-[#4b5563] dark:text-[#d1d5db] text-sm font-medium leading-normal hover:underline" href="#">Home</a>
-                <span class="text-[#4b5563] dark:text-[#d1d5db] text-sm font-medium leading-normal">/</span>
-                <a class="text-[#4b5563] dark:text-[#d1d5db] text-sm font-medium leading-normal hover:underline" href="#">Account</a>
+                <a class="text-[#4b5563] dark:text-[#d1d5db] text-sm font-medium leading-normal hover:underline"
+                    href="index.xhtml">Home</a>
                 <span class="text-[#4b5563] dark:text-[#d1d5db] text-sm font-medium leading-normal">/</span>
                 <span class="text-[#111813] dark:text-white text-sm font-medium leading-normal">Profile</span>
             </div>
@@ -29,170 +25,213 @@
                 <!-- Sidebar Navigation -->
                 <aside class="lg:col-span-3 w-full lg:sticky lg:top-20 lg:h-fit">
                     <h:panelGroup id="profileSidebar" layout="block">
-                    <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] overflow-hidden">
-                        <!-- User Mini Profile -->
-                        <div class="p-6 border-b border-[#f0f4f2] dark:border-[#2a3e32] flex gap-3 items-center">
-                            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" data-alt="User avatar small" style='background-image: url("#{auth.userProfileImageUrl}");'>
+                        <div
+                            class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] overflow-hidden">
+                            <!-- User Mini Profile -->
+                            <div class="p-6 border-b border-[#f0f4f2] dark:border-[#2a3e32] flex gap-3 items-center">
+                                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                                    data-alt="User avatar small"
+                                    style='background-image: url("#{auth.userProfileImageUrl}");'>
+                                </div>
+                                <div class="flex flex-col">
+                                    <h1 class="text-[#111813] dark:text-white text-sm font-bold">#{auth.userFullName}
+                                    </h1>
+                                    <p class="text-[#4b5563] dark:text-[#d1d5db] text-xs">Member since
+                                        #{auth.userMemberSince}</p>
+                                </div>
                             </div>
-                            <div class="flex flex-col">
-                                <h1 class="text-[#111813] dark:text-white text-sm font-bold">#{auth.userFullName}</h1>
-                                <p class="text-[#4b5563] dark:text-[#d1d5db] text-xs">Member since #{auth.userMemberSince}</p>
-                            </div>
+                            <!-- Navigation Links -->
+                            <nav class="flex flex-col p-2 gap-1">
+                                <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary transition-all"
+                                    href="#" data-scroll-to="section-personal-info">
+                                    <span class="material-symbols-outlined fill">person</span>
+                                    <span class="text-sm font-bold">Personal Info</span>
+                                </a>
+                                <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all"
+                                    href="#" data-scroll-to="section-addresses">
+                                    <span class="material-symbols-outlined">location_on</span>
+                                    <span class="text-sm font-medium">My Addresses</span>
+                                </a>
+                                <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all"
+                                    href="#" data-scroll-to="section-payment">
+                                    <span class="material-symbols-outlined">credit_card</span>
+                                    <span class="text-sm font-medium">Payment Methods</span>
+                                </a>
+                                <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all"
+                                    href="#">
+                                    <span class="material-symbols-outlined">package_2</span>
+                                    <span class="text-sm font-medium">Order History</span>
+                                </a>
+                                <div class="h-px bg-[#f0f4f2] dark:bg-[#2a3e32] my-1 mx-2"></div>
+                                <h:form>
+                                    <h:commandButton action="#{auth.logout()}"
+                                        styleClass="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all w-full text-left">
+                                        <f:facet name="value">
+                                            <span>
+                                                <span class="material-symbols-outlined">logout</span>
+                                                <span class="text-sm font-bold">Sign Out</span>
+                                            </span>
+                                        </f:facet>
+                                    </h:commandButton>
+                                </h:form>
+                            </nav>
                         </div>
-                        <!-- Navigation Links -->
-                        <nav class="flex flex-col p-2 gap-1">
-                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary transition-all" href="#" data-scroll-to="section-personal-info">
-                                <span class="material-symbols-outlined fill">person</span>
-                                <span class="text-sm font-bold">Personal Info</span>
-                            </a>
-                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all" href="#" data-scroll-to="section-addresses">
-                                <span class="material-symbols-outlined">location_on</span>
-                                <span class="text-sm font-medium">My Addresses</span>
-                            </a>
-                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all" href="#" data-scroll-to="section-payment">
-                                <span class="material-symbols-outlined">credit_card</span>
-                                <span class="text-sm font-medium">Payment Methods</span>
-                            </a>
-                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all" href="#" data-scroll-to="section-notifications">
-                                <span class="material-symbols-outlined">notifications</span>
-                                <span class="text-sm font-medium">Notification Settings</span>
-                            </a>
-                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all" href="#">
-                                <span class="material-symbols-outlined">package_2</span>
-                                <span class="text-sm font-medium">Order History</span>
-                            </a>
-                            <div class="h-px bg-[#f0f4f2] dark:bg-[#2a3e32] my-1 mx-2"></div>
-                            <h:form>
-                                <h:commandButton action="#{auth.logout()}" styleClass="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all w-full text-left">
-                                    <f:facet name="value">
-                                        <span>
-                                            <span class="material-symbols-outlined">logout</span>
-                                            <span class="text-sm font-bold">Sign Out</span>
-                                        </span>
-                                    </f:facet>
-                                </h:commandButton>
-                            </h:form>
-                        </nav>
-                    </div>
                     </h:panelGroup>
                     <!-- Address Modal (Shopee-style with Progressive Fields) -->
-                    <div id="addressModal" class="hidden fixed inset-0 flex items-center justify-center bg-black/60 p-4" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:100200;">
-                        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-lg w-full max-w-2xl max-h-[85vh] overflow-y-auto flex flex-col" style="position:relative;z-index:100300;">
+                    <div id="addressModal" class="hidden fixed inset-0 flex items-center justify-center bg-black/60 p-4"
+                        style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:100200;">
+                        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-lg w-full max-w-2xl max-h-[85vh] overflow-y-auto flex flex-col"
+                            style="position:relative;z-index:100300;">
                             <!-- Modal Header (sticky) -->
-                            <div class="sticky top-0 flex items-center justify-between p-5 bg-gradient-to-r from-primary/10 to-green-50 border-b">
+                            <div
+                                class="sticky top-0 flex items-center justify-between p-5 bg-gradient-to-r from-primary/10 to-green-50 border-b">
                                 <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-full bg-cover bg-center border-2 border-white shadow" style="background-image: url('#{auth.userProfileImageUrl}');"></div>
+                                    <div class="w-12 h-12 rounded-full bg-cover bg-center border-2 border-white shadow"
+                                        style="background-image: url('#{auth.userProfileImageUrl}');"></div>
                                     <div>
                                         <h3 class="text-lg font-bold text-[#111813]">Add / Edit Address</h3>
                                         <p class="text-xs text-[#4b5563]">Select location details</p>
                                     </div>
                                 </div>
-                                <button onclick="closeAddressModal();" class="text-xl px-3 py-1 hover:bg-gray-200 rounded-md">✕</button>
+                                <button onclick="closeAddressModal();"
+                                    class="text-xl px-3 py-1 hover:bg-gray-200 rounded-md">✕</button>
                             </div>
                             <!-- Modal Body (scrollable) -->
                             <div class="p-6 space-y-4 flex-1 overflow-y-auto">
                                 <h:form id="addressForm">
                                     <!-- Messages (kept for compatibility but not rendered by AJAX); AJAX will render hidden result fields below -->
-                                    <h:messages id="addressMsgs" styleClass="mb-4" infoClass="p-3 rounded-md bg-green-50 border border-green-200 text-green-800 text-sm" errorClass="p-3 rounded-md bg-red-50 border border-red-200 text-red-800 text-sm" warnClass="p-3 rounded-md bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm"/>
-                                    <h:outputText id="addressSaveResult" value="#{addressCtrl.saveResultMessage}" style="display:none;" />
+                                    <h:messages id="addressMsgs" styleClass="mb-4"
+                                        infoClass="p-3 rounded-md bg-green-50 border border-green-200 text-green-800 text-sm"
+                                        errorClass="p-3 rounded-md bg-red-50 border border-red-200 text-red-800 text-sm"
+                                        warnClass="p-3 rounded-md bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm" />
+                                    <h:outputText id="addressSaveResult" value="#{addressCtrl.saveResultMessage}"
+                                        style="display:none;" />
                                     <h:inputHidden id="addressSaveSeverity" value="#{addressCtrl.saveResultSeverity}" />
-                                    
+
                                     <!-- Set as default address toggle (at the top) -->
-                                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800 mb-6">
-                                        <label for="addr_is_default" class="text-sm font-semibold text-[#111813] dark:text-white cursor-pointer">
+                                    <div
+                                        class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800 mb-6">
+                                        <label for="addr_is_default"
+                                            class="text-sm font-semibold text-[#111813] dark:text-white cursor-pointer">
                                             Set as default address
                                         </label>
                                         <div class="relative inline-block">
                                             <input id="addr_is_default" type="checkbox" class="sr-only peer" />
-                                            <div id="addr_is_default_toggle" role="button" tabindex="0" onclick="toggleDefaultCheckbox();" onkeydown="if(event.key==='Enter' || event.key===' '){ event.preventDefault(); toggleDefaultCheckbox(); }" class="w-11 h-6 bg-gray-300 dark:bg-gray-600 peer-checked:bg-emerald-500 rounded-full transition-colors peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white dark:after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:border after:border-gray-300 dark:after:border-gray-600 cursor-pointer"></div>
-                                            <h:inputHidden id="addr_is_default_hidden" value="#{addressCtrl.editingAddress.isDefault}"/>
+                                            <div id="addr_is_default_toggle" role="button" tabindex="0"
+                                                onclick="toggleDefaultCheckbox();"
+                                                onkeydown="if(event.key==='Enter' || event.key===' '){ event.preventDefault(); toggleDefaultCheckbox(); }"
+                                                class="w-11 h-6 bg-gray-300 dark:bg-gray-600 peer-checked:bg-emerald-500 rounded-full transition-colors peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white dark:after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:border after:border-gray-300 dark:after:border-gray-600 cursor-pointer">
+                                            </div>
+                                            <h:inputHidden id="addr_is_default_hidden"
+                                                value="#{addressCtrl.editingAddress.isDefault}" />
                                         </div>
                                     </div>
 
                                     <!-- Address Type (no 'Other') -->
                                     <div>
                                         <label class="text-sm font-medium block mb-2">Address Type</label>
-                                        <select id="addr_type_ui" class="w-full p-2 border rounded-md" onchange="onTypeChange()">
+                                        <select id="addr_type_ui" class="w-full p-2 border rounded-md"
+                                            onchange="onTypeChange()">
                                             <option value="">-- Select Type --</option>
                                             <option value="Home">Home</option>
                                             <option value="Work">Work</option>
                                         </select>
-                                        <h:inputHidden id="addr_type" value="#{addressCtrl.editingAddress.type}"/>
-                                            <p id="addr_type_ui_error" class="text-red-600 text-sm mt-1 hidden"></p>
+                                        <h:inputHidden id="addr_type" value="#{addressCtrl.editingAddress.type}" />
+                                        <p id="addr_type_ui_error" class="text-red-600 text-sm mt-1 hidden"></p>
                                     </div>
 
                                     <!-- Step 1: Country select (only United States and Vietnam) -->
                                     <div id="step_country" class="space-y-2 relative">
                                         <label class="text-sm font-medium block">Country</label>
-                                        <select id="addr_country_ui" class="w-full p-2 border rounded-md" onchange="onCountryChange()">
+                                        <select id="addr_country_ui" class="w-full p-2 border rounded-md"
+                                            onchange="onCountryChange()">
                                             <option value="">-- Select Country --</option>
                                             <option value="United States">United States</option>
                                             <option value="Vietnam">Vietnam</option>
                                         </select>
-                                        <h:inputHidden id="addr_country" value="#{addressCtrl.editingAddress.country}"/>
-                                            <p id="addr_country_ui_error" class="text-red-600 text-sm mt-1 hidden"></p>
+                                        <h:inputHidden id="addr_country"
+                                            value="#{addressCtrl.editingAddress.country}" />
+                                        <p id="addr_country_ui_error" class="text-red-600 text-sm mt-1 hidden"></p>
                                     </div>
 
                                     <!-- Step 2: Region / Province / State -->
                                     <div id="step_region" class="hidden space-y-2">
-                                        <label id="region_label" class="text-sm font-medium block">State / Province</label>
-                                        <input id="addr_region_input" type="text" placeholder="Type to search or select..." class="w-full p-2 border rounded-md" />
-                                        <h:inputHidden id="addr_region" value="#{addressCtrl.editingAddress.region}"/>
-                                            <p id="addr_region_input_error" class="text-red-600 text-sm mt-1 hidden"></p>
+                                        <label id="region_label" class="text-sm font-medium block">State /
+                                            Province</label>
+                                        <input id="addr_region_input" type="text"
+                                            placeholder="Type to search or select..."
+                                            class="w-full p-2 border rounded-md" />
+                                        <h:inputHidden id="addr_region" value="#{addressCtrl.editingAddress.region}" />
+                                        <p id="addr_region_input_error" class="text-red-600 text-sm mt-1 hidden"></p>
                                     </div>
 
                                     <!-- Step 3: District / City (or City/Town for US) -->
                                     <div id="step_city" class="hidden space-y-2">
                                         <label id="city_label" class="text-sm font-medium block">City / District</label>
-                                        <input id="addr_city_input" type="text" placeholder="Type to search or select..." class="w-full p-2 border rounded-md" />
-                                        <h:inputHidden id="addr_city" value="#{addressCtrl.editingAddress.city}"/>
-                                            <p id="addr_city_input_error" class="text-red-600 text-sm mt-1 hidden"></p>
+                                        <input id="addr_city_input" type="text"
+                                            placeholder="Type to search or select..."
+                                            class="w-full p-2 border rounded-md" />
+                                        <h:inputHidden id="addr_city" value="#{addressCtrl.editingAddress.city}" />
+                                        <p id="addr_city_input_error" class="text-red-600 text-sm mt-1 hidden"></p>
                                     </div>
 
                                     <!-- Step 3c: ZIP (United States only) -->
                                     <div id="step_zip" class="hidden space-y-2">
                                         <label class="text-sm font-medium block">ZIP Code</label>
-                                        <input id="addr_zip_ui" type="text" placeholder="Enter ZIP code" class="w-full p-2 border rounded-md" oninput="onZipChange()" />
-                                        <h:inputHidden id="addr_state" value="#{addressCtrl.editingAddress.state}"/>
+                                        <input id="addr_zip_ui" type="text" placeholder="Enter ZIP code"
+                                            class="w-full p-2 border rounded-md" oninput="onZipChange()" />
+                                        <h:inputHidden id="addr_state" value="#{addressCtrl.editingAddress.state}" />
                                         <p id="addr_zip_ui_error" class="text-red-600 text-sm mt-1 hidden"></p>
                                     </div>
 
                                     <!-- Step 4: Street &amp; House (shown after city/ward) -->
                                     <div id="step_street" class="hidden space-y-2">
                                         <label class="text-sm font-medium block">Street Address</label>
-                                        <input id="addr_street_ui" type="text" placeholder="Enter street name..." class="w-full p-2 border rounded-md" required="required" />
-                                        <h:inputHidden id="addr_street" value="#{addressCtrl.editingAddress.street}"/>
-                                            <p id="addr_street_ui_error" class="text-red-600 text-sm mt-1 hidden"></p>
+                                        <input id="addr_street_ui" type="text" placeholder="Enter street name..."
+                                            class="w-full p-2 border rounded-md" required="required" />
+                                        <h:inputHidden id="addr_street" value="#{addressCtrl.editingAddress.street}" />
+                                        <p id="addr_street_ui_error" class="text-red-600 text-sm mt-1 hidden"></p>
                                     </div>
 
                                     <div id="step_house" class="hidden space-y-2">
                                         <label class="text-sm font-medium block">Label (Optional)</label>
-                                        <input id="addr_house_ui" type="text" placeholder="House number / Building..." class="w-full p-2 border rounded-md" />
-                                        <h:inputHidden id="addr_house" value="#{addressCtrl.editingAddress.house}"/>
-                                            <p id="addr_house_ui_error" class="text-red-600 text-sm mt-1 hidden"></p>
+                                        <input id="addr_house_ui" type="text" placeholder="House number / Building..."
+                                            class="w-full p-2 border rounded-md" />
+                                        <h:inputHidden id="addr_house" value="#{addressCtrl.editingAddress.house}" />
+                                        <p id="addr_house_ui_error" class="text-red-600 text-sm mt-1 hidden"></p>
                                     </div>
 
                                     <!-- Step 5: Map (shown after user clicks Select on map) -->
                                     <div id="step_map_wrapper" class="hidden space-y-2">
                                         <label class="text-sm font-medium block">Confirm Location on Map</label>
-                                        <p class="text-xs text-gray-600 mb-2">Drag the marker to adjust the exact location</p>
+                                        <p class="text-xs text-gray-600 mb-2">Drag the marker to adjust the exact
+                                            location</p>
                                         <div id="addr_map" class="w-full h-72 rounded-md border bg-gray-100"></div>
-                                        <h:inputHidden id="addr_lat" value="#{addressCtrl.editingAddress.latitude}"/>
-                                        <h:inputHidden id="addr_lng" value="#{addressCtrl.editingAddress.longitude}"/>
-                                        <h:inputHidden id="addr_map_selected" value="#{addressCtrl.mapSelected}"/>
+                                        <h:inputHidden id="addr_lat" value="#{addressCtrl.editingAddress.latitude}" />
+                                        <h:inputHidden id="addr_lng" value="#{addressCtrl.editingAddress.longitude}" />
+                                        <h:inputHidden id="addr_map_selected" value="#{addressCtrl.mapSelected}" />
                                     </div>
 
                                     <!-- Select on map button (required before save) -->
                                     <div id="map_button_row" class="hidden mt-6 pt-6 border-t">
-                                        <button type="button" id="select_map_btn" onclick="openMapPicker()" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">Select your place on map</button>
+                                        <button type="button" id="select_map_btn" onclick="openMapPicker()"
+                                            class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">Select
+                                            your place on map</button>
                                         <p id="addr_map_error" class="text-red-600 text-sm mt-1 hidden"></p>
                                     </div>
 
                                     <!-- Action Buttons -->
                                     <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
-                                        <button type="button" onclick="closeAddressModal()" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100">Cancel</button>
-                                        <h:commandButton id="saveAddrBtn" value="Save Address" action="#{addressCtrl.save()}" styleClass="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50" onclick="return prepareAddressAndSubmit();">
-                                            <f:ajax execute="@form" render="addressForm:addressSaveResult addressForm:addressSaveSeverity" />
+                                        <button type="button" onclick="closeAddressModal()"
+                                            class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100">Cancel</button>
+                                        <h:commandButton id="saveAddrBtn" value="Save Address"
+                                            action="#{addressCtrl.save()}"
+                                            styleClass="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50"
+                                            onclick="return prepareAddressAndSubmit();">
+                                            <p:remoteCommand name="clearSaveResult"
+                                                actionListener="#{addressController.clearSaveResult}" process="@this" />
+                                            <f:ajax execute="@form"
+                                                render="addressForm:addressSaveResult addressForm:addressSaveSeverity" />
                                         </h:commandButton>
                                     </div>
                                 </h:form>
@@ -201,157 +240,225 @@
                     </div>
 
                     <!-- Delete Confirm Modal -->
-                    <div id="deleteConfirmModal" class="hidden fixed inset-0 flex items-center justify-center bg-black/60 p-4" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:100400;">
-                        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-lg w-full max-w-md p-6" style="position:relative;z-index:100500;">
+                    <div id="deleteConfirmModal"
+                        class="hidden fixed inset-0 flex items-center justify-center bg-black/60 p-4"
+                        style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:100400;">
+                        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-lg w-full max-w-md p-6"
+                            style="position:relative;z-index:100500;">
                             <h3 class="text-lg font-bold mb-2">#{msg['address.deleteConfirm']}</h3>
-                            <div id="deleteConfirmMessage" class="text-sm text-gray-700 mb-4">Are you sure you want to delete this address?</div>
+                            <div id="deleteConfirmMessage" class="text-sm text-gray-700 mb-4">Are you sure you want to
+                                delete this address?</div>
                             <div class="flex justify-end gap-3">
-                                <button type="button" onclick="cancelDelete();" aria-label="Cancel" class="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-all duration-150" style="min-width:84px;padding:8px 14px;font-size:14px;line-height:1.2;text-align:center;white-space:nowrap;overflow:visible;position:relative;">
-                                    <span class="delete-btn-text" style="position:relative;z-index:100600;display:inline-block;color:var(--cancel-text,#374151);font-weight:600;pointer-events:none;">#{msg['address.deleteCancel']}</span>
+                                <button type="button" onclick="cancelDelete();" aria-label="Cancel"
+                                    class="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-all duration-150"
+                                    style="min-width:84px;padding:8px 14px;font-size:14px;line-height:1.2;text-align:center;white-space:nowrap;overflow:visible;position:relative;">
+                                    <span class="delete-btn-text"
+                                        style="position:relative;z-index:100600;display:inline-block;color:var(--cancel-text,#374151);font-weight:600;pointer-events:none;">#{msg['address.deleteCancel']}</span>
                                 </button>
-                                <button type="button" onclick="confirmDeleteNow();" aria-label="Confirm delete" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transform hover:scale-105 transition-all duration-150 font-semibold" style="min-width:84px;padding:8px 14px;font-size:14px;line-height:1.2;text-align:center;white-space:nowrap;overflow:visible;position:relative;">
-                                    <span class="delete-btn-text" style="position:relative;z-index:100600;display:inline-block;color:#ffffff;font-weight:700;pointer-events:none;">#{msg['address.deleteConfirmBtn']}</span>
+                                <button type="button" onclick="confirmDeleteNow();" aria-label="Confirm delete"
+                                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transform hover:scale-105 transition-all duration-150 font-semibold"
+                                    style="min-width:84px;padding:8px 14px;font-size:14px;line-height:1.2;text-align:center;white-space:nowrap;overflow:visible;position:relative;">
+                                    <span class="delete-btn-text"
+                                        style="position:relative;z-index:100600;display:inline-block;color:#ffffff;font-weight:700;pointer-events:none;">#{msg['address.deleteConfirmBtn']}</span>
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Load Leaflet CSS/JS -->
-                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
                     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
                     <!-- Tom Select for autocomplete dropdowns -->
-                    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet"/>
+                    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet" />
                     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
-                    <script src="#{facesContext.externalContext.requestContextPath}/resources/js/profile-address.js"></script>
+                    <script
+                        src="#{facesContext.externalContext.requestContextPath}/resources/js/profile-address.js"></script>
 
                 </aside>
                 <!-- Main Content Area -->
                 <main class="lg:col-span-9 flex flex-col gap-6">
                     <!-- Page Heading &amp; Profile Header Combined -->
-                    <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-primary/20 to-green-100 dark:from-primary/10 dark:to-[#1a2e22]"></div>
+                    <div
+                        class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 relative overflow-hidden">
+                        <div
+                            class="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-primary/20 to-green-100 dark:from-primary/10 dark:to-[#1a2e22]">
+                        </div>
                         <div class="relative flex flex-col md:flex-row gap-6 items-end md:items-center mt-8">
                             <div class="relative group">
-                                <div class="bg-center bg-no-repeat bg-cover rounded-full size-28 border-4 border-white dark:border-surface-dark shadow-md" data-alt="User profile picture large" style='background-image: url("#{auth.userProfileImageUrl}");'>
+                                <div class="bg-center bg-no-repeat bg-cover rounded-full size-28 border-4 border-white dark:border-surface-dark shadow-md"
+                                    data-alt="User profile picture large"
+                                    style='background-image: url("#{auth.userProfileImageUrl}");'>
                                 </div>
-                                <div class="absolute inset-0 flex items-center justify-center rounded-full transition-colors duration-200 pointer-events-none">
-                                    <button type="button" onclick="document.getElementById('avatarViewModal').classList.remove('hidden');" class="opacity-0 group-hover:opacity-100 pointer-events-auto bg-black/40 hover:bg-black/50 rounded-full w-full h-full flex items-center justify-center transition-all">
-                                            <img src="#{facesContext.externalContext.requestContextPath}/images/view.png" alt="view" class="w-12 h-12" style="filter: brightness(0) invert(1)"/>
+                                <div
+                                    class="absolute inset-0 flex items-center justify-center rounded-full transition-colors duration-200 pointer-events-none">
+                                    <button type="button"
+                                        onclick="document.getElementById('avatarViewModal').classList.remove('hidden');"
+                                        class="opacity-0 group-hover:opacity-100 pointer-events-auto bg-black/40 hover:bg-black/50 rounded-full w-full h-full flex items-center justify-center transition-all">
+                                        <img src="#{facesContext.externalContext.requestContextPath}/images/view.png"
+                                            alt="view" class="w-12 h-12" style="filter: brightness(0) invert(1)" />
                                     </button>
                                 </div>
                                 <div class="absolute bottom-0 right-0">
-                                    <input type="file" name="avatarFile" id="avatarFileInput" class="hidden" accept="image/*" data-context-path="#{request.contextPath}" />
-                                    <label for="avatarFileInput" class="inline-block bg-white dark:bg-[#2a3e32] rounded-full p-2 border border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-[#111813] dark:text-white transition-colors cursor-pointer">
-                                        <span class="material-symbols-outlined text-[18px] leading-none">photo_camera</span>
+                                    <input type="file" name="avatarFile" id="avatarFileInput" class="hidden"
+                                        accept="image/*" data-context-path="#{request.contextPath}" />
+                                    <label for="avatarFileInput"
+                                        class="inline-block bg-white dark:bg-[#2a3e32] rounded-full p-2 border border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-[#111813] dark:text-white transition-colors cursor-pointer">
+                                        <span
+                                            class="material-symbols-outlined text-[18px] leading-none">photo_camera</span>
                                     </label>
                                 </div>
-                                <script src="#{facesContext.externalContext.requestContextPath}/resources/js/profile-avatar.js"></script>
+                                <script
+                                    src="#{facesContext.externalContext.requestContextPath}/resources/js/profile-avatar.js"></script>
                             </div>
 
-                                <!-- Avatar View Modal -->
-                                <div id="avatarViewModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/80" style="z-index:100001;">
-                                    <div class="relative z-[100002]" style="z-index:100002;">
-                                        <button onclick="document.getElementById('avatarViewModal').classList.add('hidden');" class="absolute top-2 right-2 text-white bg-black/50 rounded-full p-2 z-[100003]" style="z-index:100003;">✕</button>
-                                        <img src="#{auth.userProfileImageUrl}" alt="avatar large" class="max-h-[80vh] max-w-[90vw] object-contain rounded-lg z-[100004]" style="z-index:100004;"/>
-                                    </div>
+                            <!-- Avatar View Modal -->
+                            <div id="avatarViewModal"
+                                class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/80"
+                                style="z-index:100001;">
+                                <div class="relative z-[100002]" style="z-index:100002;">
+                                    <button
+                                        onclick="document.getElementById('avatarViewModal').classList.add('hidden');"
+                                        class="absolute top-2 right-2 text-white bg-black/50 rounded-full p-2 z-[100003]"
+                                        style="z-index:100003;">✕</button>
+                                    <img src="#{auth.userProfileImageUrl}" alt="avatar large"
+                                        class="max-h-[80vh] max-w-[90vw] object-contain rounded-lg z-[100004]"
+                                        style="z-index:100004;" />
                                 </div>
+                            </div>
                             <h:panelGroup id="profileHeadingSection" layout="block" styleClass="flex-1 pb-2">
-                                <h2 class="text-2xl md:text-3xl font-black text-[#111813] dark:text-white tracking-tight">#{auth.userFullName}</h2>
+                                <h2
+                                    class="text-2xl md:text-3xl font-black text-[#111813] dark:text-white tracking-tight">
+                                    #{auth.userFullName}</h2>
                                 <div class="flex flex-wrap gap-3 mt-1 items-center text-[#4b5563] dark:text-[#d1d5db]">
-                                    <span class="flex items-center gap-1 text-sm"><span class="material-symbols-outlined text-[18px]">mail</span> #{auth.userEmail}</span>
+                                    <span class="flex items-center gap-1 text-sm"><span
+                                            class="material-symbols-outlined text-[18px]">mail</span>
+                                        #{auth.userEmail}</span>
                                     <span class="hidden md:inline text-gray-300">|</span>
-                                    <span class="flex items-center gap-1 text-sm bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-2 py-0.5 rounded-full font-medium">
-                                        <span class="material-symbols-outlined text-[16px] fill">stars</span> #{auth.userMembershipLevel}
+                                    <span
+                                        class="flex items-center gap-1 text-sm bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-2 py-0.5 rounded-full font-medium">
+                                        <span class="material-symbols-outlined text-[16px] fill">stars</span>
+                                        #{auth.userMembershipLevel}
                                     </span>
                                 </div>
                             </h:panelGroup>
-                            <h:form styleClass="hidden md:flex">
-                                <h:commandButton action="#{auth.startEdit()}" value="Edit Public Profile" styleClass="items-center justify-center h-10 px-5 bg-[#f0f4f2] dark:bg-[#2a3e32] text-[#111813] dark:text-white text-sm font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-[#354a3d] transition-colors whitespace-nowrap" rendered="#{not auth.editingProfile}"/>
-                                <h:commandButton action="#{auth.cancelEdit()}" value="Cancel Edit" styleClass="items-center justify-center h-10 px-5 bg-[#f0f4f2] dark:bg-[#2a3e32] text-[#111813] dark:text-white text-sm font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-[#354a3d] transition-colors whitespace-nowrap" rendered="#{auth.editingProfile}"/>
-                            </h:form>
                         </div>
                     </div>
                     <!-- Personal Information Form -->
-                    <div id="section-personal-info" class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 lg:p-8">
+                    <div id="section-personal-info"
+                        class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 lg:p-8">
                         <div class="flex justify-between items-center mb-6">
                             <div>
                                 <h3 class="text-xl font-bold text-[#111813] dark:text-white">Personal Information</h3>
-                                <p class="text-[#4b5563] dark:text-[#d1d5db] text-sm mt-1">Manage your personal details and account preferences.</p>
+                                <p class="text-[#4b5563] dark:text-[#d1d5db] text-sm mt-1">Manage your personal details
+                                    and account preferences.</p>
                             </div>
                         </div>
                         <h:form id="profileForm" styleClass="flex flex-col gap-6">
                             <h:panelGroup id="profileMessages">
                                 <h:panelGroup rendered="#{not empty requestScope.profileSaveStatus}">
-                                    <div class="p-3 rounded-md mb-4 #{requestScope.profileSaveStatus == 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800'}">
+                                    <div
+                                        class="p-3 rounded-md mb-4 #{requestScope.profileSaveStatus == 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800'}">
                                         #{requestScope.profileSaveMessage}
                                     </div>
                                 </h:panelGroup>
-                                <h:messages id="msgs"/>
+                                <h:messages id="msgs" />
                             </h:panelGroup>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="flex flex-col gap-2">
                                     <label class="text-[#111813] dark:text-white text-sm font-medium">First Name</label>
-                                    <h:inputText id="firstNameInput" value="#{auth.userFirstName}" styleClass="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors" disabled="#{not auth.editingProfile}"/>
+                                    <h:inputText id="firstNameInput" value="#{auth.userFirstName}"
+                                        styleClass="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                        disabled="#{not auth.editingProfile}" />
                                 </div>
                                 <div class="flex flex-col gap-2">
                                     <label class="text-[#111813] dark:text-white text-sm font-medium">Last Name</label>
-                                    <h:inputText id="lastNameInput" value="#{auth.userLastName}" styleClass="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors" disabled="#{not auth.editingProfile}"/>
+                                    <h:inputText id="lastNameInput" value="#{auth.userLastName}"
+                                        styleClass="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                        disabled="#{not auth.editingProfile}" />
                                 </div>
                                 <div class="flex flex-col gap-2">
-                                    <label class="text-[#111813] dark:text-white text-sm font-medium">Middle Name</label>
-                                    <h:inputText id="middleNameInput" value="#{auth.userMiddleName}" styleClass="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors" disabled="#{not auth.editingProfile}"/>
+                                    <label class="text-[#111813] dark:text-white text-sm font-medium">Middle
+                                        Name</label>
+                                    <h:inputText id="middleNameInput" value="#{auth.userMiddleName}"
+                                        styleClass="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                        disabled="#{not auth.editingProfile}" />
                                 </div>
                                 <div class="flex flex-col gap-2">
-                                    <label class="text-[#111813] dark:text-white text-sm font-medium">Email Address</label>
+                                    <label class="text-[#111813] dark:text-white text-sm font-medium">Email
+                                        Address</label>
                                     <div class="relative">
-                                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-[#4b5563] dark:text-[#d1d5db]">mail</span>
-                                        <h:inputText id="emailInput" value="#{auth.userEmail}" styleClass="w-full h-11 pl-10 pr-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors" disabled="true"/>
+                                        <span
+                                            class="material-symbols-outlined absolute left-3 top-2.5 text-[#4b5563] dark:text-[#d1d5db]">mail</span>
+                                        <h:inputText id="emailInput" value="#{auth.userEmail}"
+                                            styleClass="w-full h-11 pl-10 pr-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                            disabled="true" />
                                     </div>
                                 </div>
                                 <div class="flex flex-col gap-2">
-                                    <label class="text-[#111813] dark:text-white text-sm font-medium">Phone Number (Mobile)</label>
+                                    <label class="text-[#111813] dark:text-white text-sm font-medium">Phone Number
+                                        (Mobile)</label>
                                     <div class="relative">
-                                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-[#4b5563] dark:text-[#d1d5db]">call</span>
-                                        <h:inputText id="mobileInput" value="#{auth.userPhoneNumber}" styleClass="w-full h-11 pl-10 pr-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors" disabled="#{not auth.editingProfile}"/>
+                                        <span
+                                            class="material-symbols-outlined absolute left-3 top-2.5 text-[#4b5563] dark:text-[#d1d5db]">call</span>
+                                        <h:inputText id="mobileInput" value="#{auth.userPhoneNumber}"
+                                            styleClass="w-full h-11 pl-10 pr-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                            disabled="#{not auth.editingProfile}" />
                                     </div>
                                 </div>
                                 <div class="flex flex-col gap-2">
                                     <label class="text-[#111813] dark:text-white text-sm font-medium">Home Phone</label>
                                     <div class="relative">
-                                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-[#4b5563] dark:text-[#d1d5db]">call</span>
-                                        <h:inputText id="homePhoneInput" value="#{auth.userHomePhone}" styleClass="w-full h-11 pl-10 pr-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors" disabled="#{not auth.editingProfile}"/>
+                                        <span
+                                            class="material-symbols-outlined absolute left-3 top-2.5 text-[#4b5563] dark:text-[#d1d5db]">call</span>
+                                        <h:inputText id="homePhoneInput" value="#{auth.userHomePhone}"
+                                            styleClass="w-full h-11 pl-10 pr-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                            disabled="#{not auth.editingProfile}" />
                                     </div>
                                 </div>
                             </div>
                             <div class="h-px bg-[#f0f4f2] dark:bg-[#2a3e32] my-2"></div>
                             <div class="flex justify-end gap-3">
-                                <h:commandButton value="Cancel" action="#{auth.cancelEdit()}" styleClass="px-6 h-11 rounded-lg border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white font-bold text-sm hover:bg-gray-50 dark:hover:bg-[#25382c] transition-colors" rendered="#{auth.editingProfile}"/>
-                                  <h:commandButton value="Save Changes" action="#{auth.saveProfile()}" styleClass="px-6 h-11 rounded-lg bg-primary hover:bg-[#14b84b] text-[#111813] font-bold text-sm transition-colors shadow-sm flex items-center gap-2" rendered="#{auth.editingProfile}">
-                                      <f:ajax execute="@form" render=":profileForm :siteHeader :profileSidebar :profileHeadingSection"/>
-                                  </h:commandButton>
-                                <h:commandButton value="Edit" action="#{auth.startEdit()}" styleClass="px-6 h-11 rounded-lg bg-primary hover:bg-[#14b84b] text-[#111813] font-bold text-sm transition-colors shadow-sm" rendered="#{not auth.editingProfile}"/>
+                                <h:commandButton value="Cancel" action="#{auth.cancelEdit()}"
+                                    class="px-6 h-11 rounded-lg border font-bold" rendered="#{auth.editingProfile}">
+                                    <f:ajax execute="@this" render="profileForm profileHeadingSection profileSidebar" />
+                                </h:commandButton>
+
+                                <h:commandButton value="Save Changes" action="#{auth.saveProfile()}"
+                                    styleClass="px-6 h-11 rounded-lg bg-primary hover:bg-[#14b84b] text-[#111813] font-bold text-sm transition-colors shadow-sm flex items-center gap-2"
+                                    rendered="#{auth.editingProfile}">
+                                    <f:ajax execute="@form"
+                                        render=":profileForm :siteHeader :profileSidebar :profileHeadingSection" />
+                                </h:commandButton>
+                                <h:commandButton value="Edit" action="#{auth.startEdit()}"
+                                    class="px-6 h-11 rounded-lg bg-primary font-bold"
+                                    rendered="#{not auth.editingProfile}">
+                                    <f:ajax execute="@this" render="profileForm profileHeadingSection profileSidebar" />
+                                </h:commandButton>
+
                             </div>
                         </h:form>
                     </div>
-                    
+
                     <!-- Hidden forms for edit/delete address actions -->
                     <h:form id="editAddressHiddenForm" style="display:none;">
-                        <h:commandButton id="editAddressBtn" action="#{addressCtrl.startEdit(addressCtrl.editingAddress)}" />
+                        <h:commandButton id="editAddressBtn"
+                            action="#{addressCtrl.startEdit(addressCtrl.editingAddress)}" />
                     </h:form>
                     <h:form id="deleteAddressHiddenForm" style="display:none;">
-                        <h:commandButton id="deleteAddressBtn" action="#{addressCtrl.delete(addressCtrl.editingAddress)}" />
+                        <h:commandButton id="deleteAddressBtn"
+                            action="#{addressCtrl.delete(addressCtrl.editingAddress)}" />
                     </h:form>
-                    
+
                     <!-- Addresses Section -->
                     <section id="section-addresses" class="space-y-6">
-                        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 lg:p-8">
+                        <div
+                            class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 lg:p-8">
                             <div class="flex justify-between items-center mb-6">
                                 <h3 class="text-xl font-bold text-[#111813] dark:text-white">My Addresses</h3>
-                                <h:form>
-                                    <button type="button" class="bg-transparent" onclick="openAddAddressModal();">
-                                        <span class="text-primary font-bold text-sm transition-transform duration-150 inline-block hover:scale-105 hover:text-blue-600">Add New Address</span>
-                                    </button>
-                                </h:form>
+                                <button type="button" onclick="openAddAddressModal();"
+                                    class="bg-transparent text-primary font-bold text-sm transition-transform duration-150 inline-block hover:scale-105 hover:text-blue-600">
+                                    Add New Address
+                                </button>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="addressGrid">
                                 <ui:repeat value="#{addressCtrl.addresses}" var="addr">
@@ -374,25 +481,40 @@
                                     <c:if test="${not empty addr.country}">
                                         <c:set var="addrText" value="${addrText}, ${addr.country}" scope="request" />
                                     </c:if>
-                                    <div class="aspect-square bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-4 flex flex-col relative" data-lat="#{addr.latitude}" data-lng="#{addr.longitude}" data-address="${addrText}" title="lat:#{addr.latitude} lng:#{addr.longitude}" data-addr-id="#{addr.addressID}">
+                                    <div class="aspect-square bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-4 flex flex-col relative"
+                                        data-lat="#{addr.latitude}" data-lng="#{addr.longitude}"
+                                        data-address="${addrText}" title="lat:#{addr.latitude} lng:#{addr.longitude}"
+                                        data-addr-id="#{addr.addressID}">
                                         <!-- Top-right Action Icons -->
                                         <div class="absolute top-3 right-3 flex gap-0.5 z-10">
                                             <!-- Edit Button -->
                                             <h:form styleClass="inline" id="editAddrForm_#{addr.addressID}">
-                                                <h:commandButton id="editAddrBtn_#{addr.addressID}" action="#{addressCtrl.startEdit(addr)}" value="">
-                                                    <f:ajax execute="@form" render="addressForm" oncomplete="openEditAddressModal();" />
+                                                <h:commandButton id="editAddrBtn_#{addr.addressID}"
+                                                    action="#{addressCtrl.startEdit(addr)}" value="">
+                                                    <f:ajax execute="@form" render="addressForm"
+                                                        oncomplete="openEditAddressModal();" />
                                                 </h:commandButton>
-                                                <button type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 hover:scale-110 cursor-pointer" title="Edit address" onclick="triggerEdit(event, 'editAddrBtn_#{addr.addressID}');">
-                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/edit.png" alt="edit" style="width:18px;height:18px;display:block;" />
+                                                <button type="button"
+                                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 hover:scale-110 cursor-pointer"
+                                                    title="Edit address"
+                                                    onclick="triggerEdit(event, 'editAddrBtn_#{addr.addressID}');">
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/edit.png"
+                                                        alt="edit" style="width:18px;height:18px;display:block;" />
                                                 </button>
                                             </h:form>
                                             <!-- Delete Button -->
                                             <h:form styleClass="inline" id="delAddrForm_#{addr.addressID}">
-                                                <h:commandButton id="delAddrBtn_#{addr.addressID}" action="#{addressCtrl.delete(addr)}" value="">
-                                                    <f:ajax execute="@form" render="@none" oncomplete="handleDeleteSuccess(); refreshAddressCards();" />
+                                                <h:commandButton id="delAddrBtn_#{addr.addressID}"
+                                                    action="#{addressCtrl.delete(addr)}" value="">
+                                                    <f:ajax execute="@form" render="@none"
+                                                        oncomplete="handleDeleteSuccess(); refreshAddressCards();" />
                                                 </h:commandButton>
-                                                <button type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 hover:scale-110 cursor-pointer" title="Delete address" onclick="triggerDelete(event, 'delAddrBtn_#{addr.addressID}', '#{addr.street}');">
-                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/delete.png" alt="delete" style="width:18px;height:18px;display:block;" />
+                                                <button type="button"
+                                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 hover:scale-110 cursor-pointer"
+                                                    title="Delete address"
+                                                    onclick="triggerDelete(event, 'delAddrBtn_#{addr.addressID}', '#{addr.street}');">
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/delete.png"
+                                                        alt="delete" style="width:18px;height:18px;display:block;" />
                                                 </button>
                                             </h:form>
                                         </div>
@@ -400,8 +522,12 @@
                                         <!-- Header with icon and type -->
                                         <div class="flex items-start gap-3 mb-3">
                                             <div class="flex-shrink-0">
-                                                <div class="p-2 rounded-lg flex items-center justify-center" style="width:44px;height:44px; #{addr.type == 'Home' ? 'background-color:#ecfdf5;' : (addr.type == 'Work' ? 'background-color:#eff6ff;' : '')}">
-                                                    <img alt="icon" style="width:24px;height:24px; #{addr.type == 'Home' ? 'filter: hue-rotate(0deg) saturate(1.5) brightness(0.8);' : (addr.type == 'Work' ? 'filter: hue-rotate(200deg) saturate(1.5) brightness(0.8);' : '')}" class="object-contain" src="#{facesContext.externalContext.requestContextPath}/images/#{addr.type == 'Home' ? 'home.png' : (addr.type == 'Work' ? 'work.png' : 'location.png')}" />
+                                                <div class="p-2 rounded-lg flex items-center justify-center"
+                                                    style="width:44px;height:44px; #{addr.type == 'Home' ? 'background-color:#ecfdf5;' : (addr.type == 'Work' ? 'background-color:#eff6ff;' : '')}">
+                                                    <img alt="icon"
+                                                        style="width:24px;height:24px; #{addr.type == 'Home' ? 'filter: hue-rotate(0deg) saturate(1.5) brightness(0.8);' : (addr.type == 'Work' ? 'filter: hue-rotate(200deg) saturate(1.5) brightness(0.8);' : '')}"
+                                                        class="object-contain"
+                                                        src="#{facesContext.externalContext.requestContextPath}/images/#{addr.type == 'Home' ? 'home.png' : (addr.type == 'Work' ? 'work.png' : 'location.png')}" />
                                                 </div>
                                             </div>
                                             <div class="flex-1 min-w-0 pr-10">
@@ -411,7 +537,8 @@
                                                             #{not empty addr.type ? addr.type : 'Address'}
                                                         </h4>
                                                         <ui:fragment rendered="#{addr.isDefault}">
-                                                            <span class="inline-block px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full font-bold border border-primary/30">Default</span>
+                                                            <span
+                                                                class="inline-block px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full font-bold border border-primary/30">Default</span>
                                                         </ui:fragment>
                                                     </div>
                                                 </div>
@@ -423,10 +550,16 @@
                                             <!-- Vietnam & default format -->
                                             <div class="text-base font-medium leading-tight">
                                                 <div>
-                                                    <ui:fragment rendered="#{not empty addr.house}">#{addr.house} </ui:fragment><ui:fragment rendered="#{not empty addr.street}">#{addr.street}</ui:fragment>
+                                                    <ui:fragment rendered="#{not empty addr.house}">#{addr.house}
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{not empty addr.street}">#{addr.street}
+                                                    </ui:fragment>
                                                 </div>
                                                 <div class="text-sm text-gray-600 dark:text-gray-400 font-normal">
-                                                    <ui:fragment rendered="#{not empty addr.city}">#{addr.city}</ui:fragment><ui:fragment rendered="#{not empty addr.region}">, #{addr.region}</ui:fragment>
+                                                    <ui:fragment rendered="#{not empty addr.city}">#{addr.city}
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{not empty addr.region}">, #{addr.region}
+                                                    </ui:fragment>
                                                 </div>
                                                 <div class="text-sm text-gray-600 dark:text-gray-400 font-normal">
                                                     #{addr.country}
@@ -434,114 +567,147 @@
                                             </div>
                                         </div>
 
-                                            <!-- Map Section (portrait 9:16) -->
-                                            <div class="mt-2 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex-grow" style="aspect-ratio:16/9; min-height:200px;">
-                                                <div class="addr-leaflet-map w-full h-full" data-lat="#{addr.latitude}" data-lng="#{addr.longitude}" data-id="map-#{addr.addressID}"></div>
-                                            </div>
+                                        <!-- Map Section (portrait 9:16) -->
+                                        <div class="mt-2 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex-grow"
+                                            style="aspect-ratio:16/9; min-height:200px;">
+                                            <div class="addr-leaflet-map w-full h-full" data-lat="#{addr.latitude}"
+                                                data-lng="#{addr.longitude}" data-id="map-#{addr.addressID}"></div>
+                                        </div>
                                     </div>
                                 </ui:repeat>
                             </div>
                         </div>
                     </section>
-                    
+
                     <!-- Payment &amp; Notifications Grid -->
-                    <section id="section-payment" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <section id="section-payment" class="grid grid-cols-1 lg:grid-cols-1 gap-6">
                         <!-- Payment Methods -->
-                        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6">
+                        <div
+                            class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6">
                             <div class="flex justify-between items-center mb-6">
                                 <h3 class="text-lg font-bold text-[#111813] dark:text-white">Payment Methods</h3>
                                 <button class="text-primary text-sm font-bold hover:underline">Add New</button>
                             </div>
                             <div class="flex flex-col gap-4">
-                                <div class="flex items-center justify-between p-4 rounded-lg border border-[#e5e7eb] dark:border-[#2a3e32] bg-[#f9fafb] dark:bg-[#1f3326]">
+                                <label class="flex items-center justify-between p-4 rounded-lg border
+              border-[#e5e7eb] dark:border-[#2a3e32]
+              bg-[#f9fafb] dark:bg-[#1f3326]
+              cursor-pointer transition-all
+              has-[:checked]:border-primary
+              has-[:checked]:ring-2 has-[:checked]:ring-primary/30">
+
+                                    <!-- LEFT -->
                                     <div class="flex items-center gap-4">
-                                        <div class="w-12 h-8 bg-white dark:bg-white rounded border border-gray-200 flex items-center justify-center">
-                                            <img alt="Visa" class="h-4 w-auto" data-alt="Visa logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy3n_L1bPMJ54ZTmJ1kNk9x2v-H6mzph16teqMAt3PGoZLwq3Yj4WVPieVJrQzrlLcsjsNm8XF2KCdGJ1IGFFZyxsDhACiIBaYcneMbdqWievRnqH-bcYexwfK0CXwVAu7w0kcrtNY85n6PNdDXtQG1U3ceaQ_yKhjL3myIpZ-lZmRq8zZQZiL4W2AehLiZag17zVcRN27JipPVcoj_oVBBkblSkV5WR95XnK2KmE-R8_kBk4_8ClQxHZT2YioBIK7jF8i0jufHnA"/>
+                                        <!-- SELECT RADIO -->
+                                        <input type="radio" name="selectedPayment" disabled="false" class="hidden" />
+
+
+                                        <!-- CUSTOM SELECT DOT -->
+                                        <div class="w-4 h-4 rounded-full border-2 border-gray-400
+                    flex items-center justify-center
+                    peer-checked:border-primary">
+                                            <div class="w-2 h-2 rounded-full bg-primary hidden peer-checked:block">
+                                            </div>
                                         </div>
-                                        <div class="flex flex-col">
-                                            <span class="text-[#111813] dark:text-white text-sm font-bold">Visa ending in 4242</span>
-                                            <span class="text-[#4b5563] dark:text-[#d1d5db] text-xs">Expires 12/25</span>
+
+                                        <!-- CARD INFO -->
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="w-12 h-8 bg-white rounded border flex items-center justify-center">
+                                                <img src="../../images/visa.png" class="h-4" />
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-sm font-bold text-[#111813] dark:text-white">
+                                                    Visa ending in 4242
+                                                </span>
+                                                <span class="text-xs text-[#4b5563] dark:text-[#d1d5db]">
+                                                    Expires 12/25
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <span class="material-symbols-outlined text-[#17cf54]">check_circle</span>
-                                </div>
-                                <div class="flex items-center justify-between p-4 rounded-lg border border-[#e5e7eb] dark:border-[#2a3e32]">
+                                    <!-- RIGHT -->
+                                    <span class="material-symbols-outlined text-[#17cf54]">
+                                        check_circle
+                                    </span>
+                                </label>
+                                <label class="flex items-center justify-between p-4 rounded-lg border
+              border-gray-300 dark:border-gray-600
+              bg-gray-100 dark:bg-gray-800
+              opacity-60 cursor-not-allowed">
+
                                     <div class="flex items-center gap-4">
-                                        <div class="w-12 h-8 bg-white dark:bg-white rounded border border-gray-200 flex items-center justify-center">
-                                            <img alt="Mastercard" class="h-5 w-auto" data-alt="Mastercard logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDifrWLKWYlT02-4UzU5tXlZvk5vlEMAtFLPMO_jYeQ2jb9jr_wPjQ_tSbbNo1jRcvl5IYdAorawn2X3lC7_ooA0ZxVuwGfGrAkEnlteteiApTuL8-y-NlaLW8vd9FGgfk8LsFjkeQ3CNSWt8Jo3cujf-_QnQGfLi6Omqz_K1aEdnL2i8KtU_UNU71QKCSsQkvYM6jjqg5sUwVKWxr0ONQpTRxSuB5WW0aeQkkl3NqbEQdPV3076pLlgEmEUurfifBgpDlAQ2o2J4"/>
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <span class="text-[#111813] dark:text-white text-sm font-bold">Mastercard ending in 8899</span>
-                                            <span class="text-[#4b5563] dark:text-[#d1d5db] text-xs">Expires 09/24</span>
+                                        <!-- RADIO DISABLED -->
+                                        <input type="radio" name="selectedPayment" value="expired" disabled="disabled"
+                                            class="hidden" />
+
+
+
+                                        <!-- SELECT DOT (DISABLED) -->
+                                        <div class="w-4 h-4 rounded-full border-2 border-gray-400"></div>
+
+                                        <!-- CARD INFO -->
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="w-12 h-8 bg-white rounded border flex items-center justify-center">
+                                                <img src="../../images/card.png" class="h-4" />
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-sm font-bold text-gray-500">
+                                                    Mastercard ending in 8899
+                                                </span>
+                                                <span class="text-xs text-red-600 font-semibold">
+                                                    Expired 09/24
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <button class="text-[#4b5563] dark:text-[#d1d5db] hover:text-[#111813] dark:hover:text-white text-sm">Remove</button>
-                                </div>
+
+                                    <span class="text-xs font-bold text-red-600">
+                                        Expired
+                                    </span>
+                                </label>
+
                             </div>
                         </div>
                         <!-- Payment Modal -->
-                        <div id="paymentModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/60" style="z-index:99999;">
-                            <div class="bg-white dark:bg-surface-dark rounded-lg p-6 w-full max-w-lg z-[100000]" style="z-index:100000;">
+                        <div id="paymentModal"
+                            class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/60"
+                            style="z-index:99999;">
+                            <div class="bg-white dark:bg-surface-dark rounded-lg p-6 w-full max-w-lg z-[100000]"
+                                style="z-index:100000;">
                                 <h3 class="text-lg font-bold mb-4">Add / Edit Payment Method</h3>
                                 <h:form>
                                     <div class="grid grid-cols-1 gap-3">
                                         <label class="text-sm font-medium">Card Type</label>
-                                        <h:selectOneMenu value="#{paymentCtrl.editingCard.cardType}" styleClass="w-full">
-                                            <f:selectItem itemValue="Visa" itemLabel="Visa"/>
-                                            <f:selectItem itemValue="Mastercard" itemLabel="Mastercard"/>
-                                            <f:selectItem itemValue="AmEx" itemLabel="American Express"/>
+                                        <h:selectOneMenu value="#{paymentCtrl.editingCard.cardType}"
+                                            styleClass="w-full">
+                                            <f:selectItem itemValue="Visa" itemLabel="Visa" />
+                                            <f:selectItem itemValue="Mastercard" itemLabel="Mastercard" />
+                                            <f:selectItem itemValue="AmEx" itemLabel="American Express" />
                                         </h:selectOneMenu>
                                         <label class="text-sm font-medium">Card Number</label>
-                                        <h:inputText value="#{paymentCtrl.editingCard.cardNumber}" styleClass="w-full"/>
+                                        <h:inputText value="#{paymentCtrl.editingCard.cardNumber}"
+                                            styleClass="w-full" />
                                         <label class="text-sm font-medium">Cardholder Name</label>
-                                        <h:inputText value="#{paymentCtrl.editingCardHolderName}" styleClass="w-full"/>
+                                        <h:inputText value="#{paymentCtrl.editingCardHolderName}" styleClass="w-full" />
                                         <label class="text-sm font-medium">Expiry (MM/YY)</label>
                                         <div class="flex gap-2">
-                                            <h:inputText value="#{paymentCtrl.expiryMonth}" styleClass="w-1/2" pt:placeholder="MM"/>
-                                            <h:inputText value="#{paymentCtrl.expiryYear}" styleClass="w-1/2" pt:placeholder="YY"/>
+                                            <h:inputText value="#{paymentCtrl.expiryMonth}" styleClass="w-1/2"
+                                                pt:placeholder="MM" />
+                                            <h:inputText value="#{paymentCtrl.expiryYear}" styleClass="w-1/2"
+                                                pt:placeholder="YY" />
                                         </div>
                                     </div>
                                     <div class="flex justify-end gap-2 mt-4">
-                                        <h:commandButton value="Cancel" onclick="document.getElementById('paymentModal').classList.add('hidden'); return false;" styleClass="px-4 py-2 border"/>
-                                        <h:commandButton value="Save" action="#{paymentCtrl.save()}" styleClass="px-4 py-2 bg-primary text-white" onclick="document.getElementById('paymentModal').classList.add('hidden');"/>
+                                        <h:commandButton value="Cancel"
+                                            onclick="document.getElementById('paymentModal').classList.add('hidden'); return false;"
+                                            styleClass="px-4 py-2 border" />
+                                        <h:commandButton value="Save" action="#{paymentCtrl.save()}"
+                                            styleClass="px-4 py-2 bg-primary text-white"
+                                            onclick="document.getElementById('paymentModal').classList.add('hidden');" />
                                     </div>
                                 </h:form>
-                            </div>
-                        </div>
-                        <!-- Notification Settings -->
-                        <div id="section-notifications" class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6">
-                            <h3 class="text-lg font-bold text-[#111813] dark:text-white mb-6">Notification Settings</h3>
-                            <div class="flex flex-col gap-6">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex flex-col">
-                                        <span class="text-[#111813] dark:text-white text-sm font-bold">Order Updates</span>
-                                        <span class="text-[#4b5563] dark:text-[#d1d5db] text-xs">Receive updates about your order status.</span>
-                                    </div>
-                                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                                        <input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 dark:border-gray-500 checked:right-0 checked:border-primary transition-all duration-300" id="toggle1" name="toggle" type="checkbox"/>
-                                        <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer checked:bg-primary transition-all duration-300" for="toggle1"></label>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex flex-col">
-                                        <span class="text-[#111813] dark:text-white text-sm font-bold">Promotions &amp; Deals</span>
-                                        <span class="text-[#4b5563] dark:text-[#d1d5db] text-xs">Receive emails about new products and deals.</span>
-                                    </div>
-                                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                                        <input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 dark:border-gray-500 checked:right-0 checked:border-primary transition-all duration-300" id="toggle2" name="toggle" type="checkbox"/>
-                                        <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer checked:bg-primary transition-all duration-300" for="toggle2"></label>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex flex-col">
-                                        <span class="text-[#111813] dark:text-white text-sm font-bold">SMS Notifications</span>
-                                        <span class="text-[#4b5563] dark:text-[#d1d5db] text-xs">Get text messages for delivery alerts.</span>
-                                    </div>
-                                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                                        <input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 dark:border-gray-500 checked:right-0 checked:border-primary transition-all duration-300" id="toggle3" name="toggle" type="checkbox"/>
-                                        <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer checked:bg-primary transition-all duration-300" for="toggle3"></label>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </section>
