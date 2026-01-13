@@ -78,23 +78,42 @@
             var formData = new FormData();
             formData.append('avatarFile', file);
 
-            fetch(base + '/avatar-upload', {
-                method: 'POST',
-                body: formData,
-                credentials: 'include'  // Important: ensure cookies are sent
-            })
-            .then(function(response){
-                if (!response.ok) {
-                    return response.json().then(function(data){
-                        throw new Error((data && data.error) ? data.error : ('HTTP ' + response.status));
-                    }).catch(function(jsonErr){
-                        return response.text().then(function(t){ 
-                            throw new Error('HTTP ' + response.status + ': ' + (t || 'Unknown error')); 
-                        });
+            function doFetch(retryCount) {
+                return fetch(base + '/avatar-upload', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'  // Important: ensure cookies are sent
+                })
+                .then(function(response){
+                    return response.text().then(function(text){
+                        var data;
+                        try {
+                            data = JSON.parse(text);
+                        } catch (e) {
+                            // If not JSON, treat as plain text error
+                            if (!response.ok) {
+                                throw new Error('HTTP ' + response.status + ': ' + text);
+                            }
+                            throw new Error('Invalid JSON response from server');
+                        }
+                        if (!response.ok) {
+                            // If 429 (Too Many Requests), retry after delay
+                            if (response.status === 429 && retryCount < 5) {
+                                console.log('Rate limited, retrying in 5 seconds... (attempt ' + (retryCount + 1) + '/5)');
+                                return new Promise(function(resolve) {
+                                    setTimeout(function() {
+                                        resolve(doFetch(retryCount + 1));
+                                    }, 5000);
+                                });
+                            }
+                            throw new Error((data && data.error) ? data.error : ('HTTP ' + response.status));
+                        }
+                        return data;
                     });
-                }
-                return response.json();
-            })
+                });
+            }
+
+            doFetch(0)
             .then(function(data){
                 if (data && data.success) {
                     console.log('avatar-upload response', data);
