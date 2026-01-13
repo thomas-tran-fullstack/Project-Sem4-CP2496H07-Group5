@@ -35,8 +35,11 @@ public class AddressController implements Serializable {
 
     @PostConstruct
     public void init() {
-//        saveResultMessage = null;
-//        saveResultSeverity = null;
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        if (!ctx.isPostback()) {
+            saveResultMessage = null;
+            saveResultSeverity = null;
+        }
     }
     public void clearSaveResult() {
         saveResultMessage = null;

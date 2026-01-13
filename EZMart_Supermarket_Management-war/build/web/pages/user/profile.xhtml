@@ -439,11 +439,7 @@
                         </h:form>
                     </div>
 
-                    <!-- Hidden forms for edit/delete address actions -->
-                    <h:form id="editAddressHiddenForm" style="display:none;">
-                        <h:commandButton id="editAddressBtn"
-                            action="#{addressCtrl.startEdit(addressCtrl.editingAddress)}" />
-                    </h:form>
+                    <!-- Hidden forms for delete address actions -->
                     <h:form id="deleteAddressHiddenForm" style="display:none;">
                         <h:commandButton id="deleteAddressBtn"
                             action="#{addressCtrl.delete(addressCtrl.editingAddress)}" />
@@ -487,21 +483,6 @@
                                         data-addr-id="#{addr.addressID}">
                                         <!-- Top-right Action Icons -->
                                         <div class="absolute top-3 right-3 flex gap-0.5 z-10">
-                                            <!-- Edit Button -->
-                                            <h:form styleClass="inline" id="editAddrForm_#{addr.addressID}">
-                                                <h:commandButton id="editAddrBtn_#{addr.addressID}"
-                                                    action="#{addressCtrl.startEdit(addr)}" value="">
-                                                    <f:ajax execute="@form" render="addressForm"
-                                                        oncomplete="openEditAddressModal();" />
-                                                </h:commandButton>
-                                                <button type="button"
-                                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 hover:scale-110 cursor-pointer"
-                                                    title="Edit address"
-                                                    onclick="triggerEdit(event, 'editAddrBtn_#{addr.addressID}');">
-                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/edit.png"
-                                                        alt="edit" style="width:18px;height:18px;display:block;" />
-                                                </button>
-                                            </h:form>
                                             <!-- Delete Button -->
                                             <h:form styleClass="inline" id="delAddrForm_#{addr.addressID}">
                                                 <h:commandButton id="delAddrBtn_#{addr.addressID}"
