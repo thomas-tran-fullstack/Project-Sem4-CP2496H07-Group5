@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Methods - Demo/Test</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-4">Payment Methods - Test Page</h1>
+        <p class="text-gray-600 mb-6">This is a standalone test page for Payment Methods feature</p>
+
+        <!-- Payment Methods Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold">Payment Methods</h3>
+                <button onclick="openPaymentModal()" type="button" class="text-green-600 text-sm font-bold hover:underline">
+                    Add New
+                </button>
+            </div>
+            <div id="paymentMethodsList" class="flex flex-col gap-4">
+                <!-- Payment methods will be dynamically rendered -->
+            </div>
+        </div>
+
+        <!-- Payment Modal -->
+        <div id="paymentModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4">
+            <div class="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+                <!-- Modal Header -->
+                <div class="sticky top-0 flex items-center justify-between p-6 bg-gradient-to-r from-green-100 to-green-50 border-b">
+                    <div>
+                        <h3 class="text-lg font-bold">Add Payment Method</h3>
+                        <p class="text-xs text-gray-600">Choose payment type and enter details</p>
+                    </div>
+                    <button type="button" onclick="closePaymentModal();" class="text-xl px-3 py-1 hover:bg-gray-200 rounded-md">✕</button>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <div class="flex gap-0 border-b bg-gray-50 px-6 pt-4">
+                    <button type="button" onclick="switchPaymentTab('visa')" class="payment-tab-btn active px-6 py-3 font-semibold text-sm border-b-2 border-green-600 text-green-600" data-tab="visa">
+                        Visa
+                    </button>
+                    <button type="button" onclick="switchPaymentTab('mastercard')" class="payment-tab-btn px-6 py-3 font-semibold text-sm border-b-2 border-transparent text-gray-600" data-tab="mastercard">
+                        MasterCard
+                    </button>
+                    <button type="button" onclick="switchPaymentTab('paypal')" class="payment-tab-btn px-6 py-3 font-semibold text-sm border-b-2 border-transparent text-gray-600" data-tab="paypal">
+                        PayPal
+                    </button>
+                    <button type="button" onclick="switchPaymentTab('momo')" class="payment-tab-btn px-6 py-3 font-semibold text-sm border-b-2 border-transparent text-gray-600" data-tab="momo">
+                        Momo
+                    </button>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="p-6 space-y-4 flex-1 overflow-y-auto">
+                    <!-- VISA Tab -->
+                    <div id="tab-visa" class="payment-tab-content space-y-4">
+                        <div>
+                            <label class="text-sm font-semibold block mb-2">Cardholder Name</label>
+                            <input type="text" id="visa_cardholder" placeholder="Enter your full name" 
+                                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" />
+                            <p id="visa_cardholder_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                        </div>
+                        <div>
+                            <label class="text-sm font-semibold block mb-2">Card Number</label>
+                            <input type="text" id="visa_cardnumber" placeholder="1234 5678 9012 3456" maxlength="19"
+                                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" 
+                                oninput="formatCardNumber(this, 'visa')" />
+                            <p id="visa_cardnumber_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-sm font-semibold block mb-2">Expiry Date</label>
+                                <input type="text" id="visa_expiry" placeholder="MM/YY" maxlength="5"
+                                    class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                                    oninput="formatExpiry(this)" />
+                                <p id="visa_expiry_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold block mb-2">CVV</label>
+                                <input type="text" id="visa_cvv" placeholder="123" maxlength="3" 
+                                    class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                                <p id="visa_cvv_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MASTERCARD Tab -->
+                    <div id="tab-mastercard" class="payment-tab-content hidden space-y-4">
+                        <div>
+                            <label class="text-sm font-semibold block mb-2">Cardholder Name</label>
+                            <input type="text" id="mastercard_cardholder" placeholder="Enter your full name" 
+                                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" />
+                            <p id="mastercard_cardholder_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                        </div>
+                        <div>
+                            <label class="text-sm font-semibold block mb-2">Card Number</label>
+                            <input type="text" id="mastercard_cardnumber" placeholder="5555 4444 3333 2222" maxlength="19"
+                                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" 
+                                oninput="formatCardNumber(this, 'mastercard')" />
+                            <p id="mastercard_cardnumber_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-sm font-semibold block mb-2">Expiry Date</label>
+                                <input type="text" id="mastercard_expiry" placeholder="MM/YY" maxlength="5"
+                                    class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                                    oninput="formatExpiry(this)" />
+                                <p id="mastercard_expiry_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold block mb-2">CVV</label>
+                                <input type="text" id="mastercard_cvv" placeholder="123" maxlength="3" 
+                                    class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                                <p id="mastercard_cvv_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PAYPAL Tab -->
+                    <div id="tab-paypal" class="payment-tab-content hidden space-y-4">
+                        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
+                            <p class="text-sm text-blue-700 font-medium">You will be redirected to PayPal for secure login</p>
+                        </div>
+                        <div>
+                            <label class="text-sm font-semibold block mb-2">PayPal Email</label>
+                            <input type="email" id="paypal_email" placeholder="your@email.com" 
+                                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" />
+                            <p id="paypal_email_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                        </div>
+                        <div>
+                            <label class="text-sm font-semibold block mb-2">Display Name</label>
+                            <input type="text" id="paypal_name" placeholder="e.g., My PayPal" 
+                                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" />
+                            <p id="paypal_name_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                        </div>
+                    </div>
+
+                    <!-- MOMO Tab -->
+                    <div id="tab-momo" class="payment-tab-content hidden space-y-4">
+                        <div class="p-4 bg-pink-50 border border-pink-200 rounded-lg text-center">
+                            <p class="text-sm text-pink-700 font-medium">You will be redirected to Momo for secure login</p>
+                        </div>
+                        <div>
+                            <label class="text-sm font-semibold block mb-2">Phone Number</label>
+                            <input type="text" id="momo_phone" placeholder="+84 123 456 789" 
+                                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" />
+                            <p id="momo_phone_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                        </div>
+                        <div>
+                            <label class="text-sm font-semibold block mb-2">Display Name</label>
+                            <input type="text" id="momo_name" placeholder="e.g., My Momo" 
+                                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400" />
+                            <p id="momo_name_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="sticky bottom-0 flex justify-end gap-3 p-6 bg-gray-50 border-t">
+                    <button type="button" onclick="closePaymentModal();" 
+                        class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="savePaymentMethod();" 
+                        class="px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700">
+                        Add Payment Method
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug Panel -->
+        <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-bold mb-4">Debug & Test</h3>
+            <div class="space-y-2">
+                <button onclick="loadDemoData()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Load Demo Data
+                </button>
+                <button onclick="clearAllData()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                    Clear All
+                </button>
+                <button onclick="showConsoleData()" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+                    Show in Console
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inline minimal version of profile-payment.js for testing
+        let paymentMethods = [];
+        let currentTab = 'visa';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPaymentMethods();
+            renderPaymentMethodsList();
+        });
+
+        function loadPaymentMethods() {
+            const stored = localStorage.getItem('paymentMethods');
+            if (stored) {
+                paymentMethods = JSON.parse(stored);
+            }
+        }
+
+        function savePaymentMethodsToStorage() {
+            localStorage.setItem('paymentMethods', JSON.stringify(paymentMethods));
+        }
+
+        function openPaymentModal() {
+            document.getElementById('paymentModal').classList.remove('hidden');
+            resetPaymentForm();
+            switchPaymentTab('visa');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+            resetPaymentForm();
+        }
+
+        function resetPaymentForm() {
+            document.getElementById('visa_cardholder').value = '';
+            document.getElementById('visa_cardnumber').value = '';
+            document.getElementById('visa_expiry').value = '';
+            document.getElementById('visa_cvv').value = '';
+            document.getElementById('mastercard_cardholder').value = '';
+            document.getElementById('mastercard_cardnumber').value = '';
+            document.getElementById('mastercard_expiry').value = '';
+            document.getElementById('mastercard_cvv').value = '';
+            document.getElementById('paypal_email').value = '';
+            document.getElementById('paypal_name').value = '';
+            document.getElementById('momo_phone').value = '';
+            document.getElementById('momo_name').value = '';
+            clearAllErrors();
+        }
+
+        function switchPaymentTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.payment-tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            
+            document.querySelectorAll('.payment-tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'border-green-600', 'text-green-600');
+                btn.classList.add('border-transparent', 'text-gray-600');
+            });
+            document.querySelector('[data-tab="' + tab + '"]').classList.add('active', 'border-green-600', 'text-green-600');
+        }
+
+        function formatCardNumber(input, cardType) {
+            let value = input.value.replace(/\s/g, '').replace(/[^0-9]/g, '');
+            if (value.length > 0) {
+                let formatted = value.match(/.{1,4}/g).join(' ');
+                input.value = formatted;
+            }
+        }
+
+        function formatExpiry(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            input.value = value;
+        }
+
+        function clearError(id) {
+            const el = document.getElementById(id);
+            if (el) { el.textContent = ''; el.classList.add('hidden'); }
+        }
+
+        function clearAllErrors() {
+            document.querySelectorAll('[id$="_error"]').forEach(el => {
+                el.textContent = '';
+                el.classList.add('hidden');
+            });
+        }
+
+        function showError(id, msg) {
+            const el = document.getElementById(id);
+            if (el) { el.textContent = msg; el.classList.remove('hidden'); }
+        }
+
+        function validateCardNumber(num) {
+            const clean = num.replace(/\s/g, '');
+            if (clean.length < 13 || clean.length > 19) return false;
+            if (!/^\d+$/.test(clean)) return false;
+            let sum = 0, even = false;
+            for (let i = clean.length - 1; i >= 0; i--) {
+                let d = parseInt(clean[i]);
+                if (even) { d *= 2; if (d > 9) d -= 9; }
+                sum += d;
+                even = !even;
+            }
+            return sum % 10 === 0;
+        }
+
+        function validateExpiryDate(str) {
+            const [m, y] = str.split('/').map(Number);
+            if (m < 1 || m > 12) return false;
+            const now = new Date();
+            const curYear = now.getFullYear() % 100;
+            const curMonth = now.getMonth() + 1;
+            if (y < curYear) return false;
+            if (y === curYear && m < curMonth) return false;
+            return true;
+        }
+
+        function validateCVV(cvv) { return /^\d{3}$/.test(cvv); }
+
+        function savePaymentMethod() {
+            if (currentTab === 'visa') {
+                const ch = document.getElementById('visa_cardholder').value;
+                const cn = document.getElementById('visa_cardnumber').value;
+                const ex = document.getElementById('visa_expiry').value;
+                const cv = document.getElementById('visa_cvv').value;
+                
+                if (!ch || ch.length < 3) { showError('visa_cardholder_error', 'Min 3 chars'); return; }
+                if (!validateCardNumber(cn)) { showError('visa_cardnumber_error', 'Invalid card'); return; }
+                if (!validateExpiryDate(ex)) { showError('visa_expiry_error', 'Expired or invalid'); return; }
+                if (!validateCVV(cv)) { showError('visa_cvv_error', '3 digits required'); return; }
+                
+                paymentMethods.push({
+                    id: Date.now(),
+                    type: 'visa',
+                    cardholder: ch,
+                    cardnumber: cn,
+                    expiry: ex,
+                    cvv: cv,
+                    lastFour: cn.slice(-4),
+                    isDefault: paymentMethods.length === 0,
+                    isExpired: false,
+                    addedDate: new Date().toISOString()
+                });
+            }
+            
+            savePaymentMethodsToStorage();
+            alert('✅ Payment method added!');
+            closePaymentModal();
+            renderPaymentMethodsList();
+        }
+
+        function renderPaymentMethodsList() {
+            const container = document.getElementById('paymentMethodsList');
+            if (paymentMethods.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No payment methods</p>';
+                return;
+            }
+            container.innerHTML = paymentMethods.map(m => `
+                <div class="flex items-center justify-between p-4 rounded border ${m.isDefault ? 'border-2 border-green-600 bg-green-50' : 'border-gray-300'}">
+                    <div><strong>${m.type.toUpperCase()}</strong> ending in ${m.lastFour}</div>
+                    <div class="flex gap-2">
+                        ${m.isDefault ? '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Active</span>' : '<button onclick="setDefault(${m.id})" class="px-2 py-1 bg-green-600 text-white text-xs rounded">Select</button>'}
+                        <button onclick="deletePayment(${m.id})" class="px-2 py-1 bg-red-600 text-white text-xs rounded">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setDefault(id) {
+            paymentMethods.forEach(m => m.isDefault = false);
+            paymentMethods.find(m => m.id === id).isDefault = true;
+            savePaymentMethodsToStorage();
+            renderPaymentMethodsList();
+        }
+
+        function deletePayment(id) {
+            paymentMethods = paymentMethods.filter(m => m.id !== id);
+            if (paymentMethods.length > 0 && !paymentMethods.some(m => m.isDefault)) {
+                paymentMethods[0].isDefault = true;
+            }
+            savePaymentMethodsToStorage();
+            renderPaymentMethodsList();
+        }
+
+        function loadDemoData() {
+            paymentMethods = [
+                { id: 1, type: 'visa', cardholder: 'JOHN DOE', cardnumber: '4242 4242 4242 4242', expiry: '12/25', cvv: '123', lastFour: '4242', isDefault: true, isExpired: false, addedDate: new Date().toISOString() },
+                { id: 2, type: 'mastercard', cardholder: 'JANE SMITH', cardnumber: '5555 4444 3333 2222', expiry: '08/26', cvv: '456', lastFour: '2222', isDefault: false, isExpired: false, addedDate: new Date().toISOString() }
+            ];
+            savePaymentMethodsToStorage();
+            renderPaymentMethodsList();
+            alert('✅ Demo data loaded!');
+        }
+
+        function clearAllData() {
+            if (confirm('Clear all payment methods?')) {
+                localStorage.removeItem('paymentMethods');
+                paymentMethods = [];
+                renderPaymentMethodsList();
+                alert('✅ Cleared!');
+            }
+        }
+
+        function showConsoleData() {
+            console.log('Payment Methods:', paymentMethods);
+            console.log('localStorage:', localStorage.getItem('paymentMethods'));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+{
+  "paymentMethods": [
+    {
+      "id": 1700000001,
+      "type": "visa",
+      "cardholder": "JOHN DOE",
+      "cardnumber": "4242 4242 4242 4242",
+      "expiry": "12/25",
+      "cvv": "123",
+      "lastFour": "4242",
+      "addedDate": "2026-01-13T10:30:00Z",
+      "isDefault": true,
+      "isExpired": false,
+      "notes": "Primary credit card for online purchases"
+    },
+    {
+      "id": 1700000002,
+      "type": "mastercard",
+      "cardholder": "JANE SMITH",
+      "cardnumber": "5555 5555 5555 4444",
+      "expiry": "08/26",
+      "cvv": "456",
+      "lastFour": "4444",
+      "addedDate": "2026-01-12T14:45:00Z",
+      "isDefault": false,
+      "isExpired": false,
+      "notes": "Backup credit card"
+    },
+    {
+      "id": 1700000003,
+      "type": "paypal",
+      "email": "john.doe@gmail.com",
+      "name": "My PayPal Account",
+      "addedDate": "2026-01-11T09:15:00Z",
+      "isDefault": false,
+      "isExpired": false,
+      "notes": "Primary PayPal account"
+    },
+    {
+      "id": 1700000004,
+      "type": "momo",
+      "phone": "+84912345678",
+      "name": "My Momo Account",
+      "addedDate": "2026-01-10T16:20:00Z",
+      "isDefault": false,
+      "isExpired": false,
+      "notes": "Vietnamese mobile wallet"
+    },
+    {
+      "id": 1700000005,
+      "type": "visa",
+      "cardholder": "OLD CARD",
+      "cardnumber": "4111 1111 1111 1111",
+      "expiry": "09/23",
+      "cvv": "789",
+      "lastFour": "1111",
+      "addedDate": "2025-09-15T08:00:00Z",
+      "isDefault": false,
+      "isExpired": true,
+      "notes": "Expired - can only delete"
+    }
+  ],
+  "testCards": {
+    "validVisa": {
+      "number": "4242 4242 4242 4242",
+      "description": "Standard test Visa card",
+      "passes": "Luhn algorithm, all validations"
+    },
+    "validMasterCard": {
+      "number": "5555 5555 5555 4444",
+      "description": "Standard test MasterCard",
+      "passes": "Luhn algorithm, all validations"
+    },
+    "invalidCard": {
+      "number": "4111 1111 1111 1111",
+      "description": "Invalid test card",
+      "fails": "Luhn algorithm"
+    }
+  },
+  "validationRules": {
+    "cardNumber": {
+      "format": "16 digits (usually)",
+      "validation": "Luhn algorithm",
+      "display": "XXXX XXXX XXXX 1234 (last 4 only)",
+      "examples": [
+        "4242 4242 4242 4242 - ✅ Valid",
+        "5555 5555 5555 4444 - ✅ Valid",
+        "4111 1111 1111 1111 - ❌ Invalid"
+      ]
+    },
+    "expiryDate": {
+      "format": "MM/YY",
+      "validation": "Not expired, valid month (01-12)",
+      "examples": [
+        "12/25 - ✅ Future date",
+        "01/26 - ✅ Future date",
+        "09/23 - ❌ Expired"
+      ]
+    },
+    "cvv": {
+      "format": "3 digits",
+      "validation": "Only numbers",
+      "examples": [
+        "123 - ✅ Valid",
+        "456 - ✅ Valid",
+        "12 - ❌ Too short"
+      ]
+    },
+    "cardholder": {
+      "format": "Full name",
+      "validation": "3+ characters",
+      "examples": [
+        "JOHN DOE - ✅ Valid",
+        "JO - ❌ Too short"
+      ]
+    },
+    "email": {
+      "format": "user@domain.com",
+      "validation": "Valid email format",
+      "examples": [
+        "john@example.com - ✅ Valid",
+        "invalid.email - ❌ Invalid"
+      ]
+    },
+    "phone": {
+      "format": "+84 or 0, followed by 9-10 digits",
+      "validation": "Vietnamese phone format",
+      "examples": [
+        "+84912345678 - ✅ Valid",
+        "0912345678 - ✅ Valid",
+        "912345678 - ❌ Invalid"
+      ]
+    }
+  },
+  "stateTransitions": {
+    "activeCard": {
+      "from": ["validCard", "defaultCard"],
+      "to": ["validCard", "defaultCard"],
+      "display": "Green border, 'Active' badge, check icon",
+      "actions": ["None - already default"]
+    },
+    "validCard": {
+      "from": ["newCard"],
+      "to": ["activeCard", "deletedCard"],
+      "display": "Gray border, 'Select' button",
+      "actions": ["Select to make default", "Delete if expired"]
+    },
+    "expiredCard": {
+      "from": ["validCard"],
+      "to": ["deletedCard"],
+      "display": "Gray opacity, red text, 'Delete' button",
+      "actions": ["Can only delete"]
+    },
+    "deletedCard": {
+      "from": ["activeCard", "validCard", "expiredCard"],
+      "to": [],
+      "display": "Not shown",
+      "actions": ["Removed from list"]
+    }
+  },
+  "notificationMessages": {
+    "success": {
+      "addPaymentMethod": "Payment method added successfully!",
+      "setDefault": "Payment method set as default",
+      "deletePaymentMethod": "Payment method deleted"
+    },
+    "error": {
+      "cardNumberInvalid": "Invalid card number",
+      "cardExpired": "Card is expired or invalid date format",
+      "cvvInvalid": "CVV must be 3 digits",
+      "nameRequired": "Cardholder name is required",
+      "nameMinLength": "Cardholder name must be at least 3 characters",
+      "emailInvalid": "Invalid email format",
+      "phoneInvalid": "Invalid Vietnamese phone number format"
+    }
+  },
+  "apiStructure": {
+    "postPaymentMethod": {
+      "endpoint": "POST /api/payment-methods",
+      "requestBody": {
+        "type": "string (visa|mastercard|paypal|momo)",
+        "cardDetails": {
+          "cardholder": "string (for card types)",
+          "cardnumber": "string (for card types)",
+          "expiry": "string MM/YY (for card types)",
+          "cvv": "string (for card types)",
+          "email": "string (for paypal)",
+          "phone": "string (for momo)",
+          "name": "string (display name)"
+        }
+      },
+      "responseBody": {
+        "id": "number",
+        "type": "string",
+        "lastFour": "string",
+        "expiry": "string",
+        "isDefault": "boolean",
+        "isExpired": "boolean",
+        "addedDate": "string (ISO 8601)"
+      }
+    },
+    "getPaymentMethods": {
+      "endpoint": "GET /api/payment-methods",
+      "responseBody": [
+        {
+          "id": "number",
+          "type": "string",
+          "lastFour": "string",
+          "expiry": "string",
+          "isDefault": "boolean",
+          "isExpired": "boolean"
+        }
+      ]
+    },
+    "putDefaultPaymentMethod": {
+      "endpoint": "PUT /api/payment-methods/{id}/default",
+      "responseBody": {
+        "success": "boolean",
+        "message": "string"
+      }
+    },
+    "deletePaymentMethod": {
+      "endpoint": "DELETE /api/payment-methods/{id}",
+      "responseBody": {
+        "success": "boolean",
+        "message": "string"
+      }
+    }
+  },
+  "encryptionTips": {
+    "sensitive": [
+      "cardnumber - MUST encrypt",
+      "cvv - MUST encrypt",
+      "cardholder - Can encrypt",
+      "email - Can encrypt",
+      "phone - Can encrypt"
+    ],
+    "notSensitive": [
+      "lastFour - Display only",
+      "expiry - Display only",
+      "type - Not sensitive",
+      "isDefault - Not sensitive",
+      "isExpired - Not sensitive"
+    ],
+    "encryptionAlgorithm": "AES-256 (recommended)",
+    "keyManagement": "Use secure key storage (AWS KMS, HashiCorp Vault, etc.)"
+  }
+}

@@ -58,7 +58,7 @@
                                     <span class="text-sm font-medium">Payment Methods</span>
                                 </a>
                                 <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all"
-                                    href="#">
+                                    href="orderhistory.xhtml">
                                     <span class="material-symbols-outlined">package_2</span>
                                     <span class="text-sm font-medium">Order History</span>
                                 </a>
@@ -483,7 +483,7 @@
                                         data-addr-id="#{addr.addressID}">
                                         <!-- Top-right Action Icons -->
                                         <div class="absolute top-3 right-3 flex gap-0.5 z-10">
-                                            <!-- Delete Button -->
+                                            <!-- Direct Delete Button -->
                                             <h:form styleClass="inline" id="delAddrForm_#{addr.addressID}">
                                                 <h:commandButton id="delAddrBtn_#{addr.addressID}"
                                                     action="#{addressCtrl.delete(addr)}" value="">
@@ -491,11 +491,10 @@
                                                         oncomplete="handleDeleteSuccess(); refreshAddressCards();" />
                                                 </h:commandButton>
                                                 <button type="button"
-                                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 hover:scale-110 cursor-pointer"
+                                                    class="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-transparent hover:bg-red-100 dark:hover:bg-red-900/20 transition-all duration-200 cursor-pointer"
                                                     title="Delete address"
                                                     onclick="triggerDelete(event, 'delAddrBtn_#{addr.addressID}', '#{addr.street}');">
-                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/delete.png"
-                                                        alt="delete" style="width:18px;height:18px;display:block;" />
+                                                    <span class="material-symbols-outlined text-red-600 dark:text-red-400">delete</span>
                                                 </button>
                                             </h:form>
                                         </div>
@@ -567,134 +566,198 @@
                             class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6">
                             <div class="flex justify-between items-center mb-6">
                                 <h3 class="text-lg font-bold text-[#111813] dark:text-white">Payment Methods</h3>
-                                <button class="text-primary text-sm font-bold hover:underline">Add New</button>
+                                <button onclick="openPaymentModal()" type="button" class="text-primary text-sm font-bold hover:underline">Add New</button>
                             </div>
-                            <div class="flex flex-col gap-4">
-                                <label class="flex items-center justify-between p-4 rounded-lg border
-              border-[#e5e7eb] dark:border-[#2a3e32]
-              bg-[#f9fafb] dark:bg-[#1f3326]
-              cursor-pointer transition-all
-              has-[:checked]:border-primary
-              has-[:checked]:ring-2 has-[:checked]:ring-primary/30">
-
-                                    <!-- LEFT -->
-                                    <div class="flex items-center gap-4">
-                                        <!-- SELECT RADIO -->
-                                        <input type="radio" name="selectedPayment" disabled="false" class="hidden" />
-
-
-                                        <!-- CUSTOM SELECT DOT -->
-                                        <div class="w-4 h-4 rounded-full border-2 border-gray-400
-                    flex items-center justify-center
-                    peer-checked:border-primary">
-                                            <div class="w-2 h-2 rounded-full bg-primary hidden peer-checked:block">
-                                            </div>
-                                        </div>
-
-                                        <!-- CARD INFO -->
-                                        <div class="flex items-center gap-4">
-                                            <div
-                                                class="w-12 h-8 bg-white rounded border flex items-center justify-center">
-                                                <img src="../../images/visa.png" class="h-4" />
-                                            </div>
-                                            <div class="flex flex-col">
-                                                <span class="text-sm font-bold text-[#111813] dark:text-white">
-                                                    Visa ending in 4242
-                                                </span>
-                                                <span class="text-xs text-[#4b5563] dark:text-[#d1d5db]">
-                                                    Expires 12/25
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- RIGHT -->
-                                    <span class="material-symbols-outlined text-[#17cf54]">
-                                        check_circle
-                                    </span>
-                                </label>
-                                <label class="flex items-center justify-between p-4 rounded-lg border
-              border-gray-300 dark:border-gray-600
-              bg-gray-100 dark:bg-gray-800
-              opacity-60 cursor-not-allowed">
-
-                                    <div class="flex items-center gap-4">
-                                        <!-- RADIO DISABLED -->
-                                        <input type="radio" name="selectedPayment" value="expired" disabled="disabled"
-                                            class="hidden" />
-
-
-
-                                        <!-- SELECT DOT (DISABLED) -->
-                                        <div class="w-4 h-4 rounded-full border-2 border-gray-400"></div>
-
-                                        <!-- CARD INFO -->
-                                        <div class="flex items-center gap-4">
-                                            <div
-                                                class="w-12 h-8 bg-white rounded border flex items-center justify-center">
-                                                <img src="../../images/card.png" class="h-4" />
-                                            </div>
-                                            <div class="flex flex-col">
-                                                <span class="text-sm font-bold text-gray-500">
-                                                    Mastercard ending in 8899
-                                                </span>
-                                                <span class="text-xs text-red-600 font-semibold">
-                                                    Expired 09/24
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <span class="text-xs font-bold text-red-600">
-                                        Expired
-                                    </span>
-                                </label>
-
+                            <div id="paymentMethodsList" class="flex flex-col gap-4">
+                                <!-- Payment methods will be dynamically rendered by JavaScript -->
                             </div>
                         </div>
-                        <!-- Payment Modal -->
+
+                        <!-- Payment Modal - Enhanced with Tabs -->
                         <div id="paymentModal"
-                            class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/60"
+                            class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4"
                             style="z-index:99999;">
-                            <div class="bg-white dark:bg-surface-dark rounded-lg p-6 w-full max-w-lg z-[100000]"
+                            <div class="bg-white dark:bg-surface-dark rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col"
                                 style="z-index:100000;">
-                                <h3 class="text-lg font-bold mb-4">Add / Edit Payment Method</h3>
-                                <h:form>
-                                    <div class="grid grid-cols-1 gap-3">
-                                        <label class="text-sm font-medium">Card Type</label>
-                                        <h:selectOneMenu value="#{paymentCtrl.editingCard.cardType}"
-                                            styleClass="w-full">
-                                            <f:selectItem itemValue="Visa" itemLabel="Visa" />
-                                            <f:selectItem itemValue="Mastercard" itemLabel="Mastercard" />
-                                            <f:selectItem itemValue="AmEx" itemLabel="American Express" />
-                                        </h:selectOneMenu>
-                                        <label class="text-sm font-medium">Card Number</label>
-                                        <h:inputText value="#{paymentCtrl.editingCard.cardNumber}"
-                                            styleClass="w-full" />
-                                        <label class="text-sm font-medium">Cardholder Name</label>
-                                        <h:inputText value="#{paymentCtrl.editingCardHolderName}" styleClass="w-full" />
-                                        <label class="text-sm font-medium">Expiry (MM/YY)</label>
-                                        <div class="flex gap-2">
-                                            <h:inputText value="#{paymentCtrl.expiryMonth}" styleClass="w-1/2"
-                                                pt:placeholder="MM" />
-                                            <h:inputText value="#{paymentCtrl.expiryYear}" styleClass="w-1/2"
-                                                pt:placeholder="YY" />
+                                <!-- Modal Header (sticky) -->
+                                <div class="sticky top-0 flex items-center justify-between p-6 bg-gradient-to-r from-primary/10 to-green-50 border-b">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-12 rounded-full bg-cover bg-center border-2 border-white shadow"
+                                            style="background-image: url('#{auth.userProfileImageUrl}');"></div>
+                                        <div>
+                                            <h3 class="text-lg font-bold text-[#111813]">Add Payment Method</h3>
+                                            <p class="text-xs text-[#4b5563]">Choose payment type and enter details</p>
                                         </div>
                                     </div>
-                                    <div class="flex justify-end gap-2 mt-4">
-                                        <h:commandButton value="Cancel"
-                                            onclick="document.getElementById('paymentModal').classList.add('hidden'); return false;"
-                                            styleClass="px-4 py-2 border" />
-                                        <h:commandButton value="Save" action="#{paymentCtrl.save()}"
-                                            styleClass="px-4 py-2 bg-primary text-white"
-                                            onclick="document.getElementById('paymentModal').classList.add('hidden');" />
+                                    <button type="button" onclick="closePaymentModal();" class="text-xl px-3 py-1 hover:bg-gray-200 rounded-md">✕</button>
+                                </div>
+
+                                <!-- Modal Body (scrollable) -->
+                                <div class="flex-1 overflow-y-auto">
+                                    <!-- Tabs Navigation -->
+                                    <div class="flex gap-0 border-b bg-gray-50 dark:bg-gray-800 px-6 pt-4">
+                                        <button type="button" onclick="switchPaymentTab('visa')" class="payment-tab-btn active px-6 py-3 font-semibold text-sm border-b-2 border-primary text-primary" data-tab="visa">
+                                            <span class="material-symbols-outlined mr-2" style="vertical-align: middle; font-size: 20px;">credit_card</span>
+                                            Visa
+                                        </button>
+                                        <button type="button" onclick="switchPaymentTab('mastercard')" class="payment-tab-btn px-6 py-3 font-semibold text-sm border-b-2 border-transparent text-gray-600 hover:text-primary" data-tab="mastercard">
+                                            <span class="material-symbols-outlined mr-2" style="vertical-align: middle; font-size: 20px;">credit_card</span>
+                                            MasterCard
+                                        </button>
+                                        <button type="button" onclick="switchPaymentTab('paypal')" class="payment-tab-btn px-6 py-3 font-semibold text-sm border-b-2 border-transparent text-gray-600 hover:text-primary" data-tab="paypal">
+                                            <span class="material-symbols-outlined mr-2" style="vertical-align: middle; font-size: 20px;">account_balance</span>
+                                            PayPal
+                                        </button>
+                                        <button type="button" onclick="switchPaymentTab('momo')" class="payment-tab-btn px-6 py-3 font-semibold text-sm border-b-2 border-transparent text-gray-600 hover:text-primary" data-tab="momo">
+                                            <span class="material-symbols-outlined mr-2" style="vertical-align: middle; font-size: 20px;">wallet</span>
+                                            Momo
+                                        </button>
                                     </div>
-                                </h:form>
+
+                                    <!-- Tab Contents -->
+                                    <div class="p-6 space-y-4">
+                                        <!-- VISA Tab -->
+                                        <div id="tab-visa" class="payment-tab-content">
+                                            <div class="space-y-4">
+                                                <div>
+                                                    <label class="text-sm font-semibold text-[#111813] dark:text-white block mb-2">Cardholder Name</label>
+                                                    <input type="text" id="visa_cardholder" placeholder="Enter your full name" 
+                                                        class="w-full p-3 border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30" />
+                                                    <p id="visa_cardholder_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                                                </div>
+
+                                                <div>
+                                                    <label class="text-sm font-semibold text-[#111813] dark:text-white block mb-2">Card Number</label>
+                                                    <input type="text" id="visa_cardnumber" placeholder="1234 5678 9012 3456" maxlength="19"
+                                                        class="w-full p-3 border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30" 
+                                                        oninput="formatCardNumber(this, 'visa')" />
+                                                    <p id="visa_cardnumber_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                                                </div>
+
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label class="text-sm font-semibold text-[#111813] dark:text-white block mb-2">Expiry Date</label>
+                                                        <input type="text" id="visa_expiry" placeholder="MM/YY" maxlength="5"
+                                                            class="w-full p-3 border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+                                                            oninput="formatExpiry(this)" />
+                                                        <p id="visa_expiry_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-sm font-semibold text-[#111813] dark:text-white block mb-2">CVV</label>
+                                                        <input type="text" id="visa_cvv" placeholder="123" maxlength="3" 
+                                                            class="w-full p-3 border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+                                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                                                        <p id="visa_cvv_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- MASTERCARD Tab -->
+                                        <div id="tab-mastercard" class="payment-tab-content hidden">
+                                            <div class="space-y-4">
+                                                <div>
+                                                    <label class="text-sm font-semibold text-[#111813] dark:text-white block mb-2">Cardholder Name</label>
+                                                    <input type="text" id="mastercard_cardholder" placeholder="Enter your full name" 
+                                                        class="w-full p-3 border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30" />
+                                                    <p id="mastercard_cardholder_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                                                </div>
+
+                                                <div>
+                                                    <label class="text-sm font-semibold text-[#111813] dark:text-white block mb-2">Card Number</label>
+                                                    <input type="text" id="mastercard_cardnumber" placeholder="5555 4444 3333 2222" maxlength="19"
+                                                        class="w-full p-3 border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30" 
+                                                        oninput="formatCardNumber(this, 'mastercard')" />
+                                                    <p id="mastercard_cardnumber_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                                                </div>
+
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label class="text-sm font-semibold text-[#111813] dark:text-white block mb-2">Expiry Date</label>
+                                                        <input type="text" id="mastercard_expiry" placeholder="MM/YY" maxlength="5"
+                                                            class="w-full p-3 border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+                                                            oninput="formatExpiry(this)" />
+                                                        <p id="mastercard_expiry_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-sm font-semibold text-[#111813] dark:text-white block mb-2">CVV</label>
+                                                        <input type="text" id="mastercard_cvv" placeholder="123" maxlength="3" 
+                                                            class="w-full p-3 border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+                                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                                                        <p id="mastercard_cvv_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- PAYPAL Tab -->
+                                        <div id="tab-paypal" class="payment-tab-content hidden">
+                                            <div class="space-y-4">
+                                                <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
+                                                    <p class="text-sm text-blue-700 font-medium">
+                                                        <span class="material-symbols-outlined" style="vertical-align: middle;">info</span>
+                                                        You will be redirected to PayPal for secure login
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <label class="text-sm font-semibold text-[#111813] dark:text-white block mb-2">PayPal Email</label>
+                                                    <input type="email" id="paypal_email" placeholder="your@email.com" 
+                                                        class="w-full p-3 border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30" />
+                                                    <p id="paypal_email_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                                                </div>
+                                                <div>
+                                                    <label class="text-sm font-semibold text-[#111813] dark:text-white block mb-2">Display Name (for reference)</label>
+                                                    <input type="text" id="paypal_name" placeholder="e.g., My PayPal" 
+                                                        class="w-full p-3 border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30" />
+                                                    <p id="paypal_name_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- MOMO Tab -->
+                                        <div id="tab-momo" class="payment-tab-content hidden">
+                                            <div class="space-y-4">
+                                                <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
+                                                    <p class="text-sm text-blue-700 font-medium">
+                                                        <span class="material-symbols-outlined" style="vertical-align: middle;">info</span>
+                                                        You will be redirected to Momo for secure login
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <label class="text-sm font-semibold text-[#111813] dark:text-white block mb-2">Phone Number (Momo Account)</label>
+                                                    <input type="text" id="momo_phone" placeholder="+84 123 456 789" 
+                                                        class="w-full p-3 border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30" />
+                                                    <p id="momo_phone_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                                                </div>
+                                                <div>
+                                                    <label class="text-sm font-semibold text-[#111813] dark:text-white block mb-2">Display Name (for reference)</label>
+                                                    <input type="text" id="momo_name" placeholder="e.g., My Momo" 
+                                                        class="w-full p-3 border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30" />
+                                                    <p id="momo_name_error" class="text-red-600 text-xs mt-1 hidden"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal Footer -->
+                                <div class="sticky bottom-0 flex justify-end gap-3 p-6 bg-gray-50 dark:bg-gray-800 border-t">
+                                    <button type="button" onclick="closePaymentModal();" 
+                                        class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition">
+                                        Cancel
+                                    </button>
+                                    <button type="button" onclick="savePaymentMethod();" 
+                                        class="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition">
+                                        Add Payment Method
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </section>
                 </main>
             </div>
         </div>
+        <script src="#{request.contextPath}/resources/js/profile-payment.js"></script>
         <script>
             //<![CDATA[
             document.addEventListener('DOMContentLoaded', function () {
