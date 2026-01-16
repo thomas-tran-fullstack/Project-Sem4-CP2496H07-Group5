@@ -51,6 +51,7 @@ CREATE TABLE Customers (
     Longitude DECIMAL(9,6) NULL,
     MobilePhone NVARCHAR(20),
     CreatedAt DATETIME DEFAULT GETDATE(),
+    AvatarUrl NVARCHAR(500) NULL,
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 

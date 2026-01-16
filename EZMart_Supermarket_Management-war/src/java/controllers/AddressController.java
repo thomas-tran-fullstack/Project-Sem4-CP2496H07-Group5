@@ -39,6 +39,8 @@ public class AddressController implements Serializable {
         if (!ctx.isPostback()) {
             saveResultMessage = null;
             saveResultSeverity = null;
+            // Load addresses for current user when page first loads
+            loadForCurrentUser();
         }
     }
     public void clearSaveResult() {

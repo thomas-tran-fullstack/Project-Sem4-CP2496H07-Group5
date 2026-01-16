@@ -4,20 +4,106 @@
 let paymentMethods = [];
 let currentTab = 'visa';
 
+// Get context path (application root)
+function getContextPath() {
+    // Try to get from input element
+    const input = document.querySelector('input[id$="contextPath"]');
+    if (input && input.value) {
+        return input.value;
+    }
+    
+    // Try to get from window variable
+    if (window._ctx) {
+        return window._ctx;
+    }
+    
+    // Extract from current path (e.g., /EZMart_Supermarket_Management-war)
+    const pathArray = window.location.pathname.split('/');
+    if (pathArray.length > 1 && pathArray[1]) {
+        return '/' + pathArray[1];
+    }
+    
+    return '';
+}
+
+// Diagnostic: Check session on page load
+function checkSessionDiagnostic() {
+    const contextPath = getContextPath();
+    console.log('[DIAGNOSTIC] Checking session with contextPath:', contextPath);
+    
+    fetch(contextPath + '/diagnostic/session', {
+        method: 'GET',
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('[DIAGNOSTIC] Session info:', data);
+        if (data.hasSession) {
+            console.log('[DIAGNOSTIC] Session ID:', data.sessionId);
+            console.log('[DIAGNOSTIC] Session attributes:');
+            if (data.attributes && data.attributes.length > 0) {
+                data.attributes.forEach(attr => {
+                    if (attr.isCurrentCustomerId) {
+                        console.log('[DIAGNOSTIC] ✓ currentCustomerId:', attr.value);
+                    } else if (attr.isCurrentCustomer) {
+                        console.log('[DIAGNOSTIC] ✓ currentCustomer:', attr.type);
+                    } else if (attr.isCurrentUser) {
+                        console.log('[DIAGNOSTIC] ✓ currentUser:', attr.type);
+                    } else {
+                        console.log('[DIAGNOSTIC]   ' + attr.name + ' (' + attr.type + ')');
+                    }
+                });
+            } else {
+                console.log('[DIAGNOSTIC] ⚠ No session attributes found!');
+            }
+        } else {
+            console.log('[DIAGNOSTIC] ⚠ No session found!');
+        }
+    })
+    .catch(err => console.error('[DIAGNOSTIC] Error:', err));
+}
+
 // Initialize payment methods on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Debug: Check session on page load
+    checkSessionDiagnostic();
+    
     loadPaymentMethods();
     renderPaymentMethodsList();
 });
 
-// Load payment methods from local storage or backend
+// Load payment methods from backend
 function loadPaymentMethods() {
-    // This would typically come from backend
-    // For now, using localStorage as fallback
-    const stored = localStorage.getItem('paymentMethods');
-    if (stored) {
-        paymentMethods = JSON.parse(stored);
-    }
+    const contextPath = getContextPath();
+    const url = contextPath + '/resources/api/payment-methods';
+    
+    console.log('Loading payment methods from:', url);
+    
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        },
+        credentials: 'include'
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error('Failed to load payment methods: ' + response.status + ' ' + text);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Payment methods loaded:', data);
+        paymentMethods = data && Array.isArray(data) ? data : [];
+        renderPaymentMethodsList();
+    })
+    .catch(error => {
+        console.error('Error loading payment methods:', error);
+        paymentMethods = [];
+        renderPaymentMethodsList();
+    });
 }
 
 // Save payment methods to local storage (temporary - backend should handle this)
@@ -399,62 +485,108 @@ function validateMomoForm() {
 // Save payment method
 function savePaymentMethod() {
     let isValid = false;
-    let paymentData = {
-        type: currentTab,
-        id: Date.now(),
-        addedDate: new Date().toISOString(),
-        isDefault: paymentMethods.length === 0, // First card is default
-        isExpired: false
-    };
+    let paymentData = {};
     
     // Validate based on current tab
     if (currentTab === 'visa') {
         isValid = validateVisaForm();
         if (isValid) {
-            paymentData.cardholder = document.getElementById('visa_cardholder').value.trim();
-            paymentData.cardnumber = document.getElementById('visa_cardnumber').value.trim();
-            paymentData.expiry = document.getElementById('visa_expiry').value.trim();
-            paymentData.cvv = document.getElementById('visa_cvv').value.trim();
-            paymentData.lastFour = paymentData.cardnumber.slice(-4);
+            paymentData.cardType = 'VISA';
+            paymentData.cardholderName = document.getElementById('visa_cardholder').value.trim();
+            paymentData.cardNumber = document.getElementById('visa_cardnumber').value.trim().replace(/\s/g, '');
+            paymentData.cardExpiry = document.getElementById('visa_expiry').value.trim();
         }
     } else if (currentTab === 'mastercard') {
         isValid = validateMasterCardForm();
         if (isValid) {
-            paymentData.cardholder = document.getElementById('mastercard_cardholder').value.trim();
-            paymentData.cardnumber = document.getElementById('mastercard_cardnumber').value.trim();
-            paymentData.expiry = document.getElementById('mastercard_expiry').value.trim();
-            paymentData.cvv = document.getElementById('mastercard_cvv').value.trim();
-            paymentData.lastFour = paymentData.cardnumber.slice(-4);
+            paymentData.cardType = 'MASTERCARD';
+            paymentData.cardholderName = document.getElementById('mastercard_cardholder').value.trim();
+            paymentData.cardNumber = document.getElementById('mastercard_cardnumber').value.trim().replace(/\s/g, '');
+            paymentData.cardExpiry = document.getElementById('mastercard_expiry').value.trim();
         }
     } else if (currentTab === 'paypal') {
         isValid = validatePayPalForm();
         if (isValid) {
+            paymentData.cardType = 'PAYPAL';
             paymentData.email = document.getElementById('paypal_email').value.trim();
-            paymentData.name = document.getElementById('paypal_name').value.trim();
+            paymentData.cardholderName = document.getElementById('paypal_name').value.trim();
         }
     } else if (currentTab === 'momo') {
         isValid = validateMomoForm();
         if (isValid) {
+            paymentData.cardType = 'MOMO';
             paymentData.phone = document.getElementById('momo_phone').value.trim();
-            paymentData.name = document.getElementById('momo_name').value.trim();
+            paymentData.cardholderName = document.getElementById('momo_name').value.trim();
         }
     }
     
     if (isValid) {
-        // Remove default flag from others if this is being set as default
-        if (paymentData.isDefault) {
-            paymentMethods.forEach(pm => pm.isDefault = false);
+        // Get context path
+        const contextPath = getContextPath();
+        const url = contextPath + '/resources/api/payment-methods';
+        
+        // Send to server
+        const formData = new FormData();
+        formData.append('cardType', paymentData.cardType);
+        if (paymentData.cardNumber) formData.append('cardNumber', paymentData.cardNumber);
+        if (paymentData.cardExpiry) formData.append('cardExpiry', paymentData.cardExpiry);
+        if (paymentData.cardholderName) formData.append('cardholderName', paymentData.cardholderName);
+        if (paymentData.email) formData.append('email', paymentData.email);
+        if (paymentData.phone) formData.append('phone', paymentData.phone);
+        formData.append('isDefault', paymentMethods.length === 0 ? 'true' : 'false');
+
+        // Debug: log what we're sending
+        console.log('Sending payment data to:', url);
+        console.log('FormData contents:');
+        for (let [key, value] of formData.entries()) {
+            if (key === 'cardNumber' && value) {
+                console.log('  ' + key + '=***' + value.substring(Math.max(0, value.length-4)));
+            } else {
+                console.log('  ' + key + '=' + value);
+            }
         }
-        
-        paymentMethods.push(paymentData);
-        savePaymentMethodsToStorage();
-        
-        // Show success message
-        showPaymentNotification('Payment method added successfully!', 'success');
-        
-        // Close modal and refresh list
-        closePaymentModal();
-        renderPaymentMethodsList();
+
+        fetch(contextPath + '/resources/api/payment-methods', {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        })
+        .then(response => {
+            console.log('Save payment response status:', response.status);
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.log('Server response body:', text);
+                    try {
+                        const data = JSON.parse(text);
+                        throw new Error(data.error || 'Failed to save payment method (status: ' + response.status + ')');
+                    } catch (e) {
+                        throw new Error('Failed to save payment method (status: ' + response.status + '). Server response: ' + text);
+                    }
+                }).catch(err => {
+                    throw new Error('Failed to save payment method (status: ' + response.status + ')');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Save payment success:', data);
+            if (data.success) {
+                // Reload payment methods
+                loadPaymentMethods();
+                
+                // Show success message
+                showPaymentNotification('Payment method added successfully!', 'success');
+                
+                // Close modal
+                closePaymentModal();
+            } else {
+                showPaymentNotification(data.error || 'Failed to save payment method', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving payment method:', error);
+            showPaymentNotification(error.message || 'Failed to save payment method', 'error');
+        });
     }
 }
 
@@ -470,10 +602,8 @@ function renderPaymentMethodsList() {
     
     // Sort methods: non-expired active first, then other non-expired, then expired
     const sorted = [...paymentMethods].sort((a, b) => {
-        if (a.isDefault && !a.isExpired) return -1;
-        if (b.isDefault && !b.isExpired) return 1;
-        if (!a.isExpired && b.isExpired) return -1;
-        if (a.isExpired && !b.isExpired) return 1;
+        if (a.isDefault) return -1;
+        if (b.isDefault) return 1;
         return 0;
     });
     
@@ -482,11 +612,9 @@ function renderPaymentMethodsList() {
     sorted.forEach(method => {
         const card = document.createElement('div');
         card.className = `payment-method-card flex items-center justify-between p-4 rounded-lg border transition-all ${
-            method.isExpired 
-                ? 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 opacity-60'
-                : method.isDefault 
-                    ? 'border-2 border-primary dark:border-primary bg-primary/5 dark:bg-primary/10'
-                    : 'border-[#e5e7eb] dark:border-[#2a3e32] bg-[#f9fafb] dark:bg-[#1f3326]'
+            method.isDefault 
+                ? 'border-2 border-primary dark:border-primary bg-primary/5 dark:bg-primary/10'
+                : 'border-[#e5e7eb] dark:border-[#2a3e32] bg-[#f9fafb] dark:bg-[#1f3326]'
         }`;
         
         // Left side - Card info
@@ -495,14 +623,20 @@ function renderPaymentMethodsList() {
         
         // Get card image based on type
         let imagePath = '../../images/';
-        if (method.type === 'visa') {
+        let cardTypeDisplay = '';
+        
+        if (method.type === 'VISA') {
             imagePath += 'visa.png';
-        } else if (method.type === 'mastercard') {
+            cardTypeDisplay = 'Visa';
+        } else if (method.type === 'MASTERCARD') {
             imagePath += 'card.png';
-        } else if (method.type === 'paypal') {
+            cardTypeDisplay = 'MasterCard';
+        } else if (method.type === 'PAYPAL') {
             imagePath += 'paypal.png';
-        } else if (method.type === 'momo') {
+            cardTypeDisplay = 'PayPal';
+        } else if (method.type === 'MOMO') {
             imagePath += 'momo.png';
+            cardTypeDisplay = 'Momo';
         }
         
         // Card image
@@ -522,24 +656,23 @@ function renderPaymentMethodsList() {
         let cardTitle = '';
         let cardSubtitle = '';
         
-        if (method.type === 'visa' || method.type === 'mastercard') {
-            const cardType = method.type === 'visa' ? 'Visa' : 'MasterCard';
-            cardTitle = `${cardType} ending in ${method.lastFour}`;
+        if (method.type === 'VISA' || method.type === 'MASTERCARD') {
+            cardTitle = `${cardTypeDisplay} ${method.cardNumber}`;
             cardSubtitle = `Expires ${method.expiry}`;
-        } else if (method.type === 'paypal') {
-            cardTitle = method.name;
-            cardSubtitle = method.email;
-        } else if (method.type === 'momo') {
-            cardTitle = method.name;
-            cardSubtitle = method.phone;
+        } else if (method.type === 'PAYPAL') {
+            cardTitle = `PayPal`;
+            cardSubtitle = method.email || 'PayPal Account';
+        } else if (method.type === 'MOMO') {
+            cardTitle = `Momo`;
+            cardSubtitle = method.phone || 'Momo Account';
         }
         
         const titleEl = document.createElement('span');
-        titleEl.className = `text-sm font-bold ${method.isExpired ? 'text-gray-500' : 'text-[#111813] dark:text-white'}`;
+        titleEl.className = 'text-sm font-bold text-[#111813] dark:text-white';
         titleEl.textContent = cardTitle;
         
         const subtitleEl = document.createElement('span');
-        subtitleEl.className = `text-xs ${method.isExpired ? 'text-red-600 font-semibold' : 'text-[#4b5563] dark:text-[#d1d5db]'}`;
+        subtitleEl.className = 'text-xs text-[#4b5563] dark:text-[#d1d5db]';
         subtitleEl.textContent = cardSubtitle;
         
         detailsDiv.appendChild(titleEl);
@@ -552,21 +685,7 @@ function renderPaymentMethodsList() {
         const rightDiv = document.createElement('div');
         rightDiv.className = 'flex items-center gap-3';
         
-        if (method.isExpired) {
-            // Delete button for expired cards
-            const deleteBtn = document.createElement('button');
-            deleteBtn.type = 'button';
-            deleteBtn.className = 'p-2 hover:bg-red-100 rounded transition';
-            deleteBtn.title = 'Delete expired card';
-            deleteBtn.onclick = () => deletePaymentMethod(method.id);
-            
-            const deleteIcon = document.createElement('img');
-            deleteIcon.src = '../../images/delete.png';
-            deleteIcon.className = 'w-5 h-5';
-            deleteIcon.alt = 'Delete';
-            deleteBtn.appendChild(deleteIcon);
-            rightDiv.appendChild(deleteBtn);
-        } else if (method.isDefault) {
+        if (method.isDefault) {
             // Active status for default card
             const activeLabel = document.createElement('div');
             activeLabel.className = 'flex items-center gap-2 px-3 py-1 bg-green-100 dark:bg-green-900/20 rounded-full';
@@ -583,14 +702,42 @@ function renderPaymentMethodsList() {
             activeLabel.appendChild(activeIcon);
             activeLabel.appendChild(activeText);
             rightDiv.appendChild(activeLabel);
+            
+            // Delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'p-2 hover:bg-red-100 rounded transition';
+            deleteBtn.title = 'Delete payment method';
+            deleteBtn.onclick = () => deletePaymentMethod(method.id);
+            
+            const deleteIcon = document.createElement('span');
+            deleteIcon.className = 'material-symbols-outlined text-red-600';
+            deleteIcon.style.fontSize = '20px';
+            deleteIcon.textContent = 'delete';
+            deleteBtn.appendChild(deleteIcon);
+            rightDiv.appendChild(deleteBtn);
         } else {
-            // Select button for non-default, non-expired cards
+            // Select button for non-default cards
             const selectBtn = document.createElement('button');
             selectBtn.type = 'button';
             selectBtn.className = 'px-4 py-2 border border-gray-300 dark:border-gray-600 rounded text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition';
             selectBtn.textContent = 'Select';
             selectBtn.onclick = () => setDefaultPaymentMethod(method.id);
             rightDiv.appendChild(selectBtn);
+            
+            // Delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'p-2 hover:bg-red-100 rounded transition';
+            deleteBtn.title = 'Delete payment method';
+            deleteBtn.onclick = () => deletePaymentMethod(method.id);
+            
+            const deleteIcon = document.createElement('span');
+            deleteIcon.className = 'material-symbols-outlined text-red-600';
+            deleteIcon.style.fontSize = '20px';
+            deleteIcon.textContent = 'delete';
+            deleteBtn.appendChild(deleteIcon);
+            rightDiv.appendChild(deleteBtn);
         }
         
         card.appendChild(rightDiv);
@@ -601,38 +748,89 @@ function renderPaymentMethodsList() {
 // Set payment method as default
 function setDefaultPaymentMethod(methodId) {
     const method = paymentMethods.find(m => m.id === methodId);
-    if (method && !method.isExpired) {
-        // Remove default flag from all others
-        paymentMethods.forEach(pm => pm.isDefault = false);
-        method.isDefault = true;
-        
-        savePaymentMethodsToStorage();
-        renderPaymentMethodsList();
-        
-        showPaymentNotification('Payment method set as default', 'success');
+    if (!method) {
+        showPaymentNotification('Payment method not found', 'error');
+        return;
     }
+
+    const contextPath = getContextPath();
+    
+    // Send as query parameters for PUT request
+    const url = contextPath + '/resources/api/payment-methods?cardId=' + method.id + '&isDefault=true';
+    
+    console.log('[Payment] Setting default payment method with URL:', url);
+
+    fetch(url, {
+        method: 'PUT',
+        credentials: 'include'
+    })
+    .then(response => {
+        console.log('[Payment] Set default response status:', response.status);
+        if (!response.ok) {
+            return response.json().then(data => {
+                console.log('[Payment] Error response:', data);
+                throw new Error(data.error || 'Failed to set default payment method');
+            }).catch(err => {
+                throw new Error('Failed to set default payment method');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('[Payment] Set default response data:', data);
+        if (data.success) {
+            // Reload payment methods
+            loadPaymentMethods();
+            showPaymentNotification('Payment method set as default', 'success');
+        } else {
+            showPaymentNotification(data.error || 'Failed to set default payment method', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error setting default payment method:', error);
+        showPaymentNotification(error.message || 'Failed to set default payment method', 'error');
+    });
 }
 
 // Delete payment method
 function deletePaymentMethod(methodId) {
     if (confirm('Are you sure you want to delete this payment method?')) {
-        paymentMethods = paymentMethods.filter(m => m.id !== methodId);
+        const contextPath = getContextPath();
         
-        // If deleted method was default, set another as default
-        if (!paymentMethods.some(m => m.isDefault) && paymentMethods.length > 0) {
-            // Set first non-expired as default
-            const nonExpired = paymentMethods.find(m => !m.isExpired);
-            if (nonExpired) {
-                nonExpired.isDefault = true;
-            } else if (paymentMethods.length > 0) {
-                paymentMethods[0].isDefault = true;
-            }
+        // Find the card in the current list to get its ID
+        const cardToDelete = paymentMethods.find(m => m.id === methodId);
+        if (!cardToDelete) {
+            showPaymentNotification('Payment method not found', 'error');
+            return;
         }
-        
-        savePaymentMethodsToStorage();
-        renderPaymentMethodsList();
-        
-        showPaymentNotification('Payment method deleted', 'success');
+
+        fetch(contextPath + '/resources/api/payment-methods?cardId=' + cardToDelete.id, {
+            method: 'DELETE',
+            credentials: 'include'
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Failed to delete payment method');
+                }).catch(err => {
+                    throw new Error('Failed to delete payment method');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Reload payment methods
+                loadPaymentMethods();
+                showPaymentNotification('Payment method deleted successfully', 'success');
+            } else {
+                showPaymentNotification(data.error || 'Failed to delete payment method', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting payment method:', error);
+            showPaymentNotification(error.message || 'Failed to delete payment method', 'error');
+        });
     }
 }
 

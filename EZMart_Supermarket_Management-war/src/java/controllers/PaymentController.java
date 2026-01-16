@@ -68,11 +68,45 @@ public class PaymentController implements Serializable {
     }
 
     /**
-     * Validate card fields
+     * Validate card fields based on payment type
      */
     private boolean validateCard(CreditCards card) {
         if (card == null) return false;
-        
+
+        // Validate card type
+        String cardType = card.getCardType();
+        if (cardType == null || cardType.isEmpty() || cardType.length() > 20) {
+            FacesContext.getCurrentInstance().addMessage(null, new jakarta.faces.application.FacesMessage(
+                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                "Payment method type is required", null
+            ));
+            return false;
+        }
+
+        // Different validation rules based on payment type
+        if ("VISA".equalsIgnoreCase(cardType) || "MASTERCARD".equalsIgnoreCase(cardType)) {
+            // Credit card validation
+            return validateCreditCard(card);
+        } else if ("MOMO".equalsIgnoreCase(cardType)) {
+            // MOMO validation - no card number/expiry required
+            return validateMomoCard(card);
+        } else if ("PAYPAL".equalsIgnoreCase(cardType)) {
+            // PayPal validation - no card number/expiry required
+            return validatePayPalCard(card);
+        } else {
+            // Unknown payment type
+            FacesContext.getCurrentInstance().addMessage(null, new jakarta.faces.application.FacesMessage(
+                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                "Unsupported payment method type", null
+            ));
+            return false;
+        }
+    }
+
+    /**
+     * Validate credit card fields
+     */
+    private boolean validateCreditCard(CreditCards card) {
         // Validate card number
         String cardNumber = card.getCardNumber();
         if (cardNumber == null || cardNumber.isEmpty()) {
@@ -82,7 +116,7 @@ public class PaymentController implements Serializable {
             ));
             return false;
         }
-        
+
         // Remove non-digits for validation
         String digitsOnly = cardNumber.replaceAll("\\D", "");
         if (digitsOnly.length() < 13 || digitsOnly.length() > 19) {
@@ -92,7 +126,7 @@ public class PaymentController implements Serializable {
             ));
             return false;
         }
-        
+
         // Validate Luhn checksum
         if (!luhnCheck(cardNumber)) {
             FacesContext.getCurrentInstance().addMessage(null, new jakarta.faces.application.FacesMessage(
@@ -101,7 +135,7 @@ public class PaymentController implements Serializable {
             ));
             return false;
         }
-        
+
         // Validate expiry date
         String expiry = card.getCardExpiry();
         if (expiry == null || expiry.isEmpty()) {
@@ -111,7 +145,7 @@ public class PaymentController implements Serializable {
             ));
             return false;
         }
-        
+
         if (!isValidExpiryDate(expiry)) {
             FacesContext.getCurrentInstance().addMessage(null, new jakarta.faces.application.FacesMessage(
                 jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
@@ -119,17 +153,27 @@ public class PaymentController implements Serializable {
             ));
             return false;
         }
-        
-        // Validate card type
-        String cardType = card.getCardType();
-        if (cardType == null || cardType.isEmpty() || cardType.length() > 20) {
-            FacesContext.getCurrentInstance().addMessage(null, new jakarta.faces.application.FacesMessage(
-                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                "Card type is required", null
-            ));
-            return false;
-        }
-        
+
+        return true;
+    }
+
+    /**
+     * Validate MOMO payment method
+     */
+    private boolean validateMomoCard(CreditCards card) {
+        // MOMO doesn't require card number or expiry date
+        // The card number field might be used to store phone number or other identifier
+        // For now, just ensure card type is set (already validated above)
+        return true;
+    }
+
+    /**
+     * Validate PayPal payment method
+     */
+    private boolean validatePayPalCard(CreditCards card) {
+        // PayPal doesn't require card number or expiry date
+        // The card number field might be used to store email or other identifier
+        // For now, just ensure card type is set (already validated above)
         return true;
     }
 

@@ -30,4 +30,6 @@ public interface CustomersFacadeLocal {
     int count();
 
     public Customers findByUserID(Integer userID);
+
+    public Customers findByMobilePhone(String mobilePhone);
 }

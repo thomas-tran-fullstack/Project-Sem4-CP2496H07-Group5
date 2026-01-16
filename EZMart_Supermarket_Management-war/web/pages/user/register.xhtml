@@ -128,12 +128,32 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- Mobile Phone -->
+                            <div>
+                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="mobile-phone">#{locale.getMessage('register.mobilePhone')}</label>
+                                <div class="relative">
+                                    <h:inputText id="mobile-phone" value="#{auth.mobilePhone}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" placeholder="10-11 digits" />
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                                        <span class="material-symbols-outlined text-[20px]">phone</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Address -->
+                            <div>
+                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5">Address (Optional)</label>
+                                <button type="button" id="select-map-btn" onclick="openRegisterAddressModal()" class="w-full flex items-center justify-center gap-2 rounded-lg bg-green-600 px-3 py-3.5 text-sm font-bold leading-6 text-white shadow-sm hover:bg-green-700 transition-all active:scale-[0.98]">
+                                    <span class="material-symbols-outlined">add</span>
+                                    <span>Add New Address</span>
+                                </button>
+                                <!-- Hidden fields to store selected address -->
+                                <div id="reg-address-display" class="mt-2 text-sm text-gray-600 dark:text-gray-400"></div>
+                            </div>
                             <!-- Password Row -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
                                     <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="pwd-field">#{locale.getMessage('register.password')}</label>
                                     <div class="relative">
-                                        <h:inputSecret id="pwd-field" value="#{auth.regPassword}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" />
+                                        <h:inputText id="pwd-field" value="#{auth.regPassword}" type="password" styleClass="form-input block w-full rounded-lg border-0 py-3.5 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" />
                                         <button id="pwd-toggle-1" class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-auto text-gray-400 hover:text-primary transition-colors" type="button">
                                             <span class="material-symbols-outlined pwd-icon">visibility_off</span>
                                         </button>
@@ -142,7 +162,7 @@
                                 <div>
                                     <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="confirm-password">#{locale.getMessage('register.confirmPassword')}</label>
                                     <div class="relative">
-                                        <h:inputSecret id="confirm-password" value="#{auth.regConfirmPassword}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" />
+                                        <h:inputText id="confirm-password" value="#{auth.regConfirmPassword}" type="password" styleClass="form-input block w-full rounded-lg border-0 py-3.5 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" />
                                         <button id="pwd-toggle-2" class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-auto text-gray-400 hover:text-primary transition-colors" type="button">
                                             <span class="material-symbols-outlined pwd-icon">visibility_off</span>
                                         </button>
@@ -181,15 +201,120 @@
                             <div class="pt-4">
                                 <h:commandButton action="#{auth.register}" value="#{locale.getMessage('register.signUp')}" styleClass="flex w-full justify-center rounded-lg bg-primary px-3 py-3.5 text-sm font-bold leading-6 text-white shadow-sm hover:bg-primary-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all active:scale-[0.98]" />
                             </div>
+                            
+                            <!-- Context path storage (extracted from URL via JavaScript) -->
+                            <div id="contextPath" style="display:none;"></div>
+                            
+                            <!-- Hidden fields for address data (from modal) -->
+                            <h:inputHidden id="regaddr_type" value="#{auth.addressType}" />
+                            <h:inputHidden id="regaddr_country" value="#{auth.country}" />
+                            <h:inputHidden id="regaddr_region" value="#{auth.state}" />
+                            <h:inputHidden id="regaddr_city" value="#{auth.city}" />
+                            <h:inputHidden id="regaddr_street" value="#{auth.street}" />
+                            <h:inputHidden id="regaddr_label" value="#{auth.addressLabel}" />
+                            <h:inputHidden id="regaddr_lat" value="#{auth.latitude}" />
+                            <h:inputHidden id="regaddr_lng" value="#{auth.longitude}" />
                         </h:form>
+                        
+                        <!-- Address Modal for Register -->
+                        <div id="registerAddressModal" class="hidden fixed inset-0 flex items-center justify-center bg-black/60 p-4" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:100200;">
+                            <div class="bg-white dark:bg-surface-dark rounded-xl shadow-lg w-full max-w-2xl max-h-[85vh] overflow-y-auto flex flex-col" style="position:relative;z-index:100300;">
+                                <!-- Modal Header -->
+                                <div class="sticky top-0 flex items-center justify-between p-5 bg-gradient-to-r from-primary/10 to-green-50 border-b">
+                                    <div>
+                                        <h3 class="text-lg font-bold text-[#111813]">Add Address</h3>
+                                        <p class="text-xs text-[#4b5563]">Select location details</p>
+                                    </div>
+                                    <button type="button" onclick="closeRegisterAddressModal();" class="text-xl px-3 py-1 hover:bg-gray-200 rounded-md">✕</button>
+                                </div>
+                                <!-- Modal Body -->
+                                <div class="p-6 space-y-4 flex-1 overflow-y-auto">
+                                    <!-- Address Type -->
+                                    <div>
+                                        <label class="text-sm font-medium block mb-2">Address Type</label>
+                                        <select id="regaddr_type_ui" class="w-full p-2 border rounded-md">
+                                            <option value="">-- Select Type --</option>
+                                            <option value="Home">Home</option>
+                                            <option value="Work">Work</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Country -->
+                                    <div>
+                                        <label class="text-sm font-medium block mb-2">Country</label>
+                                        <select id="regaddr_country_ui" class="w-full p-2 border rounded-md" onchange="onRegCountryChange()">
+                                            <option value="">-- Select Country --</option>
+                                            <option value="United States">United States</option>
+                                            <option value="Vietnam">Vietnam</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Region / Province / State -->
+                                    <div id="regreg_region" class="hidden">
+                                        <label id="reregion_label" class="text-sm font-medium block mb-2">State / Province</label>
+                                        <select id="regaddr_region_input" class="w-full p-2 border rounded-md">
+                                            <option value="">-- Select --</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- City / District -->
+                                    <div id="regstep_city" class="hidden">
+                                        <label id="regcity_label" class="text-sm font-medium block mb-2">City / District</label>
+                                        <select id="regaddr_city_input" class="w-full p-2 border rounded-md">
+                                            <option value="">-- Select --</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Street Address -->
+                                    <div id="regstep_street" class="hidden">
+                                        <label class="text-sm font-medium block mb-2">Street Address</label>
+                                        <input id="regaddr_street_ui" type="text" placeholder="Enter street name..." class="w-full p-2 border rounded-md" />
+                                    </div>
+
+                                    <!-- Label / House Number -->
+                                    <div id="regstep_label" class="hidden">
+                                        <label class="text-sm font-medium block mb-2">Label (Optional)</label>
+                                        <input id="regaddr_label_ui" type="text" placeholder="House number / Building..." class="w-full p-2 border rounded-md" />
+                                    </div>
+
+                                    <!-- Map Section -->
+                                    <div id="regstep_map_wrapper" class="hidden">
+                                        <label class="text-sm font-medium block mb-2">Confirm Location on Map</label>
+                                        <p class="text-xs text-gray-600 mb-2">Drag the marker to adjust the exact location</p>
+                                        <div id="regaddr_map" class="w-full h-72 rounded-md border bg-gray-100"></div>
+                                    </div>
+
+                                    <!-- Select on Map Button -->
+                                    <div id="regmap_button_row" class="hidden mt-6 pt-6 border-t">
+                                        <button type="button" id="regselect_map_btn" onclick="openRegMapPicker()" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">Select your place on map</button>
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
+                                        <button type="button" onclick="closeRegisterAddressModal()" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100">Cancel</button>
+                                        <button type="button" onclick="saveRegisterAddress()" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">Save Address</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <script>//<![CDATA[
-                            document.addEventListener('DOMContentLoaded', function() {
-                                // Password visibility toggles
-                                var toggle1 = document.getElementById('pwd-toggle-1');
-                                var toggle2 = document.getElementById('pwd-toggle-2');
+                            function initPasswordFunctions() {
+                                console.log('Initializing password functions...');
                                 
-                                if(toggle1) {
-                                    var pwd1 = document.getElementById('pwd-field');
+                                // Find password field using attribute selector (JSF may add namespace prefix)
+                                var pwd1 = document.querySelector('input[id$="pwd-field"]') || document.getElementById('pwd-field');
+                                var pwd2 = document.querySelector('input[id$="confirm-password"]') || document.getElementById('confirm-password');
+                                var toggle1 = document.querySelector('button[id$="pwd-toggle-1"]') || document.getElementById('pwd-toggle-1');
+                                var toggle2 = document.querySelector('button[id$="pwd-toggle-2"]') || document.getElementById('pwd-toggle-2');
+                                
+                                console.log('pwd1:', pwd1);
+                                console.log('pwd2:', pwd2);
+                                console.log('toggle1:', toggle1);
+                                console.log('toggle2:', toggle2);
+                                
+                                // Toggle password visibility for password field
+                                if(toggle1 && pwd1) {
                                     toggle1.addEventListener('click', function(e) {
                                         e.preventDefault();
                                         var icon1 = toggle1.querySelector('.pwd-icon');
@@ -201,10 +326,11 @@
                                             icon1.textContent = 'visibility_off';
                                         }
                                     });
+                                    console.log('Toggle1 listener added');
                                 }
                                 
-                                if(toggle2) {
-                                    var pwd2 = document.getElementById('confirm-password');
+                                // Toggle password visibility for confirm password field
+                                if(toggle2 && pwd2) {
                                     toggle2.addEventListener('click', function(e) {
                                         e.preventDefault();
                                         var icon2 = toggle2.querySelector('.pwd-icon');
@@ -216,6 +342,7 @@
                                             icon2.textContent = 'visibility_off';
                                         }
                                     });
+                                    console.log('Toggle2 listener added');
                                 }
                                 
                                 // Password strength indicator
@@ -228,8 +355,14 @@
                                     if(/[^A-Za-z0-9]/.test(p)) score++;
                                     return score;
                                 }
+                                
                                 function updateUI(score){
-                                    var bars = [document.getElementById('bar1'),document.getElementById('bar2'),document.getElementById('bar3'),document.getElementById('bar4')];
+                                    var bars = [
+                                        document.querySelector('div[id$="bar1"]') || document.getElementById('bar1'),
+                                        document.querySelector('div[id$="bar2"]') || document.getElementById('bar2'),
+                                        document.querySelector('div[id$="bar3"]') || document.getElementById('bar3'),
+                                        document.querySelector('div[id$="bar4"]') || document.getElementById('bar4')
+                                    ];
                                     if(!bars[0]) return;
                                     for(var i=0;i<4;i++){
                                         if(i<score){
@@ -242,21 +375,554 @@
                                             bars[i].classList.add('dark:bg-gray-700');
                                         }
                                     }
-                                    var label = document.getElementById('pwd-strength-label');
+                                    var label = document.querySelector('span[id$="pwd-strength-label"]') || document.getElementById('pwd-strength-label');
                                     if(label){
                                         if(score <= 1) { label.textContent = 'Low'; }
                                         else if(score == 2 || score == 3) { label.textContent = 'Medium'; }
                                         else { label.textContent = 'High'; }
                                     }
                                 }
-                                var pwd = document.getElementById('pwd-field');
-                                if(pwd) {
-                                    pwd.addEventListener('input', function(e){
+                                
+                                // Add input listener for password strength
+                                if(pwd1) {
+                                    pwd1.addEventListener('input', function(e){
                                         var s = scorePassword(e.target.value);
                                         updateUI(s);
                                     });
+                                    console.log('Password strength listener added');
                                 }
-                            });
+                            }
+                            
+                            // Initialize when DOM is ready
+                            if(document.readyState === 'loading') {
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    initPasswordFunctions();
+                                    initRegAddressListeners();
+                                });
+                            } else {
+                                initPasswordFunctions();
+                                initRegAddressListeners();
+                            }
+                            
+                            function initRegAddressListeners() {
+                                var regionInput = document.getElementById('regaddr_region_input');
+                                var cityInput = document.getElementById('regaddr_city_input');
+                                
+                                if(regionInput) {
+                                    regionInput.addEventListener('change', onRegRegionChange);
+                                }
+                                if(cityInput) {
+                                    cityInput.addEventListener('change', onRegCityChange);
+                                }
+                            }
+                            
+                            // Data storage for address modal
+                            var regVietnamData = null;
+                            var regUSData = null;
+                            var regTomSelectRegion = null;
+                            var regTomSelectCity = null;
+                            
+                            // Get context path
+                            function getContextPath() {
+                                // Extract context path from current URL
+                                // URL format: http://localhost:8080/contextPath/pages/user/register.xhtml
+                                var pathArray = window.location.pathname.split('/');
+                                
+                                // For URL like /EZMart_Supermarket_Management-war_war/pages/user/register.xhtml
+                                // We want to extract /EZMart_Supermarket_Management-war_war
+                                
+                                if(pathArray.length >= 2) {
+                                    // pathArray[0] = empty (before first /)
+                                    // pathArray[1] = context (app name)
+                                    var contextPath = '/' + pathArray[1];
+                                    console.log('Context path extracted from URL:', contextPath);
+                                    return contextPath;
+                                }
+                                
+                                // Fallback: try to extract from the data-contextpath if available
+                                var contextDiv = document.getElementById('contextPath');
+                                if(contextDiv && contextDiv.textContent) {
+                                    console.log('Context path from div:', contextDiv.textContent);
+                                    return contextDiv.textContent;
+                                }
+                                
+                                console.warn('Context path not found, using empty string');
+                                return '';
+                            }
+                            
+                            // Load Vietnam provinces and districts
+                            function loadVietnamData() {
+                                var contextPath = getContextPath();
+                                // Try multiple URL patterns
+                                var urlPatterns = [
+                                    contextPath + '/resources/data/vn-provinces.json',
+                                    '/resources/data/vn-provinces.json',
+                                    './resources/data/vn-provinces.json',
+                                    '../../resources/data/vn-provinces.json'
+                                ];
+                                
+                                function tryFetch(index) {
+                                    if(index >= urlPatterns.length) {
+                                        return Promise.reject(new Error('All URLs failed'));
+                                    }
+                                    
+                                    var url = urlPatterns[index];
+                                    console.log('Attempting to fetch Vietnam data from:', url);
+                                    
+                                    return fetch(url)
+                                        .then(r => {
+                                            console.log('Response status for ' + url + ':', r.status);
+                                            if(!r.ok) throw new Error('HTTP ' + r.status);
+                                            return r.json();
+                                        })
+                                        .then(data => {
+                                            console.log('Vietnam data loaded successfully from:', url);
+                                            regVietnamData = data;
+                                            return data;
+                                        })
+                                        .catch(err => {
+                                            console.warn('Failed to load from ' + url + ':', err.message);
+                                            return tryFetch(index + 1);
+                                        });
+                                }
+                                
+                                return tryFetch(0);
+                            }
+                            
+                            // Load US states and cities
+                            function loadUSData() {
+                                var contextPath = getContextPath();
+                                // Try multiple URL patterns
+                                var urlPatterns = [
+                                    contextPath + '/resources/data/us-cities.json',
+                                    '/resources/data/us-cities.json',
+                                    './resources/data/us-cities.json',
+                                    '../../resources/data/us-cities.json'
+                                ];
+                                
+                                function tryFetch(index) {
+                                    if(index >= urlPatterns.length) {
+                                        return Promise.reject(new Error('All URLs failed'));
+                                    }
+                                    
+                                    var url = urlPatterns[index];
+                                    console.log('Attempting to fetch US data from:', url);
+                                    
+                                    return fetch(url)
+                                        .then(r => {
+                                            console.log('Response status for ' + url + ':', r.status);
+                                            if(!r.ok) throw new Error('HTTP ' + r.status);
+                                            return r.json();
+                                        })
+                                        .then(data => {
+                                            console.log('US data loaded successfully from:', url);
+                                            regUSData = data;
+                                            return data;
+                                        })
+                                        .catch(err => {
+                                            console.warn('Failed to load from ' + url + ':', err.message);
+                                            return tryFetch(index + 1);
+                                        });
+                                }
+                                
+                                return tryFetch(0);
+                            }
+                            
+                            // Initialize Tom Select for region and city
+                            function initRegAddressTomSelect() {
+                                console.log('initRegAddressTomSelect called');
+                                console.log('TomSelect available:', typeof TomSelect);
+                                
+                                var regionSelect = document.getElementById('regaddr_region_input');
+                                var citySelect = document.getElementById('regaddr_city_input');
+                                
+                                console.log('Region select element:', regionSelect);
+                                console.log('City select element:', citySelect);
+                                
+                                if(regionSelect && !regTomSelectRegion && typeof TomSelect !== 'undefined') {
+                                    try {
+                                        regTomSelectRegion = new TomSelect(regionSelect, {
+                                            create: false,
+                                            placeholder: '-- Select --',
+                                            searchField: 'text'
+                                        });
+                                        console.log('Region Tom-Select initialized successfully');
+                                    } catch(e) {
+                                        console.error('Error initializing region Tom-Select:', e);
+                                    }
+                                }
+                                
+                                if(citySelect && !regTomSelectCity && typeof TomSelect !== 'undefined') {
+                                    try {
+                                        regTomSelectCity = new TomSelect(citySelect, {
+                                            create: false,
+                                            placeholder: '-- Select --',
+                                            searchField: 'text'
+                                        });
+                                        console.log('City Tom-Select initialized successfully');
+                                    } catch(e) {
+                                        console.error('Error initializing city Tom-Select:', e);
+                                    }
+                                }
+                            }
+                            
+                            // Ensure Tom-Select is initialized before use
+                            function ensureTomSelectInitialized() {
+                                if(!regTomSelectRegion) {
+                                    console.log('Tom-Select not initialized, initializing now...');
+                                    initRegAddressTomSelect();
+                                }
+                            }
+                            
+                            // Address modal functions for register
+                            var regSelectedAddress = {};
+                            
+                            function openRegisterAddressModal() {
+                                document.getElementById('registerAddressModal').classList.remove('hidden');
+                                resetRegAddressForm();
+                                // Initialize Tom Select on first open
+                                setTimeout(function() {
+                                    initRegAddressTomSelect();
+                                }, 100);
+                            }
+                            
+                            function closeRegisterAddressModal() {
+                                document.getElementById('registerAddressModal').classList.add('hidden');
+                            }
+                            
+                            function resetRegAddressForm() {
+                                document.getElementById('regaddr_type_ui').value = '';
+                                document.getElementById('regaddr_country_ui').value = '';
+                                if(regTomSelectRegion) regTomSelectRegion.clear();
+                                if(regTomSelectCity) regTomSelectCity.clear();
+                                document.getElementById('regaddr_street_ui').value = '';
+                                
+                                document.getElementById('regreg_region').classList.add('hidden');
+                                document.getElementById('regstep_city').classList.add('hidden');
+                                document.getElementById('regstep_street').classList.add('hidden');
+                            }
+                            
+                            function onRegCountryChange() {
+                                console.log('onRegCountryChange called');
+                                
+                                // Ensure Tom-Select is initialized
+                                ensureTomSelectInitialized();
+                                
+                                var country = document.getElementById('regaddr_country_ui').value;
+                                console.log('Selected country:', country);
+                                
+                                // Find the hidden input for country (JSF may add prefix)
+                                var countryHidden = document.querySelector('input[id*="regaddr_country"]');
+                                if(countryHidden) {
+                                    countryHidden.value = country;
+                                    console.log('Set country hidden field to:', country);
+                                }
+                                
+                                // Clear city and later selections
+                                if(regTomSelectCity) regTomSelectCity.clear();
+                                var cityStep = document.getElementById('regstep_city');
+                                var streetStep = document.getElementById('regstep_street');
+                                var labelStep = document.getElementById('regstep_label');
+                                var mapWrapperStep = document.getElementById('regstep_map_wrapper');
+                                var mapButtonRow = document.getElementById('regmap_button_row');
+                                
+                                if(cityStep) cityStep.classList.add('hidden');
+                                if(streetStep) streetStep.classList.add('hidden');
+                                if(labelStep) labelStep.classList.add('hidden');
+                                if(mapWrapperStep) mapWrapperStep.classList.add('hidden');
+                                if(mapButtonRow) mapButtonRow.classList.add('hidden');
+                                
+                                // Show/hide fields based on country
+                                if(country) {
+                                    console.log('Showing region div');
+                                    document.getElementById('regreg_region').classList.remove('hidden');
+                                    
+                                    // Clear region
+                                    if(regTomSelectRegion) regTomSelectRegion.clear();
+                                    
+                                    if(country === 'Vietnam') {
+                                        console.log('Loading Vietnam data...');
+                                        document.getElementById('reregion_label').textContent = 'Province';
+                                        document.getElementById('regcity_label').textContent = 'District';
+                                        
+                                        // Load Vietnam data and populate region select
+                                        loadVietnamData().then(function(data) {
+                                            console.log('Vietnam data loaded:', data);
+                                            if(regTomSelectRegion) {
+                                                regTomSelectRegion.clearOptions();
+                                                var provinces = Object.keys(data);
+                                                console.log('Provinces:', provinces);
+                                                provinces.forEach(function(prov) {
+                                                    regTomSelectRegion.addOption({text: prov, value: prov});
+                                                });
+                                                regTomSelectRegion.refreshOptions(false);
+                                            }
+                                        }).catch(function(err) {
+                                            console.error('Error loading Vietnam data:', err);
+                                        });
+                                    } else {
+                                        console.log('Loading US data...');
+                                        document.getElementById('reregion_label').textContent = 'State';
+                                        document.getElementById('regcity_label').textContent = 'City / Town';
+                                        
+                                        // Load US data and populate region select
+                                        loadUSData().then(function(data) {
+                                            console.log('US data loaded:', data);
+                                            if(regTomSelectRegion) {
+                                                regTomSelectRegion.clearOptions();
+                                                var states = Object.keys(data);
+                                                console.log('States:', states);
+                                                states.forEach(function(state) {
+                                                    regTomSelectRegion.addOption({text: state, value: state});
+                                                });
+                                                regTomSelectRegion.refreshOptions(false);
+                                            }
+                                        }).catch(function(err) {
+                                            console.error('Error loading US data:', err);
+                                        });
+                                    }
+                                } else {
+                                    console.log('Hiding region div');
+                                    document.getElementById('regreg_region').classList.add('hidden');
+                                }
+                            }
+                            
+                            function onRegRegionChange() {
+                                var country = document.getElementById('regaddr_country_ui').value;
+                                var region = document.getElementById('regaddr_region_input').value;
+                                
+                                // Find the hidden input for region (JSF may add prefix)
+                                var regionHidden = document.querySelector('input[id*="regaddr_region"]');
+                                if(regionHidden) {
+                                    regionHidden.value = region;
+                                }
+                                
+                                if(regTomSelectCity) regTomSelectCity.clear();
+                                var streetStep = document.getElementById('regstep_street');
+                                if(streetStep) streetStep.classList.add('hidden');
+                                
+                                if(region) {
+                                    var cityStep = document.getElementById('regstep_city');
+                                    if(cityStep) cityStep.classList.remove('hidden');
+                                    
+                                    // Load cities for selected province/state
+                                    if(country === 'Vietnam' && regVietnamData) {
+                                        if(regTomSelectCity) {
+                                            regTomSelectCity.clearOptions();
+                                            var districts = regVietnamData[region] ? regVietnamData[region].districts : [];
+                                            districts.forEach(function(dist) {
+                                                regTomSelectCity.addOption({text: dist, value: dist});
+                                            });
+                                        }
+                                    } else if(country === 'United States' && regUSData) {
+                                        if(regTomSelectCity) {
+                                            regTomSelectCity.clearOptions();
+                                            var cities = regUSData[region] || [];
+                                            cities.forEach(function(city) {
+                                                regTomSelectCity.addOption({text: city, value: city});
+                                            });
+                                        }
+                                    }
+                                } else {
+                                    var cityStep = document.getElementById('regstep_city');
+                                    if(cityStep) cityStep.classList.add('hidden');
+                                }
+                            }
+                            
+                            function onRegCityChange() {
+                                var country = document.getElementById('regaddr_country_ui').value;
+                                var city = document.getElementById('regaddr_city_input').value;
+                                
+                                // Find the hidden input for city (JSF may add prefix)
+                                var cityHidden = document.querySelector('input[id*="regaddr_city"]');
+                                if(cityHidden) {
+                                    cityHidden.value = city;
+                                }
+                                
+                                if(city) {
+                                    // Show street
+                                    var streetStep = document.getElementById('regstep_street');
+                                    var labelStep = document.getElementById('regstep_label');
+                                    var mapButtonRow = document.getElementById('regmap_button_row');
+                                    
+                                    if(streetStep) streetStep.classList.remove('hidden');
+                                    if(labelStep) labelStep.classList.remove('hidden');
+                                    if(mapButtonRow) mapButtonRow.classList.remove('hidden');
+                                } else {
+                                    var streetStep = document.getElementById('regstep_street');
+                                    var labelStep = document.getElementById('regstep_label');
+                                    var mapButtonRow = document.getElementById('regmap_button_row');
+                                    var mapWrapperStep = document.getElementById('regstep_map_wrapper');
+                                    
+                                    if(streetStep) streetStep.classList.add('hidden');
+                                    if(labelStep) labelStep.classList.add('hidden');
+                                    if(mapButtonRow) mapButtonRow.classList.add('hidden');
+                                    if(mapWrapperStep) mapWrapperStep.classList.add('hidden');
+                                }
+                            }
+                            
+                            // Map variables for register
+                            var regMap = null;
+                            var regMapMarker = null;
+                            var regMapInited = false;
+                            
+                            // Initialize the map for register address
+                            function initRegAddressMap() {
+                                var mapContainer = document.getElementById('regaddr_map');
+                                if(mapContainer != null && mapContainer._leaflet_id !== undefined) {
+                                    try {
+                                        mapContainer._leaflet_id = null;
+                                        if(window.regMap && typeof window.regMap.remove === 'function') {
+                                            window.regMap.remove();
+                                        }
+                                    } catch(e) { }
+                                }
+                                regMapInited = false;
+                                
+                                if(regMapInited) return;
+                                regMapInited = true;
+                                
+                                var defaultLat = 21.0285, defaultLng = 105.8542; // Hanoi, Vietnam
+                                var country = document.getElementById('regaddr_country_ui').value;
+                                
+                                // Set default location based on country
+                                if(country === 'United States') {
+                                    defaultLat = 37.7749;  // San Francisco
+                                    defaultLng = -122.4194;
+                                }
+                                
+                                regMap = L.map('regaddr_map', {center: [defaultLat, defaultLng], zoom: 12});
+                                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19}).addTo(regMap);
+                                regMapMarker = L.marker([defaultLat, defaultLng], {draggable: true}).addTo(regMap);
+                                
+                                regMapMarker.on('dragend', function(e) {
+                                    var latlng = regMapMarker.getLatLng();
+                                    var latInput = document.querySelector('input[id*="regaddr_lat"]');
+                                    var lngInput = document.querySelector('input[id*="regaddr_lng"]');
+                                    var mapSelInput = document.querySelector('input[id*="regaddr_map_selected"]');
+                                    if(latInput) latInput.value = latlng.lat;
+                                    if(lngInput) lngInput.value = latlng.lng;
+                                    if(mapSelInput) mapSelInput.value = '1';
+                                });
+                                
+                                // Allow clicking on map to move marker
+                                regMap.on('click', function(e) {
+                                    regMapMarker.setLatLng(e.latlng);
+                                    var latInput = document.querySelector('input[id*="regaddr_lat"]');
+                                    var lngInput = document.querySelector('input[id*="regaddr_lng"]');
+                                    var mapSelInput = document.querySelector('input[id*="regaddr_map_selected"]');
+                                    if(latInput) latInput.value = e.latlng.lat;
+                                    if(lngInput) lngInput.value = e.latlng.lng;
+                                    if(mapSelInput) mapSelInput.value = '1';
+                                });
+                            }
+                            
+                            function openRegMapPicker() {
+                                console.log('Opening register address map picker');
+                                document.getElementById('regstep_map_wrapper').classList.remove('hidden');
+                                setTimeout(function() {
+                                    initRegAddressMap();
+                                    geocodeRegAddressAndSetMarker();
+                                }, 100);
+                            }
+                            
+                            function geocodeRegAddressAndSetMarker() {
+                                var city = document.getElementById('regaddr_city_input').value;
+                                var country = document.getElementById('regaddr_country_ui').value;
+                                
+                                if(!city) return;
+                                
+                                var query = city + ', ' + country;
+                                console.log('Geocoding:', query);
+                                
+                                // Use OpenStreetMap geocoding API
+                                fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query))
+                                    .then(r => r.json())
+                                    .then(data => {
+                                        if(data && data.length > 0) {
+                                            var result = data[0];
+                                            var lat = parseFloat(result.lat);
+                                            var lng = parseFloat(result.lon);
+                                            console.log('Geocoded location:', lat, lng);
+                                            
+                                            if(regMap && regMapMarker) {
+                                                regMap.setView([lat, lng], 12);
+                                                regMapMarker.setLatLng([lat, lng]);
+                                                
+                                                var latInput = document.querySelector('input[id*="regaddr_lat"]');
+                                                var lngInput = document.querySelector('input[id*="regaddr_lng"]');
+                                                if(latInput) latInput.value = lat;
+                                                if(lngInput) lngInput.value = lng;
+                                            }
+                                        }
+                                    })
+                                    .catch(err => console.error('Geocoding error:', err));
+                            }
+                            
+                            function saveRegisterAddress() {
+                                var type = document.getElementById('regaddr_type_ui').value;
+                                var country = document.getElementById('regaddr_country_ui').value;
+                                var region = document.getElementById('regaddr_region_input').value;
+                                var city = document.getElementById('regaddr_city_input').value;
+                                var street = document.getElementById('regaddr_street_ui').value;
+                                var label = document.getElementById('regaddr_label_ui').value;
+                                
+                                if(!country || !region || !city || !street) {
+                                    alert('Please fill all required fields');
+                                    return;
+                                }
+                                
+                                // Get coordinates from map marker if available
+                                var lat = null;
+                                var lng = null;
+                                if(regMapMarker) {
+                                    var latlng = regMapMarker.getLatLng();
+                                    lat = latlng.lat;
+                                    lng = latlng.lng;
+                                }
+                                
+                                // Store address data
+                                regSelectedAddress = {
+                                    type: type,
+                                    country: country,
+                                    state: region,
+                                    city: city,
+                                    street: street,
+                                    label: label,
+                                    latitude: lat,
+                                    longitude: lng
+                                };
+                                
+                                // Update hidden fields using attribute selectors (JSF may add prefix)
+                                var typeHidden = document.querySelector('input[id*="regaddr_type"]');
+                                var countryHidden = document.querySelector('input[id*="regaddr_country"]');
+                                var regionHidden = document.querySelector('input[id*="regaddr_region"]');
+                                var cityHidden = document.querySelector('input[id*="regaddr_city"]');
+                                var streetHidden = document.querySelector('input[id*="regaddr_street"]');
+                                var labelHidden = document.querySelector('input[id*="regaddr_label"]');
+                                var latHidden = document.querySelector('input[id*="regaddr_lat"]');
+                                var lngHidden = document.querySelector('input[id*="regaddr_lng"]');
+                                
+                                if(typeHidden) typeHidden.value = type;
+                                if(countryHidden) countryHidden.value = country;
+                                if(regionHidden) regionHidden.value = region;
+                                if(cityHidden) cityHidden.value = city;
+                                if(streetHidden) streetHidden.value = street;
+                                if(labelHidden) labelHidden.value = label;
+                                if(latHidden && lat) latHidden.value = lat;
+                                if(lngHidden && lng) lngHidden.value = lng;
+                                
+                                console.log('Address saved with coordinates:', lat, lng);
+                                
+                                // Update display
+                                var displayText = street + ', ' + city + ', ' + region + ', ' + country;
+                                var displayDiv = document.getElementById('reg-address-display');
+                                if(displayDiv) {
+                                    displayDiv.innerHTML = '<strong>Address:</strong> ' + displayText;
+                                }
+                                
+                                closeRegisterAddressModal();
+                            }
                         //]]></script>
                         <!-- Trust Signals -->
                         <div class="pt-4 flex items-center justify-center gap-2 text-xs text-[#4b5563] dark:text-[#d1d5db]">

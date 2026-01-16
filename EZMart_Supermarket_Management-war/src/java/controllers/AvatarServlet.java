@@ -18,7 +18,20 @@ public class AvatarServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String userId = req.getParameter("userId");
-        if (userId == null || userId.isEmpty()) {
+        String customerId = req.getParameter("customerId");
+        
+        if (userId == null && customerId == null) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        
+        // Use customerId if provided, otherwise userId
+        String fileNamePrefix = "user_";
+        if (customerId != null && !customerId.isEmpty()) {
+            fileNamePrefix += customerId;
+        } else if (userId != null && !userId.isEmpty()) {
+            fileNamePrefix += userId;
+        } else {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -60,13 +73,13 @@ public class AvatarServlet extends HttpServlet {
         // try common extensions
         File img = null;
         for (String ext : new String[]{"jpg","png","gif"}) {
-            File f = new File(dir, "user_" + userId + "." + ext);
-            System.out.println("AvatarServlet: checking for user_" + userId + "." + ext + ": " + f.exists());
+            File f = new File(dir, fileNamePrefix + "." + ext);
+            System.out.println("AvatarServlet: checking for " + fileNamePrefix + "." + ext + ": " + f.exists());
             if (f.exists()) { img = f; break; }
         }
         if (img == null) {
             // Serve default avatar from /images/user.png if available
-            System.out.println("AvatarServlet: no avatar found for user " + userId + ", serving default");
+            System.out.println("AvatarServlet: no avatar found for " + fileNamePrefix + ", serving default");
             try (java.io.InputStream in = getServletContext().getResourceAsStream("/images/user.png")) {
                 if (in == null) {
                     resp.sendError(HttpServletResponse.SC_NOT_FOUND);

@@ -90,6 +90,9 @@ public class Customers implements Serializable {
     @Column(name = "CreatedAt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @Size(max = 500)
+    @Column(name = "AvatarUrl")
+    private String avatarUrl;
     @OneToMany(mappedBy = "customerID")
     private List<Orders> ordersList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customerID")
@@ -213,6 +216,14 @@ public class Customers implements Serializable {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     @XmlTransient

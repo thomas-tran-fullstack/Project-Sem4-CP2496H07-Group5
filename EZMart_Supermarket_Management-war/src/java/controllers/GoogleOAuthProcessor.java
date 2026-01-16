@@ -51,6 +51,10 @@ public class GoogleOAuthProcessor extends HttpServlet {
             // Update session attributes for compatibility
             session.setAttribute("currentUser", existingUser);
             session.setAttribute("currentUserId", existingUser.getUserID());
+            if (existingUser.getCustomersList() != null && !existingUser.getCustomersList().isEmpty()) {
+                session.setAttribute("currentCustomer", existingUser.getCustomersList().get(0));
+                session.setAttribute("currentCustomerId", existingUser.getCustomersList().get(0).getCustomerID());
+            }
             session.setAttribute("loggedIn", true);
             // Also update JSF session-scoped AuthController bean if present
             Object authBean = session.getAttribute("auth");
@@ -67,7 +71,7 @@ public class GoogleOAuthProcessor extends HttpServlet {
                     System.out.println("GoogleOAuthProcessor: failed to update AuthController bean: " + ex.getMessage());
                 }
             }
-            System.out.println("GoogleOAuthProcessor: session attributes set currentUserId=" + existingUser.getUserID() + ", loggedIn=true");
+            System.out.println("GoogleOAuthProcessor: session attributes set currentUserId=" + existingUser.getUserID() + ", currentCustomerId=" + (existingUser.getCustomersList() != null && !existingUser.getCustomersList().isEmpty() ? existingUser.getCustomersList().get(0).getCustomerID() : "null") + ", loggedIn=true");
             response.sendRedirect(request.getContextPath() + "/pages/user/index.xhtml");
             return;
         }

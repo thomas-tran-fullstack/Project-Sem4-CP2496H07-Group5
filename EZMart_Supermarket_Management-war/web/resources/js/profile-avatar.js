@@ -1,5 +1,38 @@
 (function(){
     console.log('profile-avatar.js loaded');
+    
+    // Diagnostic: Check session on page load
+    function checkSessionDiagnostic() {
+        const contextPath = (window._ctx || (document.location.pathname.split('/')[1] ? '/' + document.location.pathname.split('/')[1] : ''));
+        console.log('[DIAGNOSTIC] Avatar - Checking session with contextPath:', contextPath);
+        
+        fetch(contextPath + '/diagnostic/session', {
+            method: 'GET',
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('[DIAGNOSTIC] Avatar - Session info:', data);
+            if (data.hasSession) {
+                console.log('[DIAGNOSTIC] Avatar - Session ID:', data.sessionId);
+                if (data.attributes && data.attributes.length > 0) {
+                    data.attributes.forEach(attr => {
+                        if (attr.isCurrentCustomerId) {
+                            console.log('[DIAGNOSTIC] Avatar - ✓ currentCustomerId:', attr.value);
+                        }
+                    });
+                } else {
+                    console.log('[DIAGNOSTIC] Avatar - ⚠ No session attributes found!');
+                }
+            } else {
+                console.log('[DIAGNOSTIC] Avatar - ⚠ No session found!');
+            }
+        })
+        .catch(err => console.error('[DIAGNOSTIC] Avatar - Error:', err));
+    }
+    
+    checkSessionDiagnostic();
+    
     var inp = document.getElementById('avatarFileInput');
     if (!inp) return;
     var base = inp.dataset && inp.dataset.contextPath ? inp.dataset.contextPath : (window._ctx || '');

@@ -6,6 +6,8 @@
     <!-- Load i18n message bundle -->
     <f:loadBundle basename="messages.messages" var="msg" />
     <ui:define name="content">
+        <!-- Ensure session attributes are synced to HttpSession for REST API access -->
+        <f:event type="preRenderView" listener="#{auth.ensureHttpSessionSync}" />
 
         <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6"
             data-user-id="#{auth.userId}">
@@ -483,7 +485,7 @@
                                         data-addr-id="#{addr.addressID}">
                                         <!-- Top-right Action Icons -->
                                         <div class="absolute top-3 right-3 flex gap-0.5 z-10">
-                                            <!-- Direct Delete Button -->
+                                            <!-- Delete Button -->
                                             <h:form styleClass="inline" id="delAddrForm_#{addr.addressID}">
                                                 <h:commandButton id="delAddrBtn_#{addr.addressID}"
                                                     action="#{addressCtrl.delete(addr)}" value="">
@@ -491,10 +493,11 @@
                                                         oncomplete="handleDeleteSuccess(); refreshAddressCards();" />
                                                 </h:commandButton>
                                                 <button type="button"
-                                                    class="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-transparent hover:bg-red-100 dark:hover:bg-red-900/20 transition-all duration-200 cursor-pointer"
+                                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 hover:scale-110 cursor-pointer"
                                                     title="Delete address"
                                                     onclick="triggerDelete(event, 'delAddrBtn_#{addr.addressID}', '#{addr.street}');">
-                                                    <span class="material-symbols-outlined text-red-600 dark:text-red-400">delete</span>
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/delete.png"
+                                                        alt="delete" style="width:18px;height:18px;display:block;" />
                                                 </button>
                                             </h:form>
                                         </div>
@@ -569,7 +572,62 @@
                                 <button onclick="openPaymentModal()" type="button" class="text-primary text-sm font-bold hover:underline">Add New</button>
                             </div>
                             <div id="paymentMethodsList" class="flex flex-col gap-4">
-                                <!-- Payment methods will be dynamically rendered by JavaScript -->
+                                <!-- Payment methods rendered from server -->
+                                <ui:repeat value="#{paymentCtrl.cards}" var="card">
+                                    <div class="border border-[#e5e7eb] dark:border-[#2a3e32] rounded-lg p-4 flex items-center justify-between hover:shadow-md transition-shadow"
+                                        data-card-id="#{card.cardID}">
+                                        <div class="flex items-center gap-4 flex-1">
+                                            <!-- Card Type Icon -->
+                                            <div class="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg"
+                                                styleClass="#{card.cardType == 'VISA' ? 'bg-blue-600' : (card.cardType == 'MASTERCARD' ? 'bg-amber-600' : 'bg-blue-500')}">
+                                                <span class="text-sm">#{card.cardType}</span>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-semibold text-[#111813] dark:text-white">
+                                                    #{card.cardType} ending in <span class="font-mono">#{card.cardNumber.substring(card.cardNumber.length()-4)}</span>
+                                                </p>
+                                                <p class="text-sm text-[#4b5563] dark:text-[#d1d5db]">
+                                                    Expires: #{card.cardExpiry}
+                                                    <ui:fragment rendered="#{card.isDefault}">
+                                                        <span class="inline-block ml-2 px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full font-bold border border-primary/30">Default</span>
+                                                    </ui:fragment>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <!-- Action Buttons -->
+                                        <div class="flex gap-2">
+                                            <h:form styleClass="inline">
+                                                <h:commandButton action="#{paymentCtrl.setDefault(card)}" value="">
+                                                    <f:ajax execute="@form" render="@none" oncomplete="location.reload();" />
+                                                </h:commandButton>
+                                                <button type="button" class="px-3 py-2 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                                    onclick="this.previousElementSibling.click();"
+                                                    title="Set as default">
+                                                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                                </button>
+                                            </h:form>
+                                            <h:form styleClass="inline">
+                                                <h:commandButton action="#{paymentCtrl.delete(card)}" value="">
+                                                    <f:ajax execute="@form" render="@none" oncomplete="location.reload();" />
+                                                </h:commandButton>
+                                                <button type="button" class="px-3 py-2 text-sm rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 transition-colors"
+                                                    onclick="if(confirm('Delete this card?')) this.previousElementSibling.click();"
+                                                    title="Delete card">
+                                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                </button>
+                                            </h:form>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                                
+                                <!-- Empty State -->
+                                <ui:fragment rendered="#{empty paymentCtrl.cards}">
+                                    <div class="text-center py-12">
+                                        <span class="material-symbols-outlined text-6xl text-[#dce5df] dark:text-[#2a3e32] mb-4 block">credit_card</span>
+                                        <p class="text-[#4b5563] dark:text-[#d1d5db] mb-4">No payment methods added yet</p>
+                                        <button onclick="openPaymentModal()" type="button" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">Add Your First Card</button>
+                                    </div>
+                                </ui:fragment>
                             </div>
                         </div>
 

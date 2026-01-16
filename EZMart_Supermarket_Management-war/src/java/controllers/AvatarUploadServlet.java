@@ -20,12 +20,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
+import jakarta.ejb.EJB;
+import entityclass.Customers;
+import sessionbeans.CustomersFacadeLocal;
 
 @WebServlet(name = "AvatarUploadServlet", urlPatterns = {"/avatar-upload"})
 @MultipartConfig(maxFileSize = 5242880) // 5 MB max
 public class AvatarUploadServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    
+    @EJB
+    private CustomersFacadeLocal customersFacade;
+    
     private static final long MAX_BYTES = 5 * 1024 * 1024; // 5 MB
     private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<>(
         Arrays.asList("jpg", "jpeg", "png", "gif")
@@ -148,6 +155,23 @@ public class AvatarUploadServlet extends HttpServlet {
             String avatarUrl = request.getContextPath() + "/avatar?userId=" + userId + "&t=" + ts;
             String absoluteBase = request.getScheme() + "://" + request.getServerName() + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : (":" + request.getServerPort())) + request.getContextPath();
             String avatarUrlAbsolute = absoluteBase + "/avatar?userId=" + userId + "&t=" + ts;
+            
+            // Save avatarUrl to database
+            try {
+                Customers customer = customersFacade.find(userId);
+                if (customer != null) {
+                    customer.setAvatarUrl(avatarUrl);
+                    customersFacade.edit(customer);
+                    System.out.println("AvatarUploadServlet: Updated customer " + userId + " with avatarUrl: " + avatarUrl);
+                } else {
+                    System.out.println("AvatarUploadServlet: Customer " + userId + " not found in database");
+                }
+            } catch (Exception e) {
+                System.err.println("AvatarUploadServlet: Error saving avatar URL to database: " + e.getMessage());
+                e.printStackTrace();
+                // Don't fail the upload, just log the error
+            }
+            
             jsonBuilder.add("success", true)
                        .add("message", "Avatar uploaded successfully")
                        .add("userId", userId)
@@ -172,7 +196,7 @@ public class AvatarUploadServlet extends HttpServlet {
     }
 
     /**
-     * Authenticate user from session and return user ID
+     * Authenticate user from session and return customer ID
      */
     private Integer authenticateUser(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
@@ -182,24 +206,25 @@ public class AvatarUploadServlet extends HttpServlet {
         }
 
         // Try to get userId from multiple possible session attributes
-        Integer userId = null;
+        Integer customerId = null;
         
-        // Method 1: Direct currentUserId attribute (set by auth controller)
-        Object idObj = session.getAttribute("currentUserId");
+        // Method 1: Direct currentCustomerId attribute (set by auth controller)
+        Object idObj = session.getAttribute("currentCustomerId");
         if (idObj != null) {
-            if (idObj instanceof Integer) userId = (Integer) idObj;
+            if (idObj instanceof Integer) customerId = (Integer) idObj;
             else if (idObj instanceof String) {
                 try {
-                    userId = Integer.valueOf((String) idObj);
+                    customerId = Integer.valueOf((String) idObj);
                 } catch (NumberFormatException e) {
                     // ignore
                 }
             }
+            System.out.println("AvatarUploadServlet: Got customerId from currentCustomerId: " + customerId);
         }
         
         // Method 2: Check for JSF sessionMap stored currentCustomer
         // JSF stores the customer object which has a customerID
-        if (userId == null) {
+        if (customerId == null) {
             Object customerObj = session.getAttribute("currentCustomer");
             if (customerObj != null) {
                 try {
@@ -207,16 +232,51 @@ public class AvatarUploadServlet extends HttpServlet {
                     java.lang.reflect.Method getIdMethod = customerObj.getClass().getMethod("getCustomerID");
                     Object id = getIdMethod.invoke(customerObj);
                     if (id instanceof Integer) {
-                        userId = (Integer) id;
+                        customerId = (Integer) id;
                     }
+                    System.out.println("AvatarUploadServlet: Got customerId from currentCustomer: " + customerId);
                 } catch (Exception e) {
                     System.out.println("AvatarUploadServlet: Failed to extract customer ID via reflection: " + e.getMessage());
                 }
             }
         }
+        
+        // Method 3: Try from currentUser
+        if (customerId == null) {
+            Object userObj = session.getAttribute("currentUser");
+            if (userObj != null) {
+                try {
+                    java.lang.reflect.Method getIdMethod = userObj.getClass().getMethod("getUserID");
+                    Object id = getIdMethod.invoke(userObj);
+                    if (id instanceof Integer) {
+                        // Try to get customer for that user
+                        try {
+                            java.lang.reflect.Method getCustomersMethod = userObj.getClass().getMethod("getCustomersList");
+                            Object customersList = getCustomersMethod.invoke(userObj);
+                            if (customersList instanceof java.util.List) {
+                                java.util.List<?> list = (java.util.List<?>) customersList;
+                                if (!list.isEmpty()) {
+                                    Object firstCustomer = list.get(0);
+                                    java.lang.reflect.Method getCustIdMethod = firstCustomer.getClass().getMethod("getCustomerID");
+                                    Object custId = getCustIdMethod.invoke(firstCustomer);
+                                    if (custId instanceof Integer) {
+                                        customerId = (Integer) custId;
+                                    }
+                                }
+                            }
+                        } catch (Exception e2) {
+                            // ignore, use userId from user object
+                        }
+                    }
+                    System.out.println("AvatarUploadServlet: Got customerId from currentUser: " + customerId);
+                } catch (Exception e) {
+                    System.out.println("AvatarUploadServlet: Failed to extract customerId from currentUser: " + e.getMessage());
+                }
+            }
+        }
 
-        if (userId != null) {
-            System.out.println("AvatarUploadServlet: User authenticated, userId=" + userId);
+        if (customerId != null) {
+            System.out.println("AvatarUploadServlet: User authenticated, customerId=" + customerId);
         } else {
             System.out.println("AvatarUploadServlet: User not authenticated");
             // Debug: print all session attributes
@@ -224,11 +284,15 @@ public class AvatarUploadServlet extends HttpServlet {
             System.out.println("AvatarUploadServlet: Available session attributes:");
             while (names.hasMoreElements()) {
                 String n = names.nextElement();
-                System.out.println("  " + n + "=" + session.getAttribute(n).getClass().getSimpleName());
+                try {
+                    System.out.println("  " + n + "=" + session.getAttribute(n).getClass().getSimpleName());
+                } catch (Exception e) {
+                    System.out.println("  " + n + "=(error reading)");
+                }
             }
         }
 
-        return userId;
+        return customerId;
     }
 
     /**

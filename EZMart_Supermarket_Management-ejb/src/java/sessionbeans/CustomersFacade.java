@@ -39,4 +39,13 @@ public class CustomersFacade extends AbstractFacade<Customers> implements Custom
         }
     }
 
-}
+    @Override
+    public Customers findByMobilePhone(String mobilePhone) {
+        try {
+            return em.createNamedQuery("Customers.findByMobilePhone", Customers.class)
+                    .setParameter("mobilePhone", mobilePhone)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }}
