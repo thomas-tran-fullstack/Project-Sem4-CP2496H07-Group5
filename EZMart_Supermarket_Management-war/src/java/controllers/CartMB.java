@@ -210,7 +210,7 @@ public class CartMB implements Serializable {
         }
 
         shippingCost = BigDecimal.ZERO; // Free shipping for now
-        taxAmount = BigDecimal.ZERO; // No tax for now
+        taxAmount = subtotal.multiply(new BigDecimal("0.08")); // 8% tax
         totalAmount = subtotal.subtract(discountAmount).add(shippingCost).add(taxAmount);
         totalSavings = offerSavings.add(discountAmount); // Total savings from offers and vouchers
     }

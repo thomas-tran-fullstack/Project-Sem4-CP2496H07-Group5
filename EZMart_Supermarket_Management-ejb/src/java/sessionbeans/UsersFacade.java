@@ -87,5 +87,16 @@ public class UsersFacade extends AbstractFacade<Users> implements UsersFacadeLoc
             return null;
         }
     }
+
+    @Override
+    public java.util.List<Users> findUsersByRole(String role) {
+        try {
+            return em.createQuery("SELECT u FROM Users u WHERE u.role = :role", Users.class)
+                    .setParameter("role", role)
+                    .getResultList();
+        } catch (Exception e) {
+            return new java.util.ArrayList<>();
+        }
+    }
     
 }

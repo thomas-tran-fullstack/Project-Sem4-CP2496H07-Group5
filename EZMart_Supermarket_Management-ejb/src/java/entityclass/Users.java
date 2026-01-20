@@ -72,6 +72,9 @@ public class Users implements Serializable {
     @Column(name = "CreatedAt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @Column(name = "LastOnlineAt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastOnlineAt;
     @OneToMany(mappedBy = "userID")
     private List<AuditLogs> auditLogsList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userID")
@@ -146,6 +149,14 @@ public class Users implements Serializable {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Date getLastOnlineAt() {
+        return lastOnlineAt;
+    }
+
+    public void setLastOnlineAt(Date lastOnlineAt) {
+        this.lastOnlineAt = lastOnlineAt;
     }
 
     @XmlTransient

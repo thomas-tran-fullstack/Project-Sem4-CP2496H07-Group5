@@ -36,4 +36,15 @@ public class OrdersFacade extends AbstractFacade<Orders> implements OrdersFacade
                 .getResultList();
     }
     
+    @Override
+    public List<Orders> findByCustomerID(entityclass.Customers customer) {
+        if (customer == null) {
+            return em.createQuery("SELECT o FROM Orders o ORDER BY o.orderDate DESC", Orders.class)
+                    .getResultList();
+        }
+        return em.createQuery("SELECT o FROM Orders o WHERE o.customerID = :customer ORDER BY o.orderDate DESC", Orders.class)
+                .setParameter("customer", customer)
+                .getResultList();
+    }
+    
 }

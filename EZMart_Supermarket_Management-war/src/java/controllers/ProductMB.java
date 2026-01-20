@@ -118,7 +118,29 @@ public class ProductMB implements Serializable {
         loadBrandItems();
         loadCategoryItems();
         loadSortItems();
-        updatePagination();
+
+        // Check for search parameter in URL
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        Map<String, String> params = facesContext.getExternalContext().getRequestParameterMap();
+        String searchParam = params.get("search");
+        String categoryParam = params.get("category");
+        if (searchParam != null && !searchParam.trim().isEmpty()) {
+            searchTerm = searchParam.trim();
+        }
+        if (categoryParam != null && !categoryParam.trim().isEmpty()) {
+            try {
+                Integer categoryId = Integer.valueOf(categoryParam.trim());
+                selectedCategoryIds = new ArrayList<>();
+                selectedCategoryIds.add(categoryId);
+            } catch (NumberFormatException e) {
+                // Invalid category ID, ignore
+            }
+        }
+        if (searchParam != null || categoryParam != null) {
+            applyFilters();
+        } else {
+            updatePagination();
+        }
     }
 
     public void loadProducts() {
@@ -396,7 +418,7 @@ public class ProductMB implements Serializable {
         try (InputStream input = file.getInputStream()) {
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
-            return "/uploads/products/" + fileName;
+           return "/uploads/products/" + fileName; 
         }
     }
 
@@ -691,6 +713,12 @@ public class ProductMB implements Serializable {
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Please login to add items to cart"));
             return;
         }
+        // Check if product is out of stock
+        if (isOutOfStock(product)) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Product is out of stock"));
+            return;
+        }
         cartMB.addToCart(product, 1);
         FacesContext.getCurrentInstance().addMessage(null,
             new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Product added to cart successfully"));
@@ -862,6 +890,60 @@ public class ProductMB implements Serializable {
         }
 
         return "";
+    }
+
+    // Stock management methods
+    public boolean isLowStock(Products product) {
+        if (product == null || product.getStockQuantity() == null) {
+            return false;
+        }
+        return product.getStockQuantity() <= 5;
+    }
+
+    public boolean isOutOfStock(Products product) {
+        if (product == null || product.getStockQuantity() == null) {
+            return false;
+        }
+        return product.getStockQuantity() == 0;
+    }
+
+    public String getStockStatus(Products product) {
+        if (isOutOfStock(product)) {
+            return "Out of Stock";
+        } else if (isLowStock(product)) {
+            return "Low Stock";
+        } else {
+            return "In Stock";
+        }
+    }
+
+    public int getLowStockCount() {
+        if (products == null) {
+            return 0;
+        }
+        return (int) products.stream().filter(this::isLowStock).count();
+    }
+
+    public List<Products> getLowStockProducts() {
+        if (products == null) {
+            return new ArrayList<>();
+        }
+        return products.stream().filter(this::isLowStock).toList();
+    }
+
+    // Notification dropdown properties
+    private boolean showNotificationDropdown = false;
+
+    public void toggleNotificationDropdown() {
+        showNotificationDropdown = !showNotificationDropdown;
+    }
+
+    public boolean isShowNotificationDropdown() {
+        return showNotificationDropdown;
+    }
+
+    public void setShowNotificationDropdown(boolean showNotificationDropdown) {
+        this.showNotificationDropdown = showNotificationDropdown;
     }
 
     public String getSortBy() {

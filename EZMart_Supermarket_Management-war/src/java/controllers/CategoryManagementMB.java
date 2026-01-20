@@ -193,6 +193,7 @@ public class CategoryManagementMB implements Serializable {
         try {
             categoriesFacade.remove(category);
             loadCategories();
+            updatePagination();
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Category deleted successfully"));
         } catch (Exception e) {
@@ -351,6 +352,7 @@ public class CategoryManagementMB implements Serializable {
 
     private String saveUploadedFile(Part file) throws IOException {
         String fileName = UUID.randomUUID().toString() + "_" + file.getSubmittedFileName();
+        // Save to user home directory so images persist across deployments
         Path uploadPath = Paths.get(System.getProperty("user.home"), "uploads", "categories");
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
@@ -359,7 +361,7 @@ public class CategoryManagementMB implements Serializable {
         try (InputStream input = file.getInputStream()) {
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
-            return "/uploads/categories/" + fileName;
+            return fileName; // Return just filename, ImageServlet will handle the path
         }
     }
 

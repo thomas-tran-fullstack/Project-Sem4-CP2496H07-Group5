@@ -65,17 +65,13 @@
                             </p>
                         </div>
                         <!-- Social Login -->
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 gap-3">
                             <h:form styleClass="contents">
                                 <h:commandButton id="google-reg-btn"
                                                action="#{auth.redirectToGoogleOAuth()}"
                                                styleClass="flex items-center justify-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                                                value="Google" />
                             </h:form>
-                            <button class="flex items-center justify-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" type="button">
-                                <svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewbox="0 0 24 24"><path d="M13.2657 2.00018C13.6841 2.00018 14.6549 2.08382 15.6583 2.76637C16.5916 3.39964 17.2941 4.41709 17.2941 5.90018C17.2941 7.21637 16.7916 8.35855 15.8257 9.20018C14.8091 10.0918 13.5999 10.3664 13.0657 10.3664C12.5657 10.3664 11.6649 10.2838 10.7141 9.63382C9.72906 8.95018 9.04406 7.91709 9.04406 6.41709C9.04406 5.06636 9.57739 3.84182 10.5941 2.96636C11.6266 2.08273 12.8657 1.99927 13.2657 2.00018ZM15.4891 11.2338C17.1649 11.2338 18.6324 12.2338 19.3491 13.5671C20.6991 12.0165 22.6157 11.9671 22.8657 11.9671C22.9824 11.9671 23.3324 11.9838 23.3324 12.5002C23.3324 12.6338 23.2824 12.7838 23.2157 12.9002C22.2824 14.5002 22.4157 16.4838 23.5157 17.8171C23.6324 17.9502 23.9491 18.3671 23.9491 18.8838C23.9491 19.0665 23.9157 19.3002 23.7657 19.5338C22.7824 21.0338 21.0324 23.5002 17.6491 23.5002C16.8991 23.5002 16.2991 23.2838 15.6824 23.0671C15.1157 22.8665 14.6157 22.6838 13.9824 22.6838C13.3491 22.6838 12.8324 22.8665 12.2824 23.0671C11.6657 23.2838 11.0491 23.5002 10.3157 23.5002C6.91573 23.5002 5.16573 21.0338 4.18239 19.5338C2.51573 17.0338 2.06573 13.1002 5.09906 11.3338C6.39906 10.5671 7.69906 10.5338 8.44906 10.5338C9.66573 10.5338 10.6324 10.9502 11.3324 11.2671C11.9324 11.5338 12.4491 11.7502 13.1991 11.7502C13.4324 11.7502 14.5991 11.7165 15.4891 11.2338Z"></path></svg>
-                                <span class="truncate">Apple</span>
-                            </button>
                         </div>
                         <!-- Form -->
                         <h:form class="space-y-5">
@@ -298,6 +294,53 @@
                             </div>
                         </div>
                         
+                        <style>
+                            /* Tom-Select styling for register address modal */
+                            #registerAddressModal .ts-wrapper {
+                                width: 100% !important;
+                            }
+                            
+                            #registerAddressModal .ts-control {
+                                width: 100% !important;
+                                padding: 0.5rem !important;
+                                border: 1px solid #e5e7eb !important;
+                                border-radius: 0.375rem !important;
+                                background-color: white !important;
+                                box-shadow: none !important;
+                            }
+                            
+                            #registerAddressModal .dark .ts-control {
+                                background-color: #1f2937 !important;
+                                border-color: #374151 !important;
+                            }
+                            
+                            #registerAddressModal .ts-control.focus,
+                            #registerAddressModal .ts-control.active {
+                                border-color: #16a34a !important;
+                                box-shadow: 0 0 0 1px #16a34a !important;
+                            }
+                            
+                            #registerAddressModal .ts-dropdown {
+                                width: 100% !important;
+                                top: 100% !important;
+                                border: 1px solid #e5e7eb !important;
+                                border-radius: 0.375rem !important;
+                                background-color: white !important;
+                                margin-top: 0.25rem !important;
+                            }
+                            
+                            #registerAddressModal .dark .ts-dropdown {
+                                background-color: #1f2937 !important;
+                                border-color: #374151 !important;
+                            }
+                        </style>
+                        <!-- Tom-Select CSS and JS -->
+                        <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet" />
+                        <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+                        <!-- Leaflet CSS and JS for Map -->
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet/dist/leaflet.css" />
+                        <script src="https://cdn.jsdelivr.net/npm/leaflet/dist/leaflet.js"></script>
+                        
                         <script>//<![CDATA[
                             function initPasswordFunctions() {
                                 console.log('Initializing password functions...');
@@ -408,12 +451,9 @@
                                 var regionInput = document.getElementById('regaddr_region_input');
                                 var cityInput = document.getElementById('regaddr_city_input');
                                 
-                                if(regionInput) {
-                                    regionInput.addEventListener('change', onRegRegionChange);
-                                }
-                                if(cityInput) {
-                                    cityInput.addEventListener('change', onRegCityChange);
-                                }
+                                // Note: Tom-Select onChange is handled in initRegAddressTomSelect
+                                // No need to add manual listeners as onChange callback is configured there
+                                console.log('Register address listeners initialized');
                             }
                             
                             // Data storage for address modal
@@ -539,26 +579,62 @@
                                 console.log('Region select element:', regionSelect);
                                 console.log('City select element:', citySelect);
                                 
-                                if(regionSelect && !regTomSelectRegion && typeof TomSelect !== 'undefined') {
+                                // Destroy existing Tom-Select instances if they exist
+                                if(regTomSelectRegion && typeof regTomSelectRegion.destroy === 'function') {
+                                    try {
+                                        regTomSelectRegion.destroy();
+                                        regTomSelectRegion = null;
+                                    } catch(e) {}
+                                }
+                                if(regTomSelectCity && typeof regTomSelectCity.destroy === 'function') {
+                                    try {
+                                        regTomSelectCity.destroy();
+                                        regTomSelectCity = null;
+                                    } catch(e) {}
+                                }
+                                
+                                if(regionSelect && typeof TomSelect !== 'undefined') {
                                     try {
                                         regTomSelectRegion = new TomSelect(regionSelect, {
                                             create: false,
                                             placeholder: '-- Select --',
-                                            searchField: 'text'
+                                            searchField: 'text',
+                                            onChange: onRegRegionChange
                                         });
+                                        // Add styling to wrapper
+                                        var regionWrapper = regionSelect.parentElement;
+                                        if(regionWrapper && regionWrapper.classList) {
+                                            regionWrapper.classList.add('w-full');
+                                        }
+                                        // Add styling to the control element (the visible input area)
+                                        var regionControl = regionSelect.parentElement.querySelector('.ts-control');
+                                        if(regionControl && regionControl.classList) {
+                                            regionControl.classList.add('w-full', 'p-2', 'border', 'rounded-md', 'bg-white', 'dark:bg-gray-800');
+                                        }
                                         console.log('Region Tom-Select initialized successfully');
                                     } catch(e) {
                                         console.error('Error initializing region Tom-Select:', e);
                                     }
                                 }
                                 
-                                if(citySelect && !regTomSelectCity && typeof TomSelect !== 'undefined') {
+                                if(citySelect && typeof TomSelect !== 'undefined') {
                                     try {
                                         regTomSelectCity = new TomSelect(citySelect, {
                                             create: false,
                                             placeholder: '-- Select --',
-                                            searchField: 'text'
+                                            searchField: 'text',
+                                            onChange: onRegCityChange
                                         });
+                                        // Add styling to wrapper
+                                        var cityWrapper = citySelect.parentElement;
+                                        if(cityWrapper && cityWrapper.classList) {
+                                            cityWrapper.classList.add('w-full');
+                                        }
+                                        // Add styling to the control element (the visible input area)
+                                        var cityControl = citySelect.parentElement.querySelector('.ts-control');
+                                        if(cityControl && cityControl.classList) {
+                                            cityControl.classList.add('w-full', 'p-2', 'border', 'rounded-md', 'bg-white', 'dark:bg-gray-800');
+                                        }
                                         console.log('City Tom-Select initialized successfully');
                                     } catch(e) {
                                         console.error('Error initializing city Tom-Select:', e);
@@ -579,11 +655,12 @@
                             
                             function openRegisterAddressModal() {
                                 document.getElementById('registerAddressModal').classList.remove('hidden');
-                                resetRegAddressForm();
-                                // Initialize Tom Select on first open
+                                // Initialize Tom Select FIRST before resetting form
+                                initRegAddressTomSelect();
+                                // Then reset after Tom-Select is initialized
                                 setTimeout(function() {
-                                    initRegAddressTomSelect();
-                                }, 100);
+                                    resetRegAddressForm();
+                                }, 50);
                             }
                             
                             function closeRegisterAddressModal() {
@@ -604,9 +681,6 @@
                             
                             function onRegCountryChange() {
                                 console.log('onRegCountryChange called');
-                                
-                                // Ensure Tom-Select is initialized
-                                ensureTomSelectInitialized();
                                 
                                 var country = document.getElementById('regaddr_country_ui').value;
                                 console.log('Selected country:', country);
@@ -689,7 +763,7 @@
                             
                             function onRegRegionChange() {
                                 var country = document.getElementById('regaddr_country_ui').value;
-                                var region = document.getElementById('regaddr_region_input').value;
+                                var region = regTomSelectRegion ? regTomSelectRegion.getValue() : document.getElementById('regaddr_region_input').value;
                                 
                                 // Find the hidden input for region (JSF may add prefix)
                                 var regionHidden = document.querySelector('input[id*="regaddr_region"]');
@@ -731,7 +805,7 @@
                             
                             function onRegCityChange() {
                                 var country = document.getElementById('regaddr_country_ui').value;
-                                var city = document.getElementById('regaddr_city_input').value;
+                                var city = regTomSelectCity ? regTomSelectCity.getValue() : document.getElementById('regaddr_city_input').value;
                                 
                                 // Find the hidden input for city (JSF may add prefix)
                                 var cityHidden = document.querySelector('input[id*="regaddr_city"]');
@@ -827,7 +901,7 @@
                             }
                             
                             function geocodeRegAddressAndSetMarker() {
-                                var city = document.getElementById('regaddr_city_input').value;
+                                var city = regTomSelectCity ? regTomSelectCity.getValue() : document.getElementById('regaddr_city_input').value;
                                 var country = document.getElementById('regaddr_country_ui').value;
                                 
                                 if(!city) return;
@@ -862,8 +936,8 @@
                             function saveRegisterAddress() {
                                 var type = document.getElementById('regaddr_type_ui').value;
                                 var country = document.getElementById('regaddr_country_ui').value;
-                                var region = document.getElementById('regaddr_region_input').value;
-                                var city = document.getElementById('regaddr_city_input').value;
+                                var region = regTomSelectRegion ? regTomSelectRegion.getValue() : document.getElementById('regaddr_region_input').value;
+                                var city = regTomSelectCity ? regTomSelectCity.getValue() : document.getElementById('regaddr_city_input').value;
                                 var street = document.getElementById('regaddr_street_ui').value;
                                 var label = document.getElementById('regaddr_label_ui').value;
                                 

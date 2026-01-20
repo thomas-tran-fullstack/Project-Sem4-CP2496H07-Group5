@@ -1,333 +1,435 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui:composition template="/templates/user/layout.xhtml"
-                xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="jakarta.faces.facelets">
+<ui:composition template="/templates/user/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core">
     <ui:define name="content">
-        <div class="flex-1 w-full max-w-7xl mx-auto px-4 md:px-10 py-8">
-            <!-- Breadcrumbs -->
-            <nav class="mb-8 overflow-x-auto">
-                <div class="flex items-center text-sm font-medium whitespace-nowrap">
-                    <a class="text-gray-500 hover:text-primary transition-colors" href="#">Cart</a>
-                    <span class="mx-3 text-gray-400">/</span>
-                    <span class="text-primary font-bold">Checkout</span>
-                </div>
-            </nav>
+        <h:form id="checkoutForm">
+            <!-- Thêm phần hiển thị messages ở đầu form để show error/success từ applyVoucher -->
+            <h:messages id="globalMessages" showDetail="true" showSummary="false"
+                errorClass="text-red-600" infoClass="text-green-600" layout="table" />
+            <div class="flex-1 w-full max-w-7xl mx-auto px-4 md:px-10 py-8">
+                <!-- Breadcrumbs -->
+                <nav class="mb-8 overflow-x-auto">
+                    <div class="flex items-center text-sm font-medium whitespace-nowrap">
+                        <h:link class="text-gray-500 hover:text-primary transition-colors"
+                            outcome="/pages/user/cart.xhtml">Cart</h:link>
+                        <span class="mx-3 text-gray-400">/</span>
+                        <span class="text-primary font-bold">Checkout</span>
+                    </div>
+                </nav>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-                <!-- Left Column: Checkout Form -->
-                <div class="lg:col-span-8 space-y-8">
-                    <!-- Page Heading -->
-                    <div>
-                        <h1 class="text-3xl md:text-4xl font-black tracking-tight text-[#111813] dark:text-[#111813] mb-2">Checkout</h1>
-                        <p class="text-gray-500 dark:text-gray-400">Complete your order by filling in the details below.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                    <!-- Left Column: Checkout Form -->
+                    <div class="lg:col-span-8 space-y-8">
+                        <!-- Page Heading -->
+                        <div>
+                            <h1
+                                class="text-3xl md:text-4xl font-black tracking-tight text-[#111813] dark:text-[#111813] mb-2">
+                                Checkout</h1>
+                            <p class="text-gray-500 dark:text-gray-400">Complete your order by filling in the details
+                                below.</p>
+                        </div>
+
+                        <!-- Shipping Information Section -->
+                        <section
+                            class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+                            <div class="mb-6">
+                                <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Contact Details
+                                </h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">We'll use this to update you on your
+                                    order.</p>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                                <div class="flex flex-col flex-1">
+                                    <h:outputLabel class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                        for="firstName">First Name</h:outputLabel>
+                                    <h:inputText id="firstName" value="#{checkoutMB.firstName}"
+                                        class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
+                                        placeholder="e.g. John" required="true" />
+                                </div>
+                                <div class="flex flex-col flex-1">
+                                    <h:outputLabel class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                        for="lastName">Last Name</h:outputLabel>
+                                    <h:inputText id="lastName" value="#{checkoutMB.lastName}"
+                                        class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
+                                        placeholder="e.g. Doe" required="true" />
+                                </div>
+                            </div>
+                            <div class="mb-8">
+                                <div class="flex flex-col w-full">
+                                    <h:outputLabel class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                        for="phoneNumber">Phone Number</h:outputLabel>
+                                    <div class="relative">
+                                        <span
+                                            class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-[20px]">call</span>
+                                        <h:inputText id="phoneNumber" value="#{checkoutMB.phoneNumber}"
+                                            class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 pl-11 pr-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
+                                            placeholder="+1 (555) 000-0000" required="true" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Shipping Address
+                                </h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Where should we deliver your
+                                    groceries?</p>
+                            </div>
+                            <div class="space-y-5">
+                                <!-- Existing Addresses -->
+                                <ui:fragment rendered="#{not empty addressCtrl.addresses}">
+                                    <h:outputLabel
+                                        class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2 block">Select
+                                        Address</h:outputLabel>
+                                    <div class="space-y-3 mb-4">
+                                        <ui:repeat value="#{addressCtrl.addresses}" var="address" varStatus="status">
+                                            <label for="checkoutForm:addressRadio#{status.index}"
+                                                class="block border rounded-lg p-4 cursor-pointer #{checkoutMB.selectedAddressID eq address.addressID ? 'border-primary bg-primary/5' : 'border-gray-200 dark:border-gray-700'} hover:border-primary/50">
+                                            <h:selectOneRadio id="addressRadio#{status.index}"
+                                                    value="#{checkoutMB.selectedAddressID}">
+                                                    <f:selectItem itemValue="#{address.addressID}" />
+                                                </h:selectOneRadio>
+                                                <div>
+                                                    <p class="font-medium">
+                                                        <ui:fragment rendered="#{not empty address.house}">#{address.house} - </ui:fragment>#{address.street}
+                                                    </p>
+                                                    <p class="text-sm text-gray-600">
+                                                        <ui:fragment rendered="#{not empty address.city}">#{address.city}</ui:fragment>
+                                                        <ui:fragment rendered="#{not empty address.region}">, #{address.region}</ui:fragment>
+                                                        <ui:fragment rendered="#{not empty address.state}">, #{address.state}</ui:fragment>
+                                                        <ui:fragment rendered="#{not empty address.country}">, #{address.country}</ui:fragment>
+                                                    </p>
+                                                </div>
+                                            </label>
+                                        </ui:repeat>
+                                    </div>
+                                    <div class="text-center mb-4">
+                                        <h:commandLink action="#{addressCtrl.startAdd()}"
+                                            class="text-primary hover:underline">
+                                            + Add New Address
+                                        </h:commandLink>
+                                    </div>
+                                </ui:fragment>
+
+                                <!-- New Address Form -->
+                                <ui:fragment
+                                    rendered="#{empty addressCtrl.addresses or checkoutMB.selectedAddress eq null}">
+                                    <div class="flex flex-col w-full">
+                                        <h:outputLabel
+                                            class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                            for="newAddressLine1">Address Line 1</h:outputLabel>
+                                        <h:inputText id="newAddressLine1" value="#{checkoutMB.newAddressLine1}"
+                                            class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
+                                            placeholder="e.g. 123 Green St" required="true" />
+                                    </div>
+                                    <div class="flex flex-col w-full">
+                                        <h:outputLabel
+                                            class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                            for="newAddressLine2">Address Line 2 (Optional)</h:outputLabel>
+                                        <h:inputText id="newAddressLine2" value="#{checkoutMB.newAddressLine2}"
+                                            class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
+                                            placeholder="e.g. Apt 4B" />
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                        <div class="flex flex-col w-full">
+                                            <h:outputLabel
+                                                class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                                for="newCity">City</h:outputLabel>
+                                            <h:inputText id="newCity" value="#{checkoutMB.newCity}"
+                                                class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
+                                                placeholder="New York" required="true" />
+                                        </div>
+                                        <div class="flex flex-col w-full">
+                                            <h:outputLabel
+                                                class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                                for="newState">State / Province</h:outputLabel>
+                                            <div class="relative">
+                                                <h:selectOneMenu id="newState" value="#{checkoutMB.newState}"
+                                                    class="form-select w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary text-[#111813] dark:text-[#111813] transition-colors appearance-none"
+                                                    required="true">
+                                                    <f:selectItem itemLabel="Select Province/City" itemValue="" />
+                                                    <f:selectItem itemLabel="An Giang" itemValue="An Giang" />
+                                                    <f:selectItem itemLabel="Bà Rịa - Vũng Tàu" itemValue="Bà Rịa - Vũng Tàu" />
+                                                    <f:selectItem itemLabel="Bắc Giang" itemValue="Bắc Giang" />
+                                                    <f:selectItem itemLabel="Bắc Kạn" itemValue="Bắc Kạn" />
+                                                    <f:selectItem itemLabel="Bạc Liêu" itemValue="Bạc Liêu" />
+                                                    <f:selectItem itemLabel="Bắc Ninh" itemValue="Bắc Ninh" />
+                                                    <f:selectItem itemLabel="Bến Tre" itemValue="Bến Tre" />
+                                                    <f:selectItem itemLabel="Bình Định" itemValue="Bình Định" />
+                                                    <f:selectItem itemLabel="Bình Dương" itemValue="Bình Dương" />
+                                                    <f:selectItem itemLabel="Bình Phước" itemValue="Bình Phước" />
+                                                    <f:selectItem itemLabel="Bình Thuận" itemValue="Bình Thuận" />
+                                                    <f:selectItem itemLabel="Cà Mau" itemValue="Cà Mau" />
+                                                    <f:selectItem itemLabel="Cao Bằng" itemValue="Cao Bằng" />
+                                                    <f:selectItem itemLabel="Đắk Lắk" itemValue="Đắk Lắk" />
+                                                    <f:selectItem itemLabel="Đắk Nông" itemValue="Đắk Nông" />
+                                                    <f:selectItem itemLabel="Điện Biên" itemValue="Điện Biên" />
+                                                    <f:selectItem itemLabel="Đồng Nai" itemValue="Đồng Nai" />
+                                                    <f:selectItem itemLabel="Đồng Tháp" itemValue="Đồng Tháp" />
+                                                    <f:selectItem itemLabel="Gia Lai" itemValue="Gia Lai" />
+                                                    <f:selectItem itemLabel="Hà Giang" itemValue="Hà Giang" />
+                                                    <f:selectItem itemLabel="Hà Nam" itemValue="Hà Nam" />
+                                                    <f:selectItem itemLabel="Hà Tĩnh" itemValue="Hà Tĩnh" />
+                                                    <f:selectItem itemLabel="Hải Dương" itemValue="Hải Dương" />
+                                                    <f:selectItem itemLabel="Hậu Giang" itemValue="Hậu Giang" />
+                                                    <f:selectItem itemLabel="Hòa Bình" itemValue="Hòa Bình" />
+                                                    <f:selectItem itemLabel="Hưng Yên" itemValue="Hưng Yên" />
+                                                    <f:selectItem itemLabel="Khánh Hòa" itemValue="Khánh Hòa" />
+                                                    <f:selectItem itemLabel="Kiên Giang" itemValue="Kiên Giang" />
+                                                    <f:selectItem itemLabel="Kon Tum" itemValue="Kon Tum" />
+                                                    <f:selectItem itemLabel="Lai Châu" itemValue="Lai Châu" />
+                                                    <f:selectItem itemLabel="Lâm Đồng" itemValue="Lâm Đồng" />
+                                                    <f:selectItem itemLabel="Lạng Sơn" itemValue="Lạng Sơn" />
+                                                    <f:selectItem itemLabel="Lào Cai" itemValue="Lào Cai" />
+                                                    <f:selectItem itemLabel="Long An" itemValue="Long An" />
+                                                    <f:selectItem itemLabel="Nam Định" itemValue="Nam Định" />
+                                                    <f:selectItem itemLabel="Nghệ An" itemValue="Nghệ An" />
+                                                    <f:selectItem itemLabel="Ninh Bình" itemValue="Ninh Bình" />
+                                                    <f:selectItem itemLabel="Ninh Thuận" itemValue="Ninh Thuận" />
+                                                    <f:selectItem itemLabel="Phú Thọ" itemValue="Phú Thọ" />
+                                                    <f:selectItem itemLabel="Quảng Bình" itemValue="Quảng Bình" />
+                                                    <f:selectItem itemLabel="Quảng Nam" itemValue="Quảng Nam" />
+                                                    <f:selectItem itemLabel="Quảng Ngãi" itemValue="Quảng Ngãi" />
+                                                    <f:selectItem itemLabel="Quảng Ninh" itemValue="Quảng Ninh" />
+                                                    <f:selectItem itemLabel="Quảng Trị" itemValue="Quảng Trị" />
+                                                    <f:selectItem itemLabel="Sóc Trăng" itemValue="Sóc Trăng" />
+                                                    <f:selectItem itemLabel="Sơn La" itemValue="Sơn La" />
+                                                    <f:selectItem itemLabel="Tây Ninh" itemValue="Tây Ninh" />
+                                                    <f:selectItem itemLabel="Thái Bình" itemValue="Thái Bình" />
+                                                    <f:selectItem itemLabel="Thái Nguyên" itemValue="Thái Nguyên" />
+                                                    <f:selectItem itemLabel="Thanh Hóa" itemValue="Thanh Hóa" />
+                                                    <f:selectItem itemLabel="Thừa Thiên Huế" itemValue="Thừa Thiên Huế" />
+                                                    <f:selectItem itemLabel="Tiền Giang" itemValue="Tiền Giang" />
+                                                    <f:selectItem itemLabel="Trà Vinh" itemValue="Trà Vinh" />
+                                                    <f:selectItem itemLabel="Tuyên Quang" itemValue="Tuyên Quang" />
+                                                    <f:selectItem itemLabel="Vĩnh Long" itemValue="Vĩnh Long" />
+                                                    <f:selectItem itemLabel="Vĩnh Phúc" itemValue="Vĩnh Phúc" />
+                                                    <f:selectItem itemLabel="Yên Bái" itemValue="Yên Bái" />
+                                                    <f:selectItem itemLabel="Phú Yên" itemValue="Phú Yên" />
+                                                    <f:selectItem itemLabel="TP Cần Thơ" itemValue="TP Cần Thơ" />
+                                                    <f:selectItem itemLabel="TP Đà Nẵng" itemValue="TP Đà Nẵng" />
+                                                    <f:selectItem itemLabel="TP Hải Phòng" itemValue="TP Hải Phòng" />
+                                                    <f:selectItem itemLabel="TP Hà Nội" itemValue="TP Hà Nội" />
+                                                    <f:selectItem itemLabel="TP Hồ Chí Minh" itemValue="TP Hồ Chí Minh" />
+                                                </h:selectOneMenu>
+                                                <span
+                                                    class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined pointer-events-none text-gray-500">expand_more</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col w-full">
+                                            <h:outputLabel
+                                                class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                                for="newZipCode">Zip Code</h:outputLabel>
+                                            <h:inputText id="newZipCode" value="#{checkoutMB.newZipCode}"
+                                                class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
+                                                placeholder="10001" required="true" />
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 pt-2">
+                                        <h:selectBooleanCheckbox id="saveAddress" value="#{checkoutMB.saveAddress}" />
+                                        <h:outputLabel for="saveAddress"
+                                            class="text-sm text-[#111813] dark:text-gray-200 cursor-pointer select-none">
+                                            Save this address for next time</h:outputLabel>
+                                    </div>
+                                </ui:fragment>
+                            </div>
+                        </section>
+                        <!-- Delivery Method Section -->
+                        <section
+                            class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+                            <div class="mb-6">
+                                <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Delivery Method
+                                </h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Select your preferred shipping
+                                    option.</p>
+                            </div>
+                            <div class="flex flex-col w-full">
+                                <h:outputLabel
+                                    class="text-[#111813] dark:text-gray-200 text-sm font-semibold mb-2 flex items-center gap-2"
+                                    for="shippingMethodSelect">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[20px]">local_shipping</span>
+                                    <!-- Icon truck cho vận chuyển -->
+                                    Choose Delivery
+                                </h:outputLabel>
+                                <div class="relative">
+                                    <h:selectOneMenu id="shippingMethodSelect" value="#{checkoutMB.shippingMethod}"
+                                        class="form-select w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-2 focus:ring-primary/50 text-[#111813] dark:text-[#111813] transition-all hover:border-primary/50 appearance-none">
+                                        <f:selectItem
+                                            itemLabel="Standard Delivery (Free, 3-5 Business Days - Eco-friendly)"
+                                            itemValue="standard" />
+                                        <f:selectItem itemLabel="Express Delivery ($15.00, 1-2 Business Days - Fastest)"
+                                            itemValue="express" />
+                                        <f:ajax event="change" render="@form" />
+                                        <!-- Thêm event="change" và render toàn form để cập nhật ngay shipping cost -->
+                                    </h:selectOneMenu>
+
+                                    <span
+                                        class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined pointer-events-none text-gray-500">expand_more</span>
+                                </div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Your choice affects delivery
+                                    time and cost.</p> <!-- Thêm mô tả ngắn -->
+                            </div>
+                        </section>
+
+                        <!-- Payment Method Selection -->
+                        <section
+                            class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+                            <div class="mb-6">
+                                <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Payment Method
+                                </h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Choose how you want to pay for your
+                                    order.</p>
+                            </div>
+                            <div class="flex flex-col w-full">
+                                <h:outputLabel
+                                    class="text-[#111813] dark:text-gray-200 text-sm font-semibold mb-2 flex items-center gap-2"
+                                    for="paymentMethodTypeSelect">
+                                    <span class="material-symbols-outlined text-primary text-[20px]">payment</span>
+                                    Choose Payment
+                                </h:outputLabel>
+                                <div class="relative">
+                                    <h:selectOneMenu id="paymentMethodTypeSelect"
+                                        value="#{checkoutMB.paymentMethodType}"
+                                        class="form-select w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-2 focus:ring-primary/50 text-[#111813] dark:text-[#111813] transition-all hover:border-primary/50 appearance-none">
+                                        <f:selectItem itemLabel="Cash on Delivery (Pay when you receive your order)"
+                                            itemValue="cod" />
+                                        <f:selectItem itemLabel="Online Payment (Bank Transfer/QR Code)"
+                                            itemValue="online" />
+                                        <f:ajax event="change" render="@form" />
+                                    </h:selectOneMenu>
+                                    <span
+                                        class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined pointer-events-none text-gray-500">expand_more</span>
+                                </div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Choose your preferred payment method.</p>
+                            </div>
+                        </section>
+
                     </div>
 
-                    <!-- Shipping Information Section -->
-                    <section class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
-                        <div class="mb-6">
-                            <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Contact Details</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">We'll use this to update you on your order.</p>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                            <label class="flex flex-col flex-1">
-                                <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">First Name</span>
-                                <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="e.g. John" type="text"/>
-                            </label>
-                            <label class="flex flex-col flex-1">
-                                <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">Last Name</span>
-                                <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="e.g. Doe" type="text"/>
-                            </label>
-                        </div>
-                        <div class="mb-8">
-                            <label class="flex flex-col w-full">
-                                <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">Phone Number</span>
-                                <div class="relative">
-                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-[20px]">call</span>
-                                    <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 pl-11 pr-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="+1 (555) 000-0000" type="tel"/>
-                                </div>
-                            </label>
-                        </div>
-                        <div class="mb-6">
-                            <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Shipping Address</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Where should we deliver your groceries?</p>
-                        </div>
-                        <div class="space-y-5">
-                            <label class="flex flex-col w-full">
-                                <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">Address Line 1</span>
-                                <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="e.g. 123 Green St" type="text"/>
-                            </label>
-                            <label class="flex flex-col w-full">
-                                <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">Address Line 2 (Optional)</span>
-                                <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="e.g. Apt 4B" type="text"/>
-                            </label>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                                <label class="flex flex-col w-full">
-                                    <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">City</span>
-                                    <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="New York" type="text"/>
-                                </label>
-                                <label class="flex flex-col w-full">
-                                    <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">State / Province</span>
-                                    <div class="relative">
-                                        <select class="form-select w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary text-[#111813] dark:text-[#111813] transition-colors appearance-none">
-                                            <option>Select State</option>
-                                            <option>California</option>
-                                            <option>New York</option>
-                                            <option>Texas</option>
-                                        </select>
-                                        <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined pointer-events-none text-gray-500">expand_more</span>
-                                    </div>
-                                </label>
-                                <label class="flex flex-col w-full">
-                                    <span class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2">Zip Code</span>
-                                    <input class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors" placeholder="10001" type="text"/>
-                                </label>
-                            </div>
-                            <div class="flex items-center gap-3 pt-2">
-                                <div class="relative flex items-center">
-                                    <input class="peer size-5 cursor-pointer appearance-none rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#112116] checked:bg-primary checked:border-primary transition-all" id="save-address" type="checkbox"/>
-                                    <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white pointer-events-none opacity-0 peer-checked:opacity-100 material-symbols-outlined text-[16px]">check</span>
-                                </div>
-                                <label class="text-sm text-[#111813] dark:text-gray-200 cursor-pointer select-none" for="save-address">Save this address for next time</label>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Delivery Method Section -->
-                    <section class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
-                        <div class="mb-6">
-                            <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Delivery Method</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Select your preferred shipping option.</p>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <!-- Standard Option -->
-                            <label class="relative cursor-pointer group">
-                                <input checked="" class="peer sr-only" name="shipping" type="radio"/>
-                                <div class="p-5 rounded-lg border-2 border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] peer-checked:border-primary peer-checked:bg-primary/5 dark:peer-checked:bg-primary/10 transition-all h-full flex flex-col justify-between">
-                                    <div class="flex justify-between items-start mb-4">
-                                        <div class="flex items-center gap-3">
-                                            <div class="size-5 rounded-full border-2 border-gray-300 dark:border-gray-500 peer-checked:group-[]:border-primary peer-checked:group-[]:bg-primary flex items-center justify-center">
-                                                <div class="size-2 bg-white rounded-full opacity-0 peer-checked:group-[]:opacity-100"></div>
+                    <!-- Right Column: Order Summary (Sticky) -->
+                    <div class="lg:col-span-4">
+                        <div class="sticky top-24 space-y-6">
+                            <div
+                                class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg shadow-gray-200/50 dark:shadow-none">
+                                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Order Summary</h2>
+                                <!-- Mini Product List -->
+                                <div class="space-y-4 mb-6">
+                                    <ui:repeat value="#{cartMB.cartItems}" var="item">
+                                        <div class="flex gap-3 items-center">
+                                            <div
+                                                class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
+                                                <ui:param name="checkoutImgPath" value="#{checkoutMB.productImageUrl(item.productID)}" />
+                                                <img alt="#{item.productID.productName}"
+                                                    class="h-full w-full object-cover"
+                                                    src="#{request.contextPath}#{checkoutImgPath}" />
                                             </div>
-                                            <span class="font-bold text-[#111813] dark:text-[#111813]">Standard Delivery</span>
-                                        </div>
-                                        <span class="font-bold text-[#111813] dark:text-[#111813]">Free</span>
-                                    </div>
-                                    <div class="pl-8">
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Estimated: 3-5 Business Days</p>
-                                        <p class="text-xs text-primary font-medium">Eco-friendly option</p>
-                                    </div>
-                                </div>
-                            </label>
-                            <!-- Express Option -->
-                            <label class="relative cursor-pointer group">
-                                <input class="peer sr-only" name="shipping" type="radio"/>
-                                <div class="p-5 rounded-lg border-2 border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] peer-checked:border-primary peer-checked:bg-primary/5 dark:peer-checked:bg-primary/10 transition-all h-full flex flex-col justify-between">
-                                    <div class="flex justify-between items-start mb-4">
-                                        <div class="flex items-center gap-3">
-                                            <div class="size-5 rounded-full border-2 border-gray-300 dark:border-gray-500 peer-checked:group-[]:border-primary peer-checked:group-[]:bg-primary flex items-center justify-center">
-                                                <div class="size-2 bg-white rounded-full opacity-0 peer-checked:group-[]:opacity-100"></div>
+                                            <div class="flex-1 min-w-0">
+                                                <p
+                                                    class="text-sm font-semibold text-[#111813] dark:text-[#111813] truncate">
+                                                    #{item.productID.productName}</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">Qty:
+                                                    #{item.quantity}</p>
                                             </div>
-                                            <span class="font-bold text-[#111813] dark:text-[#111813]">Express Delivery</span>
+                                            <p class="text-sm font-semibold text-[#111813] dark:text-[#111813]">
+                                                $#{cartMB.getItemTotal(item)}</p>
                                         </div>
-                                        <span class="font-bold text-[#111813] dark:text-[#111813]">$15.00</span>
-                                    </div>
-                                    <div class="pl-8">
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Estimated: 1-2 Business Days</p>
-                                        <p class="text-xs text-orange-500 font-medium flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[14px]">local_fire_department</span> Fastest
-                                        </p>
-                                    </div>
+                                    </ui:repeat>
                                 </div>
-                            </label>
-                        </div>
-                    </section>
+                                <!-- Calculations -->
+                                <div id="calculationsSection"
+                                    class="border-t border-gray-100 dark:border-gray-800 pt-4 space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600 dark:text-gray-400">Subtotal</span>
+                                        <span
+                                            class="font-medium text-gray-900 dark:text-white">$#{cartMB.subtotal}</span>
+                                    </div>
 
-                    <!-- Payment Details Section -->
-                    <section class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-lg font-bold text-[#111813] dark:text-[#111813] flex items-center gap-2">
-                                <span class="material-symbols-outlined text-primary">credit_card</span>
-                                Payment Details
-                            </h2>
-                        </div>
-                        <div class="space-y-6">
-                            <!-- Saved Cards Section -->
-                            <div>
-                                <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Saved Cards</h3>
-                                <div class="flex flex-col gap-3">
-                                    <!-- Saved Card 1 -->
-                                    <label class="group relative flex items-center gap-4 rounded-xl border border-gray-200 dark:border-gray-700 p-4 cursor-pointer hover:border-primary/50 dark:hover:border-primary/50 transition-all bg-gray-50/50 dark:bg-gray-800/50">
-                                        <input checked="" class="radio-custom h-5 w-5 bg-transparent border-2 border-gray-300 dark:border-gray-600 text-transparent focus:ring-primary focus:ring-offset-0 checked:focus:border-primary" name="payment_method" type="radio"/>
-                                        <div class="flex items-center justify-center w-10 h-6 bg-white dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600">
-                                            <img alt="Visa Logo" class="h-3 w-auto" data-alt="Visa logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlJjWzcPgnd5Jm9gf8tx7sp7PMlTTKYh8ugYmYgCHEImnnB9tNYN6A6dh1PwY6EPuGuVb343TsZ3HvQ6SK0UqMlT79L1BDNRHzSekc2DPpUv0UOjSuxnUthXq-dd8Tj2q1iY_dU_BA-uBPi20QNhEsFS8qiboth10btiKY4k0arhgbhOPA69Ch8nqtapn0nRUsCpG3ffNNAB9gKaFVJD63xRVszhBs8S0r5AiZQEEL6ZyCfZ-lbedQSWIc01zGeF8ZNqt89PVwlLI"/>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600 dark:text-gray-400">Tax</span>
+                                        <span
+                                            class="font-medium text-gray-900 dark:text-white">$#{checkoutMB.getTaxAmount()}</span>
+                                    </div>
+
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600 dark:text-gray-400">Shipping</span>
+                                        <span
+                                            class="font-medium text-gray-900 dark:text-white">$#{checkoutMB.getShippingCost()}</span>
+                                    </div>
+
+                                    <ui:fragment
+                                        rendered="#{checkoutMB.discountAmount != null and checkoutMB.discountAmount > 0}">
+                                        <div class="flex justify-between text-sm">
+                                            <span class="text-gray-600 dark:text-gray-400">Voucher Discount</span>
+                                            <span
+                                                class="font-medium text-green-600 dark:text-green-400">-$#{checkoutMB.discountAmount}</span>
                                         </div>
-                                        <div class="flex flex-col grow">
-                                            <p class="text-sm font-semibold text-[#111813] dark:text-[#111813]">Visa ending in 4242</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Expires 09/25</p>
-                                        </div>
-                                        <span class="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">check_circle</span>
-                                    </label>
-                                    <!-- Saved Card 2 -->
-                                    <label class="group relative flex items-center gap-4 rounded-xl border border-gray-200 dark:border-gray-700 p-4 cursor-pointer hover:border-primary/50 dark:hover:border-primary/50 transition-all bg-gray-50/50 dark:bg-gray-800/50">
-                                        <input class="radio-custom h-5 w-5 bg-transparent border-2 border-gray-300 dark:border-gray-600 text-transparent focus:ring-primary focus:ring-offset-0 checked:focus:border-primary" name="payment_method" type="radio"/>
-                                        <div class="flex items-center justify-center w-10 h-6 bg-white dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600">
-                                            <img alt="Mastercard Logo" class="h-4 w-auto" data-alt="Mastercard logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk8Q8glZSfoIK0K-3QeUn4l6pDhpapmiFXJDf06YmfGFzMDYkLroEuk1xAWRrOGms0TuD_Yf1krUY6SEDRhh-AR89pD4F8_eeIa1UdaVfuMikqX9tJPLrfLb1NMgfbeTsKz_Ed98lp8_l_SfaGY4cplmkMSnwJk7KwRycLONVm1dLzawJMlnACsjEjQaDhNavhQFaPZSmmDI77BWNtG0lsvtJscKPcS4Ww-Uaw4jdR6UiJXCueiiDQaA4b8MuVSacDqcMbvK1Uh1Q"/>
-                                        </div>
-                                        <div class="flex flex-col grow">
-                                            <p class="text-sm font-semibold text-[#111813] dark:text-[#111813]">Mastercard ending in 8899</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Expires 11/24</p>
-                                        </div>
-                                    </label>
+                                    </ui:fragment>
+
                                 </div>
-                            </div>
-
-                            <!-- New Payment Method Section -->
-                            <div>
-                                <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Add New Card</h3>
-                                <form class="space-y-6">
-                                    <div class="space-y-4">
-                                        <!-- Card Number -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Card Number</label>
-                                            <div class="relative">
-                                                <input class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary py-2.5 pl-10 transition-colors" placeholder="0000 0000 0000 0000" type="text"/>
-                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <span class="material-symbols-outlined text-gray-400">credit_card</span>
-                                                </div>
-                                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none gap-2">
-                                                    <span class="material-symbols-outlined text-gray-400 text-lg">lock</span>
-                                                </div>
+                                <!-- Voucher Input -->
+                                <div id="voucherSection"
+                                    class="border-t border-gray-100 dark:border-gray-800 pt-4 pb-4">
+                                    <div class="flex gap-2">
+                                        <h:inputText id="voucherCode" value="#{checkoutMB.voucherCode}"
+                                            class="form-input flex-1 rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-10 px-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
+                                            placeholder="Enter voucher code" />
+                                        <h:commandLink action="#{checkoutMB.applyVoucher()}"
+                                            class="bg-primary hover:bg-green-600 text-white font-medium px-4 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-[0.98] text-sm">
+                                            <f:ajax execute="voucherCode" render="@form" />
+                                            <!-- Thay đổi: render toàn form để cập nhật calculations và total ngay -->
+                                            Apply
+                                        </h:commandLink>
+                                    </div>
+                                    <ui:fragment rendered="#{checkoutMB.appliedVoucher != null}">
+                                        <div
+                                            class="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg mt-2">
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    class="material-symbols-outlined text-green-600 text-sm">check_circle</span>
+                                                <span class="text-xs font-medium text-green-800 dark:text-green-200">
+                                                    Voucher applied: #{checkoutMB.appliedVoucher.voucherCode}
+                                                </span>
                                             </div>
+                                            <h:commandLink action="#{checkoutMB.removeVoucher()}" immediate="true"
+                                                class="text-red-600 hover:text-red-800 text-xs font-medium">
+                                                <f:ajax execute="@this" render="@form" />
+                                                <!-- Thay đổi: render toàn form và reset voucherCode -->
+                                                Remove
+                                            </h:commandLink>
                                         </div>
-                                        <!-- Cardholder Name -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Cardholder Name</label>
-                                            <input class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary py-2.5 transition-colors" placeholder="John Doe" type="text"/>
-                                        </div>
-                                        <!-- Expiry & CVV -->
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Expiry Date</label>
-                                                <input class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary py-2.5 transition-colors" placeholder="MM / YY" type="text"/>
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">CVV</label>
-                                                <div class="relative">
-                                                    <input class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary py-2.5 transition-colors" placeholder="123" type="text"/>
-                                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                                        <span class="material-symbols-outlined text-gray-400 text-[20px]">help</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    </ui:fragment>
+                                </div>
+                                <!-- Total -->
+                                <div id="totalSection"
+                                    class="border-t border-gray-100 dark:border-gray-800 pt-4 mt-4 mb-6">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-base font-bold text-gray-900 dark:text-white">Total</span>
+                                        <span
+                                            class="text-2xl font-black text-gray-900 dark:text-white">$#{checkoutMB.getFinalTotal()}</span>
                                     </div>
-                                    <!-- Billing Address Checkbox -->
-                                    <div class="flex items-center gap-3 mt-4">
-                                        <input checked="" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:bg-gray-800 dark:border-gray-600" id="billing-same" type="checkbox"/>
-                                        <label class="text-sm text-gray-700 dark:text-gray-300" for="billing-same">Billing address is same as shipping address</label>
+                                </div>
+                                <!-- Place Order Button -->
+                                <h:commandLink action="#{checkoutMB.placeOrder()}"
+                                    class="w-full bg-primary hover:bg-green-600 text-white font-bold text-lg py-3.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined">shopping_cart_checkout</span>
+                                    Place Order
+                                </h:commandLink>
+                                <!-- Trust Badges -->
+                                <div class="flex justify-center items-center gap-4 mt-6 text-gray-400">
+                                    <div class="flex items-center gap-1 text-xs">
+                                        <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                                        <span>SSL Secure</span>
                                     </div>
-                                </form>
-                            </div>
-
-                            <!-- Alternative Methods -->
-                            <div>
-                                <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">Other Payment Methods</h3>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <button class="flex items-center justify-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a2e22] p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                        <span class="material-symbols-outlined text-blue-600">account_balance_wallet</span>
-                                        <span class="text-sm font-bold text-gray-800 dark:text-gray-200">PayPal</span>
-                                    </button>
-                                    <button class="flex items-center justify-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a2e22] p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                        <span class="material-symbols-outlined text-black dark:text-white">smartphone</span>
-                                        <span class="text-sm font-bold text-gray-800 dark:text-gray-200">Apple Pay</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-
-                <!-- Right Column: Order Summary (Sticky) -->
-                <div class="lg:col-span-4">
-                    <div class="sticky top-24 space-y-6">
-                        <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg shadow-gray-200/50 dark:shadow-none">
-                            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Order Summary</h2>
-                            <!-- Mini Product List -->
-                            <div class="space-y-4 mb-6">
-                                <div class="flex gap-3 items-center">
-                                    <div class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
-                                        <img alt="Fresh oranges" class="h-full w-full object-cover" data-alt="Close up of fresh organic oranges" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5rLrTOmQxnKN72BPxPmP_Jk5qMd76eC-DLsOFdB3Kti_20iLMTT-KB9GYbC1pwLD1I0kX-HdEKZHH7ZtXwywAtoTbChJGQO6PHlaFEQHTFWKZMcRo-4-252qCCeYudII_m6T0JbIw7QQxw-2nvkd7luD2Aocr5zoH1nJ9oa8xU3h4it-wfR0oUUtdYrC2R6sP8At2v11BIPsftOgSXcOanDrcL-Rflxo86mqzrTrV5hNPoyRh3IP14mjye8IWzNh84ESNtLLKI2w"/>
+                                    <div class="h-3 w-px bg-gray-300 dark:bg-gray-700"></div>
+                                    <div class="flex items-center gap-1 text-xs">
+                                        <span class="material-symbols-outlined text-[18px]">shield</span>
+                                        <span>Encrypted</span>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-semibold text-[#111813] dark:text-[#111813] truncate">Organic Valencia Oranges</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Qty: 2kg</p>
-                                    </div>
-                                    <p class="text-sm font-semibold text-[#111813] dark:text-[#111813]">$8.50</p>
-                                </div>
-                                <div class="flex gap-3 items-center">
-                                    <div class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
-                                        <img alt="Carton of milk" class="h-full w-full object-cover" data-alt="Carton of fresh milk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA53u-k9jYaCyfmmN7nvIySrqcS-zS34MijmFmjfsI8LxPWZFvew--LOcgKsuJiAnhzJ3dCMedJW9EzvcZPkS2wMihgtzBiWgWMPc8KlBtLv_3jfi3SjQ0flGKo6lllxIsxnxQkBfSsMcX7TOgJBmv-rfrJx0gX3T3lfDquXGysA1MfKd6ukMREiIYJ8nqQMfkFDjEJqoxiR1x_0nYxudwsPsQaLlBvmSreJrGGD4q6IzoOdVFm6IYDptmm9--UKjapoZx1Xtm-Odc"/>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-semibold text-[#111813] dark:text-[#111813] truncate">Farm Fresh Whole Milk</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Qty: 2L</p>
-                                    </div>
-                                    <p class="text-sm font-semibold text-[#111813] dark:text-[#111813]">$4.20</p>
-                                </div>
-                                <div class="flex gap-3 items-center">
-                                    <div class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
-                                        <img alt="Box of cereal" class="h-full w-full object-cover" data-alt="Box of breakfast cereal" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFy4MuykMrsn28jrUCnusmhL8FT6vZouiftTz6uq3WN6EsWydhiMqpmfOml8wlh0r-fd39XHc2dYUImwFU6Qw5MtCbZvRZO_W2T1um023mQCW_rwYNV7mBIM1FU0g4AOvjnI_mCWehuVf78E_oI1FU-k8r3JmPLvKV0qiA3_mTBNA1_xQ-sJsvH6Be_NnN8YaO-wcNPKwbwRjx2azbzTfs4eDCSbsSWTsG90Xbyi5mbHs0pMpXMBsi2XlKpiIK_4PeSI7wxNYTPek"/>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-semibold text-[#111813] dark:text-[#111813] truncate">Crunchy Oats Cereal</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Qty: 1 box</p>
-                                    </div>
-                                    <p class="text-sm font-semibold text-[#111813] dark:text-[#111813]">$6.80</p>
-                                </div>
-                            </div>
-                            <!-- Calculations -->
-                            <div class="border-t border-gray-100 dark:border-gray-800 pt-4 space-y-2">
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600 dark:text-gray-400">Subtotal</span>
-                                    <span class="font-medium text-gray-900 dark:text-white">$19.50</span>
-                                </div>
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600 dark:text-gray-400">Delivery Fee</span>
-                                    <span class="font-medium text-gray-900 dark:text-white">$5.00</span>
-                                </div>
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600 dark:text-gray-400">Tax</span>
-                                    <span class="font-medium text-gray-900 dark:text-white">$1.95</span>
-                                </div>
-                            </div>
-                            <!-- Total -->
-                            <div class="border-t border-gray-100 dark:border-gray-800 pt-4 mt-4 mb-6">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-base font-bold text-gray-900 dark:text-white">Total</span>
-                                    <span class="text-2xl font-black text-gray-900 dark:text-white">$26.45</span>
-                                </div>
-                            </div>
-                            <!-- Place Order Button -->
-                            <button class="w-full bg-primary hover:bg-green-600 text-white font-bold text-lg py-3.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
-                                <span class="material-symbols-outlined">shopping_cart_checkout</span>
-                                Place Order
-                            </button>
-                            <!-- Trust Badges -->
-                            <div class="flex justify-center items-center gap-4 mt-6 text-gray-400">
-                                <div class="flex items-center gap-1 text-xs">
-                                    <span class="material-symbols-outlined text-[18px]">verified_user</span>
-                                    <span>SSL Secure</span>
-                                </div>
-                                <div class="h-3 w-px bg-gray-300 dark:bg-gray-700"></div>
-                                <div class="flex items-center gap-1 text-xs">
-                                    <span class="material-symbols-outlined text-[18px]">shield</span>
-                                    <span>Encrypted</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </h:form>
     </ui:define>
 </ui:composition>

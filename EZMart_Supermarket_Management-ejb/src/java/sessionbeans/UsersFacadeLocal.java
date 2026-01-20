@@ -33,5 +33,6 @@ public interface UsersFacadeLocal {
     Users findByEmail(String email);
     Users findByIdentifierAndPassword(String identifier, String passwordHash);
     Users findByUsernameAndPassword(String username, String passwordHash);
+    List<Users> findUsersByRole(String role);
     
 }

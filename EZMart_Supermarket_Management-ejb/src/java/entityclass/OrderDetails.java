@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -47,6 +48,21 @@ public class OrderDetails implements Serializable {
     private BigDecimal unitPrice;
     @Column(name = "TotalPrice")
     private BigDecimal totalPrice;
+    @Size(max = 100)
+    @Column(name = "CustomerName")
+    private String customerName;
+    @Size(max = 255)
+    @Column(name = "CustomerAddress")
+    private String customerAddress;
+    @Size(max = 20)
+    @Column(name = "CustomerPhone")
+    private String customerPhone;
+    @Size(max = 100)
+    @Column(name = "ProductName")
+    private String productName;
+    @Size(max = 255)
+    @Column(name = "ProductImage")
+    private String productImage;
     @JoinColumn(name = "OrderID", referencedColumnName = "OrderID")
     @ManyToOne
     private Orders orderID;
@@ -107,6 +123,46 @@ public class OrderDetails implements Serializable {
 
     public void setProductID(Products productID) {
         this.productID = productID;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerAddress() {
+        return customerAddress;
+    }
+
+    public void setCustomerAddress(String customerAddress) {
+        this.customerAddress = customerAddress;
+    }
+
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
+
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
+    }
+
+      public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getProductImage() {
+        return productImage;
+    }
+
+    public void setProductImage(String productImage) {
+        this.productImage = productImage;
     }
 
     @Override

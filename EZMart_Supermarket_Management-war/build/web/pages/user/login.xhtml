@@ -79,17 +79,13 @@
                             </div>
                         </div>
                         <!-- Social Login -->
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 gap-4">
                             <h:form styleClass="contents">
                                 <h:commandLink action="#{auth.redirectToGoogleOAuth()}" styleClass="flex items-center justify-center gap-3 h-12 rounded-lg border border-[#dce5df] hover:bg-gray-50 dark:hover:bg-[#1a3322] transition-colors bg-white dark:bg-[#112116] dark:border-[#2a4034] px-4">
-                                    <img alt="Google" class="w-5 h-5" src="#{facesContext.externalContext.requestContextPath}/images/google.png"/>
+                                    <img alt="Google" class="w-5 h-5" src="#{request.contextPath}/resources/images/google.png"/>
                                     <span class="text-sm font-bold text-[#111813] dark:text-white">Google</span>
                                 </h:commandLink>
                             </h:form>
-                            <button class="flex items-center justify-center gap-2 h-12 rounded-lg border border-[#dce5df] hover:bg-gray-50 dark:hover:bg-[#1a3322] transition-colors bg-white dark:bg-[#112116] dark:border-[#2a4034]">
-                                <img alt="Facebook" class="w-5 h-5" data-alt="Facebook logo" src="#{facesContext.externalContext.requestContextPath}/images/facebook.png"/>
-                                <span class="text-sm font-bold text-[#111813] dark:text-white">Facebook</span>
-                            </button>
                         </div>
                     
                         <div class="mt-8 text-center">

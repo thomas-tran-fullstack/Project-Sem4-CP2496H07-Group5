@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/admin/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="content">
+        <div class="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth">
+            <div class="max-w-3xl mx-auto space-y-8">
+                <!-- Page Heading -->
+                <div class="flex items-center gap-3 mb-6">
+                    <a href="/EZMart_Supermarket_Management-war/pages/admin/livestream.xhtml" 
+                       class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">arrow_back</span>
+                    </a>
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Create New Livestream</h2>
+                        <p class="text-slate-500 dark:text-slate-400 mt-1">Set up a new live shopping session</p>
+                    </div>
+                </div>
+
+                <!-- Form Card -->
+                <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 p-8 shadow-sm">
+                    <form id="livestreamForm" class="space-y-6">
+                        <!-- Session Title -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-900 dark:text-white mb-2">Session Title *</label>
+                            <input type="text" id="title" placeholder="e.g., Summer Sale Event"
+                                   class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   required="required" />
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Give your livestream a catchy title</p>
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-900 dark:text-white mb-2">Description</label>
+                            <textarea id="description" rows="4" placeholder="Describe what products you'll be showcasing..."
+                                      class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Optional - help customers know what to expect</p>
+                        </div>
+
+                        <!-- Staff Selection -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-900 dark:text-white mb-2">Assigned Staff *</label>
+                            <select id="staffId" class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="required">
+                                <option value="">Loading staff members...</option>
+                            </select>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Choose who will be hosting this livestream</p>
+                        </div>
+
+                        <!-- Scheduled Start Time -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-900 dark:text-white mb-2">Start Date *</label>
+                                <input type="date" id="startDate"
+                                       class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       required="required" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-900 dark:text-white mb-2">Start Time *</label>
+                                <input type="time" id="startTime"
+                                       class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       required="required" />
+                            </div>
+                        </div>
+
+                        <!-- Scheduled End Time -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-900 dark:text-white mb-2">End Date</label>
+                                <input type="date" id="endDate"
+                                       class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-900 dark:text-white mb-2">End Time</label>
+                                <input type="time" id="endTime"
+                                       class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
+                            </div>
+                        </div>
+
+                        <!-- Thumbnail File Upload -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-900 dark:text-white mb-2">Background Image</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="file" id="thumbnailFile" accept="image/*"
+                                       class="flex-1 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
+                                <button type="button" id="previewBtn" class="px-4 py-2 bg-slate-300 dark:bg-slate-600 text-slate-900 dark:text-white rounded-lg hover:bg-slate-400 dark:hover:bg-slate-500 transition-colors" style="display:none;">
+                                    <span class="material-symbols-outlined" style="font-size: 20px;">preview</span>
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Select a JPG or PNG image to use as background for this livestream session</p>
+                            <div id="thumbnailPreview" class="mt-4 hidden">
+                                <p class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Preview:</p>
+                                <img id="previewImage" src="" alt="Thumbnail preview" class="max-w-xs h-auto rounded-lg border border-slate-300 dark:border-slate-600" />
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="flex gap-3 pt-6 border-t border-slate-200 dark:border-slate-700">
+                            <a href="/EZMart_Supermarket_Management-war/pages/admin/livestream.xhtml"
+                               class="flex-1 px-4 py-2 text-center font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                                Cancel
+                            </a>
+                            <button type="submit" 
+                                    class="flex-1 px-4 py-2 font-medium text-white bg-primary rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">add</span>
+                                Create Livestream
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Info Box -->
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                    <div class="flex gap-3">
+                        <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 flex-shrink-0">info</span>
+                        <div class="text-sm text-blue-800 dark:text-blue-300">
+                            <p class="font-semibold mb-1">Tips for successful livestream:</p>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>Set a catchy title that highlights the main products</li>
+                                <li>Schedule 1-2 hours before to allow staff to prepare</li>
+                                <li>Assign an experienced staff member for best results</li>
+                                <li>Use the stream key during OBS setup for broadcasting</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+
+    <ui:define name="pageScript">
+        <script type="text/javascript">
+        //<![CDATA[
+            var API_BASE = '/EZMart_Supermarket_Management-war/resources/api/livestream/admin';
+
+            // Load staff members on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                loadStaffMembers();
+                setupThumbnailPreview();
+            });
+
+            function loadStaffMembers() {
+                fetch('/EZMart_Supermarket_Management-war/resources/api/users?role=STAFF')
+                    .then(function(response) {
+                        if (!response.ok) throw new Error('Failed to load staff members');
+                        return response.json();
+                    })
+                    .then(function(staffList) {
+                        var select = document.getElementById('staffId');
+                        select.innerHTML = '<option value="">Select a staff member...</option>';
+                        
+                        if (staffList && staffList.length > 0) {
+                            staffList.forEach(function(staff) {
+                                var option = document.createElement('option');
+                                option.value = staff.id;
+                                option.textContent = staff.name + ' (ID: ' + staff.id + ')';
+                                select.appendChild(option);
+                            });
+                        } else {
+                            select.innerHTML += '<option disabled="disabled">No staff members available</option>';
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error loading staff members:', error);
+                        document.getElementById('staffId').innerHTML = '<option disabled="disabled">Error loading staff</option>';
+                    });
+            }
+
+            function setupThumbnailPreview() {
+                var fileInput = document.getElementById('thumbnailFile');
+                var previewBtn = document.getElementById('previewBtn');
+                var previewDiv = document.getElementById('thumbnailPreview');
+                var previewImg = document.getElementById('previewImage');
+
+                fileInput.addEventListener('change', function(e) {
+                    var file = e.target.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        var reader = new FileReader();
+                        reader.onload = function(event) {
+                            previewImg.src = event.target.result;
+                            previewDiv.classList.remove('hidden');
+                            previewBtn.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        previewDiv.classList.add('hidden');
+                        previewBtn.style.display = 'none';
+                        alert('Please select a valid image file');
+                        fileInput.value = '';
+                    }
+                });
+            }
+
+            // Form submission
+            document.getElementById('livestreamForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                var fileInput = document.getElementById('thumbnailFile');
+                var formData = new FormData();
+                
+                formData.append('title', document.getElementById('title').value);
+                formData.append('description', document.getElementById('description').value);
+                formData.append('staffId', document.getElementById('staffId').value);
+                formData.append('scheduledStartTime', new Date(
+                    document.getElementById('startDate').value + 'T' + document.getElementById('startTime').value
+                ).getTime());
+                
+                if (document.getElementById('endDate').value && document.getElementById('endTime').value) {
+                    formData.append('scheduledEndTime', new Date(
+                        document.getElementById('endDate').value + 'T' + document.getElementById('endTime').value
+                    ).getTime());
+                }
+                
+                // Add thumbnail file if selected
+                if (fileInput.files && fileInput.files.length > 0) {
+                    formData.append('thumbnailFile', fileInput.files[0]);
+                }
+
+                fetch(API_BASE + '/sessions', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(result) {
+                    if (result.success) {
+                        alert('Livestream created successfully!');
+                        window.location.href = '/EZMart_Supermarket_Management-war/pages/admin/livestream.xhtml';
+                    } else {
+                        alert('Error: ' + result.error);
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error creating livestream:', error);
+                    alert('Error creating livestream');
+                });
+            });
+
+            // Set minimum start date to today
+            var today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').setAttribute('min', today);
+            document.getElementById('endDate').setAttribute('min', today);
+        //]]>
+        </script>
+    </ui:define>
+</ui:composition>

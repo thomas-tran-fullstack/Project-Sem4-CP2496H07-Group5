@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/staff/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="content">
+        <div class="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth">
+            <div class="max-w-7xl mx-auto space-y-6">
+                <!-- Page Heading -->
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                        <span class="material-symbols-outlined text-red-600">live_tv</span>
+                        Livestream Broadcast
+                    </h2>
+                    <p class="text-slate-500 dark:text-slate-400 mt-1">Manage your live shopping session in real-time</p>
+                </div>
+
+                <!-- Main Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left: Stream Preview & Info -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Video Preview -->
+                        <div class="bg-black rounded-xl overflow-hidden aspect-video shadow-lg border border-slate-800">
+                            <div id="videoPreview" class="w-full h-full bg-gradient-to-br from-slate-900 to-black flex items-center justify-center">
+                                <div class="text-center text-slate-400">
+                                    <span class="material-symbols-outlined text-[64px] block mb-4">videocam</span>
+                                    <p class="text-lg">Video preview will appear here</p>
+                                    <p class="text-sm mt-2">Or stream from OBS/OBS.Ninja</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stream Info -->
+                        <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm">
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 id="sessionTitle" class="text-xl font-bold text-slate-900 dark:text-white">Select a Session</h3>
+                                        <p id="sessionDesc" class="text-sm text-slate-600 dark:text-slate-400 mt-1">No session selected</p>
+                                    </div>
+                                    <span id="streamStatus" class="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-white bg-slate-600 rounded-full">
+                                        <span class="inline-block w-2 h-2 bg-current rounded-full"></span>
+                                        Not Live
+                                    </span>
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                                    <div>
+                                        <p class="text-xs text-slate-600 dark:text-slate-400 mb-1">Current Viewers</p>
+                                        <p class="text-2xl font-bold text-slate-900 dark:text-white" id="currentViewers">0</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-600 dark:text-slate-400 mb-1">Peak Viewers</p>
+                                        <p class="text-2xl font-bold text-slate-900 dark:text-white" id="peakViewers">0</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-600 dark:text-slate-400 mb-1">Live Duration</p>
+                                        <p class="text-2xl font-bold text-slate-900 dark:text-white" id="duration">00:00</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Product Add -->
+                        <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm">
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined">shopping_bag</span>
+                                Add Products to Stream
+                            </h3>
+                            <form id="addProductForm" class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="text-sm font-medium text-slate-900 dark:text-white mb-1 block">Product *</label>
+                                        <select id="productId" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary" required>
+                                            <option value="">Select product...</option>
+                                            <option value="1">Product 1 - $29.99</option>
+                                            <option value="2">Product 2 - $49.99</option>
+                                            <option value="3">Product 3 - $19.99</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-sm font-medium text-slate-900 dark:text-white mb-1 block">Discount Price</label>
+                                        <input type="number" id="discountPrice" step="0.01" placeholder="Leave empty for no discount"
+                                               class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary" />
+                                    </div>
+                                    <div class="flex items-end">
+                                        <button type="submit" class="w-full px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2">
+                                            <span class="material-symbols-outlined text-[18px]">add</span>
+                                            Add Product
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Active Products -->
+                        <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
+                            <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+                                <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <span class="material-symbols-outlined">local_offer</span>
+                                    Products on Stream
+                                </h3>
+                            </div>
+                            <div id="activeProducts" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                <div class="p-6 text-center text-slate-500">Add products to start streaming</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Session Selector & Chat -->
+                    <div class="space-y-6">
+                        <!-- Session Selector -->
+                        <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm">
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Available Sessions</h3>
+                            <select id="sessionSelect" class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary mb-4">
+                                <option value="">Select a session...</option>
+                            </select>
+                            <div id="sessionActions" class="space-y-2" style="display: none;">
+                                <button id="goLiveBtn" class="w-full px-4 py-2 font-medium text-white bg-primary rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-[18px] animate-pulse">fiber_manual_record</span>
+                                    Start Broadcasting
+                                </button>
+                                <button id="endLiveBtn" class="w-full px-4 py-2 font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2" style="display: none;">
+                                    <span class="material-symbols-outlined text-[18px]">stop_circle</span>
+                                    End Broadcast
+                                </button>
+                                <button id="getStreamKeyBtn" class="w-full px-4 py-2 font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-[18px]">key</span>
+                                    Stream Settings
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Stream Key Modal (Hidden) -->
+                        <div id="streamKeyModal" style="display: none;" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                            <div class="bg-white dark:bg-[#1a2e22] rounded-xl p-6 max-w-md w-full space-y-4">
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Stream Settings for OBS</h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="text-sm font-medium text-slate-900 dark:text-white mb-1 block">RTMP Server</label>
+                                        <div class="flex gap-2">
+                                            <input type="text" id="rtmpUrl" readonly
+                                                   class="flex-1 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-mono text-sm" />
+                                            <button onclick="copyToClipboard('rtmpUrl')" class="px-3 py-2 bg-primary text-white rounded-lg hover:bg-green-600 transition-colors">
+                                                <span class="material-symbols-outlined text-[18px]">content_copy</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="text-sm font-medium text-slate-900 dark:text-white mb-1 block">Stream Key</label>
+                                        <div class="flex gap-2">
+                                            <input type="text" id="streamKey" readonly
+                                                   class="flex-1 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-mono text-sm" />
+                                            <button onclick="copyToClipboard('streamKey')" class="px-3 py-2 bg-primary text-white rounded-lg hover:bg-green-600 transition-colors">
+                                                <span class="material-symbols-outlined text-[18px]">content_copy</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-sm text-blue-800 dark:text-blue-300">
+                                    <p class="font-semibold mb-1">Setup in OBS:</p>
+                                    <ol class="list-decimal list-inside space-y-1 text-xs">
+                                        <li>Create new Scene "Livestream"</li>
+                                        <li>Add video source (Webcam, Display, etc)</li>
+                                        <li>Go to Settings → Stream</li>
+                                        <li>Paste Server and Stream Key above</li>
+                                        <li>Click Start Streaming</li>
+                                    </ol>
+                                </div>
+                                <button onclick="closeStreamKeyModal()" class="w-full px-4 py-2 font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Live Chat -->
+                        <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm flex flex-col h-96">
+                            <div class="p-4 border-b border-slate-200 dark:border-slate-700">
+                                <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <span class="material-symbols-outlined">chat</span>
+                                    Live Chat
+                                </h3>
+                            </div>
+                            <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-b from-transparent to-slate-50 dark:to-slate-800/50">
+                                <div class="text-center text-slate-500 text-sm py-8">Chat messages will appear here</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+
+    <ui:define name="pageScript">
+        <script>
+            const API_BASE = '/EZMart_Supermarket_Management-war/resources/api/livestream/staff';
+            const WS_BASE = 'ws://localhost:8080/EZMart_Supermarket_Management-war/ws/livestream';
+            let currentSessionId = null;
+            let currentUserId = 1; // TODO: Get from session
+            let streamDuration = 0;
+            let durationInterval = null;
+
+            // Load available sessions
+            async function loadSessions() {
+                try {
+                    const response = await fetch(API_BASE + '/my-sessions');
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        const select = document.getElementById('sessionSelect');
+                        result.data.forEach(session => {
+                            const option = document.createElement('option');
+                            option.value = session.sessionId;
+                            option.textContent = `${session.title} - ${new Date(session.scheduledStartTime).toLocaleString()}`;
+                            select.appendChild(option);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading sessions:', error);
+                }
+            }
+
+            // Session selection
+            document.getElementById('sessionSelect').addEventListener('change', async (e) => {
+                currentSessionId = e.target.value;
+                if (!currentSessionId) {
+                    document.getElementById('sessionActions').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('sessionActions').style.display = 'block';
+
+                try {
+                    const response = await fetch(API_BASE + '/sessions/' + currentSessionId);
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        const session = result.data;
+                        document.getElementById('sessionTitle').textContent = session.title;
+                        document.getElementById('sessionDesc').textContent = session.description || 'No description';
+                        
+                        if (session.status === 'ACTIVE') {
+                            document.getElementById('streamStatus').innerHTML = '<span class="inline-block w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>LIVE';
+                            document.getElementById('goLiveBtn').style.display = 'none';
+                            document.getElementById('endLiveBtn').style.display = 'flex';
+                        } else {
+                            document.getElementById('streamStatus').innerHTML = '<span class="inline-block w-2 h-2 bg-slate-600 rounded-full"></span>Not Live';
+                            document.getElementById('goLiveBtn').style.display = 'flex';
+                            document.getElementById('endLiveBtn').style.display = 'none';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading session:', error);
+                }
+            });
+
+            // Go Live
+            document.getElementById('goLiveBtn').addEventListener('click', async () => {
+                if (!currentSessionId) return;
+
+                try {
+                    const response = await fetch(API_BASE + '/sessions/' + currentSessionId + '/go-live', {
+                        method: 'POST'
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('Broadcasting started! Configure OBS with your stream settings.');
+                        document.getElementById('streamStatus').innerHTML = '<span class="inline-block w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>LIVE';
+                        document.getElementById('goLiveBtn').style.display = 'none';
+                        document.getElementById('endLiveBtn').style.display = 'flex';
+                        startDurationTimer();
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+
+            // End Live
+            document.getElementById('endLiveBtn').addEventListener('click', async () => {
+                if (!confirm('End this broadcast?')) return;
+
+                try {
+                    const response = await fetch(API_BASE + '/sessions/' + currentSessionId + '/end-live', {
+                        method: 'POST'
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('Broadcast ended.');
+                        document.getElementById('streamStatus').innerHTML = '<span class="inline-block w-2 h-2 bg-slate-600 rounded-full"></span>Not Live';
+                        document.getElementById('goLiveBtn').style.display = 'flex';
+                        document.getElementById('endLiveBtn').style.display = 'none';
+                        stopDurationTimer();
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+
+            // Get Stream Key
+            document.getElementById('getStreamKeyBtn').addEventListener('click', async () => {
+                if (!currentSessionId) return;
+
+                try {
+                    const response = await fetch(API_BASE + '/sessions/' + currentSessionId + '/stream-key');
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        document.getElementById('rtmpUrl').value = result.data.serverURL || 'rtmp://localhost:1935/live/';
+                        document.getElementById('streamKey').value = result.data.streamKey;
+                        document.getElementById('streamKeyModal').style.display = 'flex';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+
+            // Add Product
+            document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!currentSessionId) {
+                    alert('Please select a session first');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('productId', document.getElementById('productId').value);
+                if (document.getElementById('discountPrice').value) {
+                    formData.append('discountedPrice', document.getElementById('discountPrice').value);
+                }
+
+                try {
+                    const response = await fetch(API_BASE + '/sessions/' + currentSessionId + '/add-product', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('Product added!');
+                        document.getElementById('addProductForm').reset();
+                        loadProducts();
+                    } else {
+                        alert('Error: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+
+            // Load products
+            async function loadProducts() {
+                if (!currentSessionId) return;
+
+                try {
+                    const response = await fetch(API_BASE + '/sessions/' + currentSessionId);
+                    const result = await response.json();
+                    
+                    if (result.success && result.data.products) {
+                        const html = result.data.products.map(p => `
+                            <div class="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="font-semibold text-slate-900 dark:text-white">${p.productName}</p>
+                                        <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                                            Original: $${parseFloat(p.originalPrice).toFixed(2)} → 
+                                            <span class="text-primary">$${parseFloat(p.discountedPrice).toFixed(2)}</span>
+                                        </p>
+                                    </div>
+                                    <button onclick="removeProduct(${p.liveProductId})" class="px-2 py-1 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors">
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('');
+                        document.getElementById('activeProducts').innerHTML = html || '<div class="p-6 text-center text-slate-500">Add products to start streaming</div>';
+                    }
+                } catch (error) {
+                    console.error('Error loading products:', error);
+                }
+            }
+
+            // Duration timer
+            function startDurationTimer() {
+                streamDuration = 0;
+                durationInterval = setInterval(() => {
+                    streamDuration++;
+                    const hours = Math.floor(streamDuration / 3600).toString().padStart(2, '0');
+                    const minutes = Math.floor((streamDuration % 3600) / 60).toString().padStart(2, '0');
+                    const seconds = (streamDuration % 60).toString().padStart(2, '0');
+                    document.getElementById('duration').textContent = `${hours}:${minutes}:${seconds}`;
+                }, 1000);
+            }
+
+            function stopDurationTimer() {
+                if (durationInterval) clearInterval(durationInterval);
+            }
+
+            function closeStreamKeyModal() {
+                document.getElementById('streamKeyModal').style.display = 'none';
+            }
+
+            function copyToClipboard(elementId) {
+                const element = document.getElementById(elementId);
+                element.select();
+                document.execCommand('copy');
+                alert('Copied!');
+            }
+
+            // Initialize
+            loadSessions();
+            loadProducts();
+            setInterval(loadProducts, 10000);
+        </script>
+    </ui:define>
+</ui:composition>

@@ -622,7 +622,7 @@ function renderPaymentMethodsList() {
         leftDiv.className = 'flex items-center gap-4 flex-1';
         
         // Get card image based on type
-        let imagePath = '../../images/';
+        let imagePath = '../../resources/images/';
         let cardTypeDisplay = '';
         
         if (method.type === 'VISA') {

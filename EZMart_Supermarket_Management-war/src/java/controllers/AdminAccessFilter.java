@@ -45,7 +45,7 @@ public class AdminAccessFilter implements Filter {
                 Boolean loggedIn = (Boolean) session.getAttribute("loggedIn");
 
                 if (currentUser != null && loggedIn != null && loggedIn &&
-                    "ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+                    "admin".equalsIgnoreCase(currentUser.getRole())) {
                     hasAccess = true;
                 }
             }

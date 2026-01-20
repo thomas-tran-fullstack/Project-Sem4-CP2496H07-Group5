@@ -31,4 +31,6 @@ public interface OrdersFacadeLocal {
 
     List<Orders> findByCustomerIDAndStatus(Integer customerId, String status);
 
+    List<Orders> findByCustomerID(entityclass.Customers customer);
+
 }

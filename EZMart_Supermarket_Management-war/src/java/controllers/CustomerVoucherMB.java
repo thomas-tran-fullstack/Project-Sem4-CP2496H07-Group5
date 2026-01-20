@@ -38,7 +38,17 @@ public class CustomerVoucherMB implements Serializable {
     public void loadMyVouchers() {
         // Get current customer from session/auth
         FacesContext context = FacesContext.getCurrentInstance();
+
+        // Try to get customerId from session first
         Integer customerId = (Integer) context.getExternalContext().getSessionMap().get("customerId");
+
+        // If not found in session, try to get it from currentUser
+        if (customerId == null) {
+            entityclass.Users currentUser = (entityclass.Users) context.getExternalContext().getSessionMap().get("currentUser");
+            if (currentUser != null && currentUser.getCustomersList() != null && !currentUser.getCustomersList().isEmpty()) {
+                customerId = currentUser.getCustomersList().get(0).getCustomerID();
+            }
+        }
 
         if (customerId != null) {
             List<Vouchers> allVouchers = vouchersFacade.findByCustomerID(customerId);

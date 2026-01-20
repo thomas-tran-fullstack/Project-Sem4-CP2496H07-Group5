@@ -11,7 +11,7 @@ CREATE TABLE Users (
     Username VARCHAR(50) UNIQUE NOT NULL,
     PasswordHash VARCHAR(255) NOT NULL,
     Email VARCHAR(100),
-    Role VARCHAR(20) CHECK (Role IN ('STAFF','STREAMER','CUSTOMER','ADMIN')),
+    Role VARCHAR(20) CHECK (Role IN ('STAFF','CUSTOMER','ADMIN')),
     Status VARCHAR(20) DEFAULT 'ACTIVE',
     CreatedAt DATETIME DEFAULT GETDATE()
 );
@@ -68,7 +68,6 @@ CREATE TABLE Addresses (
     Type NVARCHAR(20) NULL,
     Region NVARCHAR(50) NULL,
     Street NVARCHAR(100) NULL,
-    -- House number / unit field (mapped by entity)
     House NVARCHAR(100) NULL,
     City NVARCHAR(50) NULL,
     State NVARCHAR(50) NULL,
@@ -105,7 +104,7 @@ CREATE TABLE CreditCards (
 ========================= */
 CREATE TABLE Categories (
     CategoryID INT IDENTITY PRIMARY KEY,
-    CategoryName VARCHAR(100),
+    CategoryName NVARCHAR(100),
     Description TEXT,
     ImageURL VARCHAR(255),
     Status VARCHAR(20),
@@ -114,24 +113,24 @@ CREATE TABLE Categories (
 
 CREATE TABLE Brands (
     BrandID INT IDENTITY PRIMARY KEY,
-    BrandName VARCHAR(100),
+    BrandName NVARCHAR(100),
     Description TEXT,
-    Country VARCHAR(50),
-    Email VARCHAR(100),
-    Phone VARCHAR(20),
-    Address VARCHAR(255),
-    Website VARCHAR(255)
+    Country NVARCHAR(50),
+    Email NVARCHAR(100),
+    Phone NVARCHAR(20),
+    Address NVARCHAR(255),
+    Website NVARCHAR(255)
 );
 
 CREATE TABLE Products (
     ProductID INT IDENTITY PRIMARY KEY,
     CategoryID INT,
     BrandID INT,
-    ProductName VARCHAR(100),
+    ProductName NVARCHAR(100),
     Description TEXT,
     UnitPrice DECIMAL(10,2),
     StockQuantity INT,
-    Status VARCHAR(20),
+    Status NVARCHAR(20),
     CreatedAt DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (CategoryID) REFERENCES Categories(CategoryID),
     FOREIGN KEY (BrandID) REFERENCES Brands(BrandID)
@@ -149,7 +148,7 @@ CREATE TABLE ProductPriceHistory (
     ProductID INT,
     OldPrice DECIMAL(12,2),
     NewPrice DECIMAL(12,2),
-    ChangeReason VARCHAR(100),
+    ChangeReason NVARCHAR(100),
     ChangedBy INT,
     ChangedAt DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
@@ -180,7 +179,10 @@ CREATE TABLE Orders (
     CustomerID INT,
     OrderDate DATETIME DEFAULT GETDATE(),
     TotalAmount DECIMAL(12,2),
-    Status VARCHAR(20) CHECK (Status IN ('PENDING','PAID','SHIPPED','COMPLETED','CANCELLED')),
+    Status NVARCHAR(20) CHECK (Status IN ('NEW','WAITING_CONFIRM','CONFIRMED','SHIPPING','COMPLETED','CANCELLED')),
+    PaymentMethod NVARCHAR(50),
+    PaymentStatus NVARCHAR(50),
+    ShippingMethod NVARCHAR(50),
     CreatedAt DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
 );
@@ -192,6 +194,11 @@ CREATE TABLE OrderDetails (
     Quantity INT,
     UnitPrice DECIMAL(10,2),
     TotalPrice DECIMAL(12,2),
+    CustomerName NVARCHAR(100),
+    CustomerAddress NVARCHAR(255),
+    CustomerPhone NVARCHAR(20),
+    ProductName NVARCHAR(100),
+    ProductImage NVARCHAR(255),
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
     FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
 );
@@ -211,19 +218,20 @@ CREATE TABLE Wallets (
     Balance DECIMAL(14,2) DEFAULT 0
 );
 
+
 CREATE TABLE WalletTransactions (
     TransactionID INT IDENTITY PRIMARY KEY,
     WalletID INT,
     Amount DECIMAL(14,2),
-    Type VARCHAR(30), -- TOPUP, PAY, REFUND
-    Status VARCHAR(20),
+    Type NVARCHAR(30), -- TOPUP, PAY, REFUND
+    Status NVARCHAR(20),
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
 CREATE TABLE Payments (
     PaymentID INT IDENTITY PRIMARY KEY,
     OrderID INT,
-    PaymentMethod VARCHAR(50),
+    PaymentMethod NVARCHAR(50),
     Amount DECIMAL(12,2),
     PaidAt DATETIME DEFAULT GETDATE()
 );
@@ -242,10 +250,24 @@ CREATE TABLE Bills (
     OrderID INT,
     CustomerID INT,
     BillAmount DECIMAL(12,2),
-    PaymentMethod VARCHAR(50),
+    PaymentMethod NVARCHAR(50),
     PaymentDate DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
     FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+CREATE TABLE PaymentProof (
+    ProofID INT IDENTITY PRIMARY KEY,
+    OrderID INT,
+    ImagePath NVARCHAR(255),
+    Note NVARCHAR(500),
+    TransactionID NVARCHAR(50),
+    Status NVARCHAR(20),
+    UploadedAt DATETIME DEFAULT GETDATE(),
+    VerifiedAt DATETIME NULL,
+    VerifiedBy INT NULL,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    FOREIGN KEY (VerifiedBy) REFERENCES Users(UserID)
 );
 
 /* =========================
@@ -258,7 +280,7 @@ CREATE TABLE Reviews (
     Rating INT CHECK (Rating BETWEEN 1 AND 5),
     Comment TEXT,
     CreatedAt DATETIME DEFAULT GETDATE(),
-    Status VARCHAR(20) DEFAULT 'PENDING',
+    Status NVARCHAR(20) DEFAULT 'PENDING',
     ModeratorID INT NULL,
     ModeratorNote NVARCHAR(MAX) NULL,
     IsFlagged BIT DEFAULT 0,
@@ -278,20 +300,20 @@ CREATE TABLE Feedbacks (
 
 CREATE TABLE Offers (
     OfferID INT IDENTITY PRIMARY KEY,
-    OfferName VARCHAR(100),
-    Description TEXT,
-    OfferType VARCHAR(30),
+    OfferName NVARCHAR(100),
+    Description NVARCHAR(MAX),
+    OfferType NVARCHAR(30),
     DiscountValue INT,
     StartDate DATE,
     EndDate DATE,
-    Status VARCHAR(20) DEFAULT 'ACTIVE',
-    BannerImage VARCHAR(255),
+    Status NVARCHAR(20) DEFAULT 'ACTIVE',
+    BannerImage NVARCHAR(255),
     VoucherEnabled BIT
 );
 
 CREATE TABLE Vouchers (
     VoucherID INT IDENTITY PRIMARY KEY,
-    VoucherCode VARCHAR(50),
+    VoucherCode NVARCHAR(50),
     IsUsed BIT DEFAULT 0,
     ExpiryDate DATE,
     DiscountValue DECIMAL(12,2),
@@ -315,9 +337,9 @@ CREATE TABLE ProductOffers (
 ========================= */
 CREATE TABLE Stores (
     StoreID INT IDENTITY PRIMARY KEY,
-    StoreName VARCHAR(100),
-    Town VARCHAR(50),
-    City VARCHAR(50),
+    StoreName NVARCHAR(100),
+    Town NVARCHAR(50),
+    City NVARCHAR(50),
     Latitude DECIMAL(9,6),
     Longitude DECIMAL(9,6)
 );
@@ -337,7 +359,7 @@ CREATE TABLE StoreProducts (
 CREATE TABLE AuditLogs (
     AuditID INT IDENTITY PRIMARY KEY,
     UserID INT,
-    Action VARCHAR(100),
+    Action NVARCHAR(100),
     ActionDate DATETIME DEFAULT GETDATE(),
     Description TEXT,
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
@@ -348,11 +370,11 @@ CREATE TABLE AuditLogs (
 ========================= */
 CREATE TABLE Pages (
     PageID INT IDENTITY PRIMARY KEY,
-    PageKey VARCHAR(100) UNIQUE,
+    PageKey NVARCHAR(100) UNIQUE,
     Title NVARCHAR(200),
     Content NVARCHAR(MAX),
-    PageType VARCHAR(50), -- GUIDE, POLICY, ABOUT, HELP
-    Status VARCHAR(20) DEFAULT 'ACTIVE',
+    PageType NVARCHAR(50), -- GUIDE, POLICY, ABOUT, HELP
+    Status NVARCHAR(20) DEFAULT 'ACTIVE',
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
@@ -368,9 +390,9 @@ CREATE TABLE News (
     NewsID INT IDENTITY PRIMARY KEY,
     Title NVARCHAR(255),
     Content NVARCHAR(MAX),
-    ImageURL VARCHAR(255),
+    ImageURL NVARCHAR(255),
     CreatedAt DATETIME DEFAULT GETDATE(),
-    Status VARCHAR(20) DEFAULT 'ACTIVE'
+    Status NVARCHAR(20) DEFAULT 'ACTIVE'
 );
 
 /* =========================
@@ -378,7 +400,7 @@ CREATE TABLE News (
 ========================= */
 CREATE TABLE Reports (
     ReportID INT IDENTITY PRIMARY KEY,
-    ReportType VARCHAR(50), -- SALES, ORDER, PRODUCT
+    ReportType NVARCHAR(50), -- SALES, ORDER, PRODUCT
     FromDate DATE,
     ToDate DATE,
     GeneratedAt DATETIME DEFAULT GETDATE(),
@@ -420,13 +442,6 @@ CREATE TABLE Chats (
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
-CREATE TABLE CommunityPosts (
-    PostID INT IDENTITY PRIMARY KEY,
-    UserID INT,
-    Content NVARCHAR(500),
-    Status VARCHAR(20),
-    CreatedAt DATETIME DEFAULT GETDATE()
-);
 
 /*=========================
    ADDITIONAL FEATURES
@@ -512,14 +527,125 @@ CREATE TABLE FrequentPurchases (
         FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
         FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
     );
+
+/* =========================
+   LIVESTREAM & BROADCAST
+========================= */
+CREATE TABLE LiveSession (
+    SessionID INT IDENTITY PRIMARY KEY,
+    StaffID INT NOT NULL,
+    Title NVARCHAR(200) NOT NULL,
+    Description NVARCHAR(MAX),
+    Status NVARCHAR(20) CHECK (Status IN ('PENDING','ACTIVE','PAUSED','ENDED')) DEFAULT 'PENDING',
+    ScheduledStartTime DATETIME NULL,
+    ScheduledEndTime DATETIME NULL,
+    ActualStartTime DATETIME NULL,
+    ActualEndTime DATETIME NULL,
+    ThumbnailURL NVARCHAR(500),
+    StreamKey NVARCHAR(100) UNIQUE,
+    HLSPlaylistURL NVARCHAR(500),
+    RtmpURL NVARCHAR(500),
+    CurrentViewers INT DEFAULT 0,
+    PeakViewers INT DEFAULT 0,
+    TotalViewers INT DEFAULT 0,
+    ChatMessageCount INT DEFAULT 0,
+    RecordingPath NVARCHAR(500) NULL,
+    IsRecording BIT DEFAULT 1,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (StaffID) REFERENCES Users(UserID)
+);
+
+CREATE TABLE LiveProduct (
+    LiveProductID INT IDENTITY PRIMARY KEY,
+    SessionID INT NOT NULL,
+    ProductID INT NOT NULL,
+    OriginalPrice DECIMAL(10,2),
+    DiscountedPrice DECIMAL(10,2),
+    DiscountPercentage DECIMAL(5,2) NULL,
+    IsActive BIT DEFAULT 1,
+    AddedAt DATETIME DEFAULT GETDATE(),
+    RemovedAt DATETIME NULL,
+    SalesCount INT DEFAULT 0,
+    FOREIGN KEY (SessionID) REFERENCES LiveSession(SessionID) ON DELETE CASCADE,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+CREATE TABLE LiveProductDiscount (
+    DiscountHistoryID INT IDENTITY PRIMARY KEY,
+    LiveProductID INT NOT NULL,
+    OldPrice DECIMAL(10,2),
+    NewPrice DECIMAL(10,2),
+    ChangedBy INT,
+    ChangedAt DATETIME DEFAULT GETDATE(),
+    ChangeReason NVARCHAR(200),
+    FOREIGN KEY (LiveProductID) REFERENCES LiveProduct(LiveProductID) ON DELETE CASCADE,
+    FOREIGN KEY (ChangedBy) REFERENCES Users(UserID)
+);
+
+CREATE TABLE LiveChat (
+    ChatMessageID INT IDENTITY PRIMARY KEY,
+    SessionID INT NOT NULL,
+    UserID INT NOT NULL,
+    MessageText NVARCHAR(500) NOT NULL,
+    MessageType NVARCHAR(20) DEFAULT 'TEXT', -- TEXT, EMOJI, PRODUCT_MENTION, SYSTEM
+    IsDeleted BIT DEFAULT 0,
+    DeletedBy INT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (SessionID) REFERENCES LiveSession(SessionID) ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (DeletedBy) REFERENCES Users(UserID)
+);
+
+CREATE TABLE LiveSessionStat (
+    StatID INT IDENTITY PRIMARY KEY,
+    SessionID INT NOT NULL,
+    SnapshotTime DATETIME DEFAULT GETDATE(),
+    ActiveViewers INT,
+    TotalMessages INT,
+    UniqueViewers INT,
+    ProductsViewed INT,
+    ProductsPurchased INT,
+    TotalRevenue DECIMAL(12,2),
+    AverageDuration INT, -- in seconds
+    FOREIGN KEY (SessionID) REFERENCES LiveSession(SessionID) ON DELETE CASCADE
+);
+
+CREATE TABLE LiveSessionViewer (
+    ViewerID INT IDENTITY PRIMARY KEY,
+    SessionID INT NOT NULL,
+    CustomerID INT NULL,
+    ViewerSessionID NVARCHAR(100) UNIQUE, -- For anonymous viewers
+    JoinedAt DATETIME DEFAULT GETDATE(),
+    LeftAt DATETIME NULL,
+    TotalDuration INT, -- in seconds
+    FOREIGN KEY (SessionID) REFERENCES LiveSession(SessionID) ON DELETE CASCADE,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+/* Create indexes for better performance */
+CREATE INDEX IX_LiveSession_StaffID ON LiveSession(StaffID);
+CREATE INDEX IX_LiveSession_Status ON LiveSession(Status);
+CREATE INDEX IX_LiveSession_CreatedAt ON LiveSession(CreatedAt);
+CREATE INDEX IX_LiveProduct_SessionID ON LiveProduct(SessionID);
+CREATE INDEX IX_LiveProduct_ProductID ON LiveProduct(ProductID);
+CREATE INDEX IX_LiveChat_SessionID ON LiveChat(SessionID);
+CREATE INDEX IX_LiveChat_CreatedAt ON LiveChat(CreatedAt);
+CREATE INDEX IX_LiveSessionStat_SessionID ON LiveSessionStat(SessionID);
+CREATE INDEX IX_LiveSessionViewer_SessionID ON LiveSessionViewer(SessionID);
+CREATE INDEX IX_LiveSessionViewer_CustomerID ON LiveSessionViewer(CustomerID);
+GO
+
 -- Sample Data Insertions
 
 INSERT INTO Users (Username, PasswordHash, Email, Role)
 VALUES
-('admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'admin@ezmart.vn', 'ADMIN'),
-('bo', '123456', 'bo@ezmart.vn', 'CUSTOMER'),
-('toan', '123456', 'toan@ezmart.vn', 'STAFF'),
-('lam', '123456', 'lam@ezmart.vn', 'CUSTOMER');
+('toan','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918','tbtoana23141@cusc.ctu.edu.vn','ADMIN'),
+('bo','b6c45863875e34487ca3c155ed145efe12a74581e27befec5aa661b8ee8ca6dd','ptboa23130@cusc.ctu.edu.vn','CUSTOMER'),
+('lam','b6c45863875e34487ca3c155ed145efe12a74581e27befec5aa661b8ee8ca6dd','tvlama23144@cusc.ctu.edu.vn','CUSTOMER'),
+('customer','b6c45863875e34487ca3c155ed145efe12a74581e27befec5aa661b8ee8ca6dd','customer@ezmart.vn','CUSTOMER'),
+('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'admin@ezmart.vn', 'ADMIN'),
+('staff', '1562206543da764123c21bd524674f0a8aaf49c8a89744c97352fe677f7e4006', 'staff@ezmart.vn', 'STAFF');
 GO
 
 INSERT INTO Customers (UserID, FirstName, LastName, City, Country, MobilePhone)
@@ -534,9 +660,9 @@ GO
 
 INSERT INTO Categories (CategoryName, Description, Status)
 VALUES
-('Food', 'Thực phẩm', 'ACTIVE'),
-('Drink', 'Nước uống', 'ACTIVE'),
-('Household', 'Đồ gia dụng', 'ACTIVE');
+(N'Food', N'Thực phẩm', N'ACTIVE'),
+(N'Drink', N'Nước uống', N'ACTIVE'),
+(N'Household', N'Đồ gia dụng', N'ACTIVE');
 GO
 
 INSERT INTO Brands (BrandName, Country)
@@ -548,15 +674,15 @@ GO
 
 INSERT INTO Products (CategoryID, BrandID, ProductName, UnitPrice, StockQuantity, Status)
 VALUES
-(1, 1, 'Sữa tươi Vinamilk 1L', 32000, 100, 'ACTIVE'),
-(1, 2, 'Sữa TH True Milk 1L', 34000, 80, 'ACTIVE'),
-(3, 3, 'Bột giặt Omo 3kg', 95000, 50, 'ACTIVE');
+(1, 1, N'Sữa tươi Vinamilk 1L', 32000, 100, 'ACTIVE'),
+(1, 2, N'Sữa TH True Milk 1L', 34000, 80, 'ACTIVE'),
+(3, 3, N'Bột giặt Omo 3kg', 95000, 50, 'ACTIVE');
 GO
 
 INSERT INTO Offers (OfferName, OfferType, DiscountValue, StartDate, EndDate, Status, BannerImage, VoucherEnabled)
 VALUES
-('Giảm giá sữa', 'Percentage', 10, '2024-01-01', '2026-12-31', 'active', NULL, 0),
-('Khuyến mãi đồ gia dụng', 'Fixed Amount', 50000, '2024-01-01', '2026-12-31', 'active', NULL, 1);
+(N'Giảm giá sữa', 'Percentage', 10, '2024-01-01', '2026-12-31', 'active', NULL, 0),
+(N'Khuyến mãi đồ gia dụng', 'Fixed Amount', 50000, '2024-01-01', '2026-12-31', 'active', NULL, 1);
 GO
 
 INSERT INTO ProductOffers (ProductID, OfferID)
@@ -575,21 +701,6 @@ VALUES
 (1, 3, 1, 95000);
 GO
 
-INSERT INTO Orders (CustomerID, TotalAmount, Status)
-VALUES
-(1, 159000, 'PAID');
-GO
-
-INSERT INTO OrderDetails (OrderID, ProductID, Quantity, UnitPrice, TotalPrice)
-VALUES
-(1, 1, 2, 32000, 64000),
-(1, 3, 1, 95000, 95000);
-GO
-
-INSERT INTO Bills (OrderID, CustomerID, BillAmount, PaymentMethod)
-VALUES
-(1, 1, 159000, 'CREDIT_CARD');
-GO
 
 INSERT INTO Reviews (ProductID, CustomerID, Rating, Comment, CreatedAt, Status, IsFlagged)
 VALUES

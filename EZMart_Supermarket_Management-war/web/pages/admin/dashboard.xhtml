@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <!-- Stats Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <!-- Total Revenue -->
                     <div class="p-5 bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
                         <div class="flex justify-between items-start mb-4">
@@ -81,6 +81,20 @@
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Active Customers</p>
                         <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">3,400</h3>
+                    </div>
+                    <!-- Low Stock Alert -->
+                    <div class="p-5 bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg text-red-600 dark:text-red-400">
+                                <span class="material-symbols-outlined">warning</span>
+                            </div>
+                            <span class="flex items-center text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full">
+                                Alert
+                                <span class="material-symbols-outlined text-[14px] ml-0.5">warning</span>
+                            </span>
+                        </div>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Low Stock Items</p>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{productMB.lowStockCount}</h3>
                     </div>
                 </div>
                 <!-- Main Grid: Chart & Top Products -->

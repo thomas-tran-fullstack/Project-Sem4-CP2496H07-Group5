@@ -47,7 +47,8 @@ import java.util.List;
     @NamedQuery(name = "Customers.findByMobilePhone", query = "SELECT c FROM Customers c WHERE c.mobilePhone = :mobilePhone"),
     @NamedQuery(name = "Customers.findByLatitude", query = "SELECT c FROM Customers c WHERE c.latitude = :latitude"),
     @NamedQuery(name = "Customers.findByLongitude", query = "SELECT c FROM Customers c WHERE c.longitude = :longitude"),
-    @NamedQuery(name = "Customers.findByCreatedAt", query = "SELECT c FROM Customers c WHERE c.createdAt = :createdAt")})
+    @NamedQuery(name = "Customers.findByCreatedAt", query = "SELECT c FROM Customers c WHERE c.createdAt = :createdAt"),
+    @NamedQuery(name = "Customers.findByAvatarUrl", query = "SELECT c FROM Customers c WHERE c.avatarUrl = :avatarUrl")})
 public class Customers implements Serializable {
 
     private static final long serialVersionUID = 1L;

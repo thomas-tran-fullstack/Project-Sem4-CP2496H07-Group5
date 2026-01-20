@@ -11,7 +11,6 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
-import jakarta.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
@@ -72,20 +71,47 @@ public class DealsManagementMB implements Serializable {
         try {
             // Get current customer from session
             FacesContext facesContext = FacesContext.getCurrentInstance();
-            HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
 
-            if (session == null || session.getAttribute("customerId") == null) {
+            // Try to get customerId from session first
+            Integer customerId = (Integer) facesContext.getExternalContext().getSessionMap().get("customerId");
+
+            // If not found in session, try to get it from currentUser
+            if (customerId == null) {
+                entityclass.Users currentUser = (entityclass.Users) facesContext.getExternalContext().getSessionMap().get("currentUser");
+                System.out.println("DealsManagementMB.claimVoucher: currentUser=" + currentUser);
+                if (currentUser != null) {
+                    System.out.println("DealsManagementMB.claimVoucher: currentUser.customersList=" + currentUser.getCustomersList());
+                    if (currentUser.getCustomersList() != null) {
+                        System.out.println("DealsManagementMB.claimVoucher: customersList.size=" + currentUser.getCustomersList().size());
+                        if (!currentUser.getCustomersList().isEmpty()) {
+                            customerId = currentUser.getCustomersList().get(0).getCustomerID();
+                            System.out.println("DealsManagementMB.claimVoucher: extracted customerId=" + customerId);
+                        }
+                    }
+                }
+            }
+
+            // Debug logging
+            System.out.println("DealsManagementMB.claimVoucher: final customerId=" + customerId);
+            System.out.println("DealsManagementMB.claimVoucher: loggedIn=" + facesContext.getExternalContext().getSessionMap().get("loggedIn"));
+
+            if (customerId == null) {
                 facesContext.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Please login to claim vouchers"));
                 return;
             }
-
-            Integer customerId = (Integer) session.getAttribute("customerId");
             Customers customer = customersFacade.find(customerId);
 
             if (customer == null) {
                 facesContext.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Customer not found"));
+                return;
+            }
+
+            // Check if the offer is of Fixed Amount type
+            if (deal.getOfferType() == null || !deal.getOfferType().toLowerCase().contains("fixed")) {
+                facesContext.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Only Fixed Amount offers can be claimed as vouchers"));
                 return;
             }
 

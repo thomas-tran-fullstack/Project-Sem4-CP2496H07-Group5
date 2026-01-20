@@ -296,7 +296,7 @@
                                     <button type="button"
                                         onclick="document.getElementById('avatarViewModal').classList.remove('hidden');"
                                         class="opacity-0 group-hover:opacity-100 pointer-events-auto bg-black/40 hover:bg-black/50 rounded-full w-full h-full flex items-center justify-center transition-all">
-                                        <img src="#{facesContext.externalContext.requestContextPath}/images/view.png"
+                                        <img src="#{facesContext.externalContext.requestContextPath}/resources/images/view.png"
                                             alt="view" class="w-12 h-12" style="filter: brightness(0) invert(1)" />
                                     </button>
                                 </div>
@@ -496,7 +496,7 @@
                                                     class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 hover:scale-110 cursor-pointer"
                                                     title="Delete address"
                                                     onclick="triggerDelete(event, 'delAddrBtn_#{addr.addressID}', '#{addr.street}');">
-                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/delete.png"
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/resources/images/delete.png"
                                                         alt="delete" style="width:18px;height:18px;display:block;" />
                                                 </button>
                                             </h:form>
@@ -510,7 +510,7 @@
                                                     <img alt="icon"
                                                         style="width:24px;height:24px; #{addr.type == 'Home' ? 'filter: hue-rotate(0deg) saturate(1.5) brightness(0.8);' : (addr.type == 'Work' ? 'filter: hue-rotate(200deg) saturate(1.5) brightness(0.8);' : '')}"
                                                         class="object-contain"
-                                                        src="#{facesContext.externalContext.requestContextPath}/images/#{addr.type == 'Home' ? 'home.png' : (addr.type == 'Work' ? 'work.png' : 'location.png')}" />
+                                                        src="#{facesContext.externalContext.requestContextPath}/resources/images/#{addr.type == 'Home' ? 'home.png' : (addr.type == 'Work' ? 'work.png' : 'location.png')}" />
                                                 </div>
                                             </div>
                                             <div class="flex-1 min-w-0 pr-10">

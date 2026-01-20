@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="content">
+        <div class="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 py-8">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <a href="/EZMart_Supermarket_Management-war/pages/user/livestream.xhtml" 
+                           class="inline-flex items-center gap-2 text-primary hover:text-green-600 transition-colors mb-3">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            Back to Live
+                        </a>
+                        <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Your Livestream History</h1>
+                        <p class="text-slate-600 dark:text-slate-400 mt-1">Replay sessions you've watched</p>
+                    </div>
+                </div>
+
+                <!-- History List -->
+                <div id="historyList" class="space-y-3">
+                    <!-- History items will be loaded here -->
+                    <div class="text-center py-12">
+                        <div class="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                            <div class="w-4 h-4 border-2 border-slate-300 border-t-primary rounded-full animate-spin"></div>
+                            Loading your history...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="text-center py-16" style="display: none;">
+                    <div class="inline-flex flex-col items-center gap-4">
+                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl text-slate-400">history</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">No history yet</h3>
+                            <p class="text-slate-600 dark:text-slate-400 mt-1">Join a livestream to start your history</p>
+                        </div>
+                        <a href="/EZMart_Supermarket_Management-war/pages/user/livestream.xhtml"
+                           class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-green-600 transition-colors">
+                            Watch Live Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+
+    <ui:define name="pageScript">
+        <script>
+            const API_BASE = '/EZMart_Supermarket_Management-war/resources/api/livestream/customer';
+
+            // Load watch history
+            async function loadHistory() {
+                try {
+                    const response = await fetch(API_BASE + '/my-history');
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        const history = result.data || [];
+                        if (history.length === 0) {
+                            document.getElementById('historyList').innerHTML = '';
+                            document.getElementById('emptyState').style.display = 'block';
+                        } else {
+                            document.getElementById('emptyState').style.display = 'none';
+                            displayHistory(history);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading history:', error);
+                }
+            }
+
+            // Display history
+            function displayHistory(history) {
+                const html = history.map(item => {
+                    const joinDate = new Date(item.joinedAt);
+                    const leftDate = item.leftAt ? new Date(item.leftAt) : null;
+                    const duration = item.totalDuration ? formatDuration(item.totalDuration) : 'Still watching';
+
+                    return `
+                        <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white">${item.sessionTitle}</h3>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">by ${item.staffName}</p>
+                                    
+                                    <div class="flex flex-wrap gap-4 mt-3 text-sm">
+                                        <div class="flex items-center gap-1 text-slate-600 dark:text-slate-400">
+                                            <span class="material-symbols-outlined text-[16px]">schedule</span>
+                                            ${joinDate.toLocaleString()}
+                                        </div>
+                                        <div class="flex items-center gap-1 text-slate-600 dark:text-slate-400">
+                                            <span class="material-symbols-outlined text-[16px]">timer</span>
+                                            Watched: ${duration}
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-green-600 transition-colors">
+                                    <span class="material-symbols-outlined align-middle">play_circle</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('historyList').innerHTML = html;
+            }
+
+            // Format duration
+            function formatDuration(seconds) {
+                if (!seconds) return '0s';
+                
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+
+                if (hours > 0) {
+                    return `${hours}h ${minutes}m`;
+                } else if (minutes > 0) {
+                    return `${minutes}m ${secs}s`;
+                } else {
+                    return `${secs}s`;
+                }
+            }
+
+            // Load on page load
+            loadHistory();
+        </script>
+    </ui:define>
+</ui:composition>

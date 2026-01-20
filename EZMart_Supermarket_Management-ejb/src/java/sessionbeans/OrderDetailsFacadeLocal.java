@@ -5,6 +5,7 @@
 package sessionbeans;
 
 import entityclass.OrderDetails;
+import entityclass.Orders;
 import jakarta.ejb.Local;
 import java.util.List;
 
@@ -28,5 +29,7 @@ public interface OrderDetailsFacadeLocal {
     List<OrderDetails> findRange(int[] range);
 
     int count();
+
+    public List<OrderDetails> findByOrderID(Orders order);
     
 }

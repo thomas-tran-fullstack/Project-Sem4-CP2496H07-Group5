@@ -39,6 +39,8 @@ import java.util.List;
     @NamedQuery(name = "Orders.findByOrderDate", query = "SELECT o FROM Orders o WHERE o.orderDate = :orderDate"),
     @NamedQuery(name = "Orders.findByTotalAmount", query = "SELECT o FROM Orders o WHERE o.totalAmount = :totalAmount"),
     @NamedQuery(name = "Orders.findByStatus", query = "SELECT o FROM Orders o WHERE o.status = :status"),
+    @NamedQuery(name = "Orders.findByPaymentMethod", query = "SELECT o FROM Orders o WHERE o.paymentMethod = :paymentMethod"),
+    @NamedQuery(name = "Orders.findByPaymentStatus", query = "SELECT o FROM Orders o WHERE o.paymentStatus = :paymentStatus"),
     @NamedQuery(name = "Orders.findByCustomerIDAndStatus", query = "SELECT o FROM Orders o WHERE o.customerID.customerID = :customerID AND o.status = :status")})
 public class Orders implements Serializable {
 
@@ -57,6 +59,15 @@ public class Orders implements Serializable {
     @Size(max = 20)
     @Column(name = "Status")
     private String status;
+    @Size(max = 50)
+    @Column(name = "PaymentMethod")
+    private String paymentMethod;
+    @Size(max = 50)
+    @Column(name = "PaymentStatus")
+    private String paymentStatus;
+    @Size(max = 50)
+    @Column(name = "ShippingMethod")
+    private String shippingMethod;
     @JoinColumn(name = "CustomerID", referencedColumnName = "CustomerID")
     @ManyToOne
     private Customers customerID;
@@ -102,6 +113,22 @@ public class Orders implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 
     public Customers getCustomerID() {
@@ -153,6 +180,14 @@ public class Orders implements Serializable {
     @Override
     public String toString() {
         return "entityclass.Orders[ orderID=" + orderID + " ]";
+    }
+
+    public String getShippingMethod() {
+        return shippingMethod;
+    }
+
+    public void setShippingMethod(String shippingMethod) {
+        this.shippingMethod = shippingMethod;
     }
     
 }

@@ -36,7 +36,10 @@ import java.util.Date;
     @NamedQuery(name = "Vouchers.findByVoucherCode", query = "SELECT v FROM Vouchers v WHERE v.voucherCode = :voucherCode"),
     @NamedQuery(name = "Vouchers.findByIsUsed", query = "SELECT v FROM Vouchers v WHERE v.isUsed = :isUsed"),
     @NamedQuery(name = "Vouchers.findByExpiryDate", query = "SELECT v FROM Vouchers v WHERE v.expiryDate = :expiryDate"),
-    @NamedQuery(name = "Vouchers.findByCreatedAt", query = "SELECT v FROM Vouchers v WHERE v.createdAt = :createdAt")})
+    @NamedQuery(name = "Vouchers.findByCreatedAt", query = "SELECT v FROM Vouchers v WHERE v.createdAt = :createdAt"),
+    @NamedQuery(name = "Vouchers.findByCustomerID", query = "SELECT v FROM Vouchers v WHERE v.customerID.customerID = :customerID"),
+    @NamedQuery(name = "Vouchers.findByOfferID", query = "SELECT v FROM Vouchers v WHERE v.offerID.offerID = :offerID"),
+    @NamedQuery(name = "Vouchers.findUnusedByCustomer", query = "SELECT v FROM Vouchers v WHERE v.customerID.customerID = :customerID AND v.isUsed = false AND v.expiryDate > :currentDate")})
 public class Vouchers implements Serializable {
 
     private static final long serialVersionUID = 1L;

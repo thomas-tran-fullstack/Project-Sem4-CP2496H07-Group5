@@ -33,12 +33,39 @@ public class ImageServlet extends HttpServlet {
             Path uploadPath = Paths.get(System.getProperty("user.home"), "uploads", "products");
             filePath = uploadPath.resolve(fileName);
         } else if (relativePath.startsWith("banners/")) {
-            // Banner images for offers
-            String fileName = relativePath.substring("banners/".length());
-            String realPath = getServletContext().getRealPath("/resources/uploads/banners/");
+    String fileName = relativePath.substring("banners/".length());
+    String realPath = getServletContext()
+            .getRealPath("/resources/uploads/banners/");
+    if (realPath != null) {
+        Path webappPath = Paths.get(realPath).resolve(fileName);
+        if (Files.exists(webappPath) && Files.isRegularFile(webappPath)) {
+            filePath = webappPath;
+        }
+    }
+    if (filePath == null) {
+        Path userHomePath = Paths.get(
+                System.getProperty("user.home"),
+                "uploads",
+                "banners",
+                fileName
+        );
+        if (Files.exists(userHomePath) && Files.isRegularFile(userHomePath)) {
+            filePath = userHomePath;
+        }
+    }
+}
+else if (relativePath.startsWith("categories/")) {
+            // Category images - first try webapp resources/uploads/categories, then user.home/uploads/categories
+            String fileName = relativePath.substring("categories/".length());
+            String realPath = getServletContext().getRealPath("/resources/uploads/categories/");
             if (realPath != null) {
-                Path uploadPath = Paths.get(realPath);
-                filePath = uploadPath.resolve(fileName);
+                Path webappPath = Paths.get(realPath);
+                filePath = webappPath.resolve(fileName);
+                // If not found in webapp, try user.home
+                if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
+                    Path userHomePath = Paths.get(System.getProperty("user.home"), "uploads", "categories");
+                    filePath = userHomePath.resolve(fileName);
+                }
             }
         } else {
             // Direct file access for products (when pathInfo is just the filename)

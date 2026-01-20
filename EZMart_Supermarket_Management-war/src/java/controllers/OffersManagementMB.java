@@ -417,16 +417,10 @@ public class OffersManagementMB implements Serializable {
                 return null;
             }
 
-            // Use user's home directory for uploads (consistent with product images)
-            String uploadDir = System.getProperty("user.home") + File.separator + "uploads" + File.separator + "banners";
-            File uploadDirFile = new File(uploadDir);
-            if (!uploadDirFile.exists()) {
-                boolean created = uploadDirFile.mkdirs();
-                if (!created) {
-                    FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to create upload directory"));
-                    return null;
-                }
+            // Save to user home directory so images persist across deployments
+            Path uploadPath = Paths.get(System.getProperty("user.home"), "uploads", "banners");
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
             }
 
             String originalFileName = Paths.get(file.getSubmittedFileName()).getFileName().toString();
@@ -459,7 +453,7 @@ public class OffersManagementMB implements Serializable {
             }
 
             String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
-            Path filePath = Paths.get(uploadDir, uniqueFileName);
+            Path filePath = uploadPath.resolve(uniqueFileName);
 
             try (InputStream input = file.getInputStream()) {
                 Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);

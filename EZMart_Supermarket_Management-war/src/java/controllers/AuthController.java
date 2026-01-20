@@ -91,6 +91,10 @@ public class AuthController implements Serializable {
         }
         if (u != null) {
             currentUser = u;
+            // Update last online time
+            currentUser.setLastOnlineAt(new Date());
+            usersFacade.edit(currentUser);
+            
             // Try to set customer profile if exists
             if (u.getCustomersList() != null && !u.getCustomersList().isEmpty()) {
                 currentCustomer = u.getCustomersList().get(0);
@@ -131,6 +135,8 @@ public class AuthController implements Serializable {
 
             if ("admin".equalsIgnoreCase(u.getRole())) {
                 redirectUrl = "/pages/admin/dashboard.xhtml";
+            } else if ("staff".equalsIgnoreCase(u.getRole())) {
+                redirectUrl = "/pages/staff/dashboard.xhtml";
             } else if ("customer".equalsIgnoreCase(u.getRole())) {
                 redirectUrl = "/pages/user/index.xhtml";
             } else {
@@ -192,6 +198,11 @@ public class AuthController implements Serializable {
     }
  
    public String logout() {
+        // Update last online time before logout
+        if (currentUser != null) {
+            currentUser.setLastOnlineAt(new Date());
+            usersFacade.edit(currentUser);
+        }
         String redirectUrl = "/pages/user/index.xhtml";
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
         loggedIn = false;
@@ -297,6 +308,7 @@ public class AuthController implements Serializable {
             c.setMiddleName(middleName);
             c.setLastName(lastName);
             c.setMobilePhone(mobilePhone);
+            c.setAvatarUrl(null); // Default avatar - no custom URL set yet
             if (street != null && !street.trim().isEmpty()) {
                 c.setStreet(street);
             }
@@ -684,6 +696,7 @@ public class AuthController implements Serializable {
                     c.setLastName(nameParts[nameParts.length - 1]);
                 }
             }
+            c.setAvatarUrl(null); // Default avatar - no custom URL set yet
             c.setCreatedAt(new Date());
             c.setUserID(u);
             customersFacade.create(c);

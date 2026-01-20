@@ -125,7 +125,9 @@
 
                                                 <!-- STOCK -->
                                                 <td class="px-4 py-4 text-center">
-                                                    #{product.stockQuantity}
+                                                    <span class="#{productMB.isOutOfStock(product) ? 'text-red-600 font-bold' : productMB.isLowStock(product) ? 'text-orange-600 font-semibold' : 'text-green-600'}">
+                                                        #{productMB.getStockStatus(product)} (#{product.stockQuantity})
+                                                    </span>
                                                 </td>
 
                                                 <!-- STATUS -->

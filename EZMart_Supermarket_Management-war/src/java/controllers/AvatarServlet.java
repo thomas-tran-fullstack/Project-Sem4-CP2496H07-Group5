@@ -60,7 +60,7 @@ public class AvatarServlet extends HttpServlet {
                     return;
                 }
                 resp.setContentType("image/png");
-                resp.setHeader("Cache-Control", "public, max-age=86400");
+                resp.setHeader("Cache-Control", "public, max-age=3600"); // Cache for 1 hour for default
                 try (OutputStream os = resp.getOutputStream()) {
                     byte[] buf = new byte[4096];
                     int r;
@@ -86,7 +86,7 @@ public class AvatarServlet extends HttpServlet {
                     return;
                 }
                 resp.setContentType("image/png");
-                resp.setHeader("Cache-Control", "public, max-age=86400");
+                resp.setHeader("Cache-Control", "public, max-age=3600"); // Cache for 1 hour for default
                 try (OutputStream os = resp.getOutputStream()) {
                     byte[] buf = new byte[4096];
                     int r;

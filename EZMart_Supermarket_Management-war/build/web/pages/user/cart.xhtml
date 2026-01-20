@@ -132,16 +132,8 @@
                                 <span class="font-medium text-slate-900 dark:text-white">$#{cartMB.subtotal}</span>
                             </div>
                             <div class="flex justify-between items-center text-slate-600 dark:text-slate-300">
-                                <span>Shipping estimate</span>
-                                <span class="font-medium text-slate-900 dark:text-white">$#{cartMB.shippingCost}</span>
-                            </div>
-                            <div class="flex justify-between items-center text-slate-600 dark:text-slate-300">
                                 <span>Tax estimate</span>
                                 <span class="font-medium text-slate-900 dark:text-white">$#{cartMB.taxAmount}</span>
-                            </div>
-                            <div class="flex justify-between items-center text-slate-600 dark:text-slate-300" rendered="#{cartMB.appliedVoucher != null}">
-                                <span>Voucher discount</span>
-                                <span class="font-medium text-green-600 dark:text-green-400">-$#{cartMB.discountAmount}</span>
                             </div>
                             <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
                                 <div class="flex justify-between items-end mb-1">
@@ -159,29 +151,7 @@
                             Proceed to Checkout
                             <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
                         </a>
-                        <h:form>
-                            <div class="mb-6">
-                                <label
-                                    class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-2">Promo
-                                    Code</label>
-                                <div class="flex gap-2">
-                                    <h:inputText
-                                        class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent dark:text-white placeholder:text-slate-400"
-                                        placeholder="Enter code"
-                                        value="#{cartMB.promoCode}" />
-                                    <h:commandButton
-                                        class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium px-4 py-2 rounded-lg text-sm transition-colors"
-                                        value="Apply"
-                                        action="#{cartMB.applyVoucher()}"
-                                        render="orderSummary" />
-                                </div>
-                                <div class="mt-2" rendered="#{cartMB.appliedVoucher != null}">
-                                    <span class="text-green-600 dark:text-green-400 text-xs">
-                                        Voucher applied: #{cartMB.appliedVoucher.voucherCode} (-$#{cartMB.discountAmount})
-                                    </span>
-                                </div>
-                            </div>
-                        </h:form>
+
                         <div
                             class="flex flex-col gap-3 text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg">
                             <div class="flex items-center gap-2">

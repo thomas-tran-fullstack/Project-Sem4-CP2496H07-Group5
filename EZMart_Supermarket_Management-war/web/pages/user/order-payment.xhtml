@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core">
+
+    <ui:define name="content">
+        <h:outputScript target="body">
+            function handleFileSelect(input, displayId) {
+            var display = document.getElementById(displayId);
+            var fileNameText = document.getElementById('fileNameText');
+
+            if (input.files &amp;&amp; input.files[0]) {
+            var fileName = input.files[0].name;
+            var fileSize = (input.files[0].size / 1024 / 1024).toFixed(2);
+            fileNameText.textContent = fileName + ' (' + fileSize + ' MB)';
+            display.classList.remove('hidden');
+            }
+            }
+        </h:outputScript>
+
+        <h:form id="paymentForm" enctype="multipart/form-data">
+            <div class="flex-1 w-full max-w-4xl mx-auto px-4 md:px-10 py-8">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <div
+                        class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-full mb-4">
+                        <span class="material-symbols-outlined text-blue-600 text-3xl">qr_code_scanner</span>
+                    </div>
+                    <h1 class="text-3xl md:text-4xl font-black tracking-tight text-[#111813] dark:text-[#111813] mb-2">
+                        Complete Your Payment
+                    </h1>
+                    <p class="text-gray-500 dark:text-gray-400 text-lg">
+                        Scan the QR code or use bank transfer to complete your order payment.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Payment Instructions -->
+                    <div class="space-y-6">
+                        <!-- Order Summary -->
+                        <div
+                            class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg">
+                            <h2 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-4">Order Summary</h2>
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Order ID:</span>
+                                    <span class="font-medium">##{orderPaymentMB.orderId}</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Total Amount:</span>
+                                    <span
+                                        class="font-bold text-lg text-[#111813] dark:text-[#111813]">$#{orderPaymentMB.orderTotal}</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Status:</span>
+                                    <span class="font-medium text-yellow-600">Waiting for Payment</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bank Details -->
+                        <div
+                            class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg">
+                            <h2 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-4">Bank Transfer Details
+                            </h2>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4">
+                                    <div class="grid grid-cols-1 gap-3 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600 dark:text-gray-400">Bank Name:</span>
+                                            <span class="font-medium">EZMart Bank</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600 dark:text-gray-400">Account Name:</span>
+                                            <span class="font-medium">EZMart Supermarket Ltd</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600 dark:text-gray-400">Account Number:</span>
+                                            <span class="font-medium font-mono">1234-5678-9012-3456</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600 dark:text-gray-400">Routing Number:</span>
+                                            <span class="font-medium font-mono">123456789</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600 dark:text-gray-400">Reference:</span>
+                                            <span class="font-medium font-mono">##{orderPaymentMB.orderId}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                                    <div class="flex items-start gap-3">
+                                        <span class="material-symbols-outlined text-yellow-600 text-lg">warning</span>
+                                        <div>
+                                            <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+                                                Important:</p>
+                                            <p class="text-sm text-yellow-700 dark:text-yellow-300">
+                                                Please include your Order ID (##{orderPaymentMB.orderId}) in the payment
+                                                reference to ensure your payment is processed correctly.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QR Code and Upload -->
+                    <div class="space-y-6">
+                        <!-- QR Code -->
+                        <div
+                            class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg text-center">
+                            <h2 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-4">Scan QR Code</h2>
+                            <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-6 mb-4">
+                                <div
+                                    class="w-48 h-48 mx-auto bg-white border-2 border-gray-300 rounded-lg flex items-center justify-center">
+                                    <!-- QR Code Placeholder - Replace with actual QR code image -->
+                                    <div class="text-center">
+                                        <span class="material-symbols-outlined text-gray-400 text-6xl">qr_code</span>
+                                        <p class="text-xs text-gray-500 mt-2">QR Code</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Scan this QR code with your banking app to make payment
+                            </p>
+                        </div>
+
+                        <!-- Payment Proof Upload -->
+                        <div
+                            class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg">
+                            <h2 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-4">Upload Payment Proof
+                            </h2>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-[#111813] dark:text-gray-200 mb-2">
+                                        Payment Screenshot/Receipt
+                                    </label>
+                                    <div
+                                        class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-primary transition-colors">
+                                        <h:inputFile id="paymentProof" value="#{orderPaymentMB.paymentProofFile}"
+                                            class="hidden" required="true"
+                                            onchange="handleFileSelect(this, 'paymentForm:fileNameDisplay')" />
+                                        <label for="paymentForm:paymentProof" class="cursor-pointer">
+                                            <span
+                                                class="material-symbols-outlined text-gray-400 text-3xl mb-2 block">cloud_upload</span>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                                                Click to upload payment proof
+                                            </p>
+                                            <p class="text-xs text-gray-500">
+                                                PNG, JPG, PDF up to 5MB
+                                            </p>
+                                        </label>
+                                    </div>
+                                    <div id="paymentForm:fileNameDisplay"
+                                        class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hidden">
+                                        <div class="flex items-center gap-2">
+                                            <span
+                                                class="material-symbols-outlined text-blue-600 text-sm">description</span>
+                                            <span id="fileNameText"
+                                                class="text-sm text-blue-800 dark:text-blue-200"></span>
+                                        </div>
+                                    </div>
+                                    <ui:fragment rendered="#{orderPaymentMB.paymentProofFile != null}">
+                                        <div
+                                            class="mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    class="material-symbols-outlined text-green-600 text-sm">check_circle</span>
+                                                <span class="text-sm text-green-800 dark:text-green-200">File uploaded
+                                                    successfully</span>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-[#111813] dark:text-gray-200 mb-2">
+                                        Transaction ID (Optional)
+                                    </label>
+                                    <h:inputText id="transactionId" value="#{orderPaymentMB.transactionId}"
+                                        class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
+                                        placeholder="Enter transaction ID from your bank" />
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-[#111813] dark:text-gray-200 mb-2">
+                                        Additional Notes (Optional)
+                                    </label>
+                                    <h:inputTextarea id="paymentNotes" value="#{orderPaymentMB.paymentNotes}"
+                                        class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] px-4 py-3 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors resize-none"
+                                        rows="3" placeholder="Any additional information about your payment" />
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="mt-6">
+                                <h:commandButton action="#{orderPaymentMB.submitPaymentProof()}"
+                                                 value="Submit Payment Proof"
+                                                 styleClass="w-full bg-primary hover:bg-green-600 text-white font-bold text-lg py-3.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
+                                                 ajax="false" />
+                            </div>
+                        </div>
+
+                        <!-- Help Section -->
+                        <div
+                            class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-blue-600 text-lg">help</span>
+                                <div>
+                                    <p class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">Need Help?</p>
+                                    <p class="text-sm text-blue-800 dark:text-blue-200">
+                                        Contact our support team if you encounter any issues with your payment.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
