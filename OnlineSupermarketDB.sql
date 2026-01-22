@@ -1,5 +1,6 @@
 CREATE DATABASE OnlineSupermarketDB;
 GO
+
 USE OnlineSupermarketDB;
 GO
 
@@ -13,7 +14,12 @@ CREATE TABLE Users (
     Email VARCHAR(100),
     Role VARCHAR(20) CHECK (Role IN ('STAFF','CUSTOMER','ADMIN')),
     Status VARCHAR(20) DEFAULT 'ACTIVE',
-    CreatedAt DATETIME DEFAULT GETDATE()
+    BanUntil DATETIME NULL,
+    LastOnlineAt DATETIME NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    -- Store per-user avatar URL (e.g., /app/avatar?userId=1&t=...)
+    -- Keep NULL by default so UI can reliably fall back to /images/user.png
+    AvatarUrl NVARCHAR(500) NULL
 );
 
 CREATE TABLE Roles (
@@ -50,8 +56,9 @@ CREATE TABLE Customers (
     Latitude DECIMAL(9,6) NULL,
     Longitude DECIMAL(9,6) NULL,
     MobilePhone NVARCHAR(20),
-    CreatedAt DATETIME DEFAULT GETDATE(),
     AvatarUrl NVARCHAR(500) NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    -- AvatarUrl removed, now in Users
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
@@ -61,6 +68,58 @@ CREATE TABLE Admins (
     AdminLevel VARCHAR(30),
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
+
+/* =========================
+   STAFF (like Customers but no address)
+========================= */
+CREATE TABLE Staffs (
+    StaffID INT IDENTITY PRIMARY KEY,
+    UserID INT UNIQUE NOT NULL,
+    FirstName NVARCHAR(50) NULL,
+    MiddleName NVARCHAR(50) NULL,
+    LastName NVARCHAR(50) NULL,
+    MobilePhone NVARCHAR(20) NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    AvatarUrl NVARCHAR(500) NULL,
+    Status NVARCHAR(20) DEFAULT 'ACTIVE',
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+GO
+
+/* =========================
+   1:1 CHAT (Staff <-> Customer)
+========================= */
+CREATE TABLE ChatConversations (
+    ConversationID INT IDENTITY PRIMARY KEY,
+    CustomerID INT NOT NULL,
+    StaffID INT NOT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    Status NVARCHAR(20) DEFAULT 'ACTIVE',
+    LastMessageAt DATETIME2 NULL,
+    CONSTRAINT FK_ChatConversations_Customers FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+    CONSTRAINT FK_ChatConversations_Staffs FOREIGN KEY (StaffID) REFERENCES Staffs(StaffID),
+    CONSTRAINT UQ_ChatConversations UNIQUE(CustomerID, StaffID)
+);
+GO
+
+CREATE TABLE ChatMessages (
+    MessageID BIGINT IDENTITY PRIMARY KEY,
+    ConversationID INT NOT NULL,
+    SenderRole NVARCHAR(20) NOT NULL CHECK (SenderRole IN ('STAFF','CUSTOMER')),
+    SenderUserID INT NOT NULL,
+    Content NVARCHAR(2000) NOT NULL,
+    SentAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    IsRead BIT NOT NULL DEFAULT 0,
+    MessageType NVARCHAR(20) DEFAULT 'TEXT', -- TEXT, IMAGE, FILE
+    AttachmentUrl NVARCHAR(500) NULL,
+    CONSTRAINT FK_ChatMessages_Conversation FOREIGN KEY (ConversationID) REFERENCES ChatConversations(ConversationID),
+    CONSTRAINT FK_ChatMessages_SenderUser FOREIGN KEY (SenderUserID) REFERENCES Users(UserID)
+);
+GO
+
+CREATE INDEX IX_ChatMessages_Conversation_SentAt
+ON ChatMessages(ConversationID, SentAt);
+GO
 
 CREATE TABLE Addresses (
     AddressID INT IDENTITY(1,1) PRIMARY KEY,
@@ -640,9 +699,6 @@ GO
 
 INSERT INTO Users (Username, PasswordHash, Email, Role)
 VALUES
-('toan','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918','tbtoana23141@cusc.ctu.edu.vn','ADMIN'),
-('bo','b6c45863875e34487ca3c155ed145efe12a74581e27befec5aa661b8ee8ca6dd','ptboa23130@cusc.ctu.edu.vn','CUSTOMER'),
-('lam','b6c45863875e34487ca3c155ed145efe12a74581e27befec5aa661b8ee8ca6dd','tvlama23144@cusc.ctu.edu.vn','CUSTOMER'),
 ('customer','b6c45863875e34487ca3c155ed145efe12a74581e27befec5aa661b8ee8ca6dd','customer@ezmart.vn','CUSTOMER'),
 ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'admin@ezmart.vn', 'ADMIN'),
 ('staff', '1562206543da764123c21bd524674f0a8aaf49c8a89744c97352fe677f7e4006', 'staff@ezmart.vn', 'STAFF');

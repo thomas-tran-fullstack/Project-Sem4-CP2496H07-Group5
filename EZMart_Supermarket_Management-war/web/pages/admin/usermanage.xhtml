@@ -1,246 +1,1258 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui:composition template="/templates/admin/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core"
-    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+<ui:composition template="/templates/admin/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
     <ui:define name="content">
-        <!-- Scrollable Page Content -->
+        <style>
+            /* Field-level messages styling for h:messages */
+            .error-field-message {
+                background-color: #fee2e2;
+                color: #dc2626;
+                border-left: 3px solid #dc2626;
+                padding: 4px 8px;
+                margin: 4px 0 !important;
+                font-size: 12px;
+                font-weight: 500;
+                border-radius: 3px;
+                display: block;
+                list-style: none;
+            }
+
+            .success-field-message {
+                background-color: #d1fae5;
+                color: #059669;
+                border-left: 3px solid #059669;
+                padding: 4px 8px;
+                margin: 4px 0 !important;
+                font-size: 12px;
+                font-weight: 500;
+                border-radius: 3px;
+                display: block;
+                list-style: none;
+            }
+
+            /* h:messages renders as UL, so we need to style LI */
+            .error-field-message li,
+            .success-field-message li {
+                list-style: none;
+                padding: 4px 8px;
+                margin: 2px 0;
+            }
+
+            /* Success Modal Animation */
+            .animate-checkmark {
+                animation: checkmark 0.8s ease-in-out;
+            }
+
+            @keyframes checkmark {
+                0% {
+                    transform: scale(0) rotate(0deg);
+                    opacity: 0;
+                }
+                50% {
+                    transform: scale(1.2) rotate(180deg);
+                    opacity: 1;
+                }
+                100% {
+                    transform: scale(1) rotate(360deg);
+                    opacity: 1;
+                }
+            }
+        </style>
+        
         <div class="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
+            <!-- Top-right Notifications Container -->
+            <div id="notificationsContainer" class="fixed top-6 right-6 z-40 flex flex-col gap-3 pointer-events-none"></div>
             <div class="max-w-[1200px] mx-auto space-y-6">
-                <!-- Page Header -->
+
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h2 class="text-2xl font-bold text-text-main dark:text-white tracking-tight">User Management
-                        </h2>
+                        <h2 class="text-2xl font-bold text-text-main dark:text-white tracking-tight">User Management</h2>
                         <p class="text-text-sub text-sm mt-1">View, edit, and manage user accounts and permissions.</p>
                     </div>
-                    <button
-                        class="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-sm shadow-primary/30 transition-all active:scale-95 font-medium">
+                    <button type="button" 
+                            onclick="document.getElementById('addUserModal').classList.remove('hidden');"
+                            class="px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all font-medium flex items-center gap-2">
                         <span class="material-symbols-outlined text-[20px]">add</span>
-                        <span>Add New User</span>
+                        Add new user
                     </button>
                 </div>
+
                 <!-- Filters & Search Toolbar -->
-                <div
-                    class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-border-color shadow-sm flex flex-col lg:flex-row gap-4 items-center justify-between">
-                    <!-- Search -->
+                <h:form id="filtersForm"
+                        class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-border-color shadow-sm flex flex-col lg:flex-row gap-4 items-center justify-between">
+
                     <div class="relative w-full lg:max-w-md">
-                        <span
-                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-sub pointer-events-none select-none text-[20px]">search</span>
-                        <input
-                            class="w-full pl-10 pr-4 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all dark:text-white placeholder:text-text-sub/60"
-                            placeholder="Search by name, email, or phone..." type="text" />
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-sub pointer-events-none select-none text-[20px]">search</span>
+                        <h:inputText value="#{userManagementController.searchQuery}"
+                                     styleClass="w-full pl-10 pr-4 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all dark:text-white placeholder:text-text-sub/60"
+                                     pt:placeholder="Search by name or email...">
+                            <f:ajax event="keyup" listener="#{userManagementController.applyFilters}" render=":usersForm:userTable"/>
+                        </h:inputText>
                     </div>
-                    <!-- Filters -->
+
                     <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
                         <div class="relative group">
                             <h:selectOneMenu value="#{userManagementController.selectedRole}"
-                                onchange="submit()"
-                                class="appearance-none pl-3 pr-10 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm text-text-sub focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer min-w-[120px]">
-                                <f:selectItem itemLabel="Role: All" itemValue="All" />
-                                <f:selectItem itemLabel="Admin" itemValue="ADMIN" />
-                                <f:selectItem itemLabel="Customer" itemValue="CUSTOMER" />
-                                <f:selectItem itemLabel="Staff" itemValue="STAFF" />
+                                             styleClass="appearance-none pl-3 pr-10 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm text-text-sub focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer min-w-[140px]">
+                                <f:selectItem itemLabel="All Roles" itemValue="All"/>
+                                <f:selectItem itemLabel="Admin" itemValue="ADMIN"/>
+                                <f:selectItem itemLabel="Staff" itemValue="STAFF"/>
+                                <f:selectItem itemLabel="Customer" itemValue="CUSTOMER"/>
+                                <f:ajax listener="#{userManagementController.applyFilters}" render=":usersForm:userTable :usersForm:pagination"/>
                             </h:selectOneMenu>
-                            <span
-                                class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-text-sub pointer-events-none text-[18px]">expand_more</span>
+                            <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-text-sub pointer-events-none text-[18px]">expand_more</span>
                         </div>
+
                         <div class="relative group">
                             <h:selectOneMenu value="#{userManagementController.selectedStatus}"
-                                onchange="submit()"
-                                class="appearance-none pl-3 pr-10 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm text-text-sub focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer min-w-[120px]">
-                                <f:selectItem itemLabel="Status: All" itemValue="All" />
-                                <f:selectItem itemLabel="Active" itemValue="ACTIVE" />
-                                <f:selectItem itemLabel="Inactive" itemValue="INACTIVE" />
-                                <f:selectItem itemLabel="Banned" itemValue="BANNED" />
+                                             styleClass="appearance-none pl-3 pr-10 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm text-text-sub focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer min-w-[140px]">
+                                <f:selectItem itemLabel="Status: All" itemValue="All"/>
+                                <f:selectItem itemLabel="Active" itemValue="ACTIVE"/>
+                                <f:selectItem itemLabel="Inactive" itemValue="INACTIVE"/>
+                                <f:selectItem itemLabel="Banned" itemValue="BANNED"/>
+                                <f:ajax listener="#{userManagementController.applyFilters}" render=":usersForm:userTable :usersForm:pagination"/>
                             </h:selectOneMenu>
-                            <span
-                                class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-text-sub pointer-events-none text-[18px]">expand_more</span>
+                            <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-text-sub pointer-events-none text-[18px]">expand_more</span>
                         </div>
+                        
                         <div class="relative group">
                             <h:selectOneMenu value="#{userManagementController.sortBy}"
-                                onchange="submit()"
-                                class="appearance-none pl-3 pr-10 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm text-text-sub focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer min-w-[140px]">
-                                <f:selectItem itemLabel="Name: A - Z" itemValue="Name: A - Z" />
-                                <f:selectItem itemLabel="Name: Z - A" itemValue="Name: Z - A" />
-                                <f:selectItem itemLabel="Oldest Online" itemValue="Oldest Online" />
-                                <f:selectItem itemLabel="Newest Online" itemValue="Newest Online" />
+                                             styleClass="appearance-none pl-3 pr-10 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm text-text-sub focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer min-w-[160px]">
+                                <f:selectItem itemLabel="More Filter" itemValue="Name: A - Z"/>
+                                <f:selectItem itemLabel="Name A - Z" itemValue="Name: A - Z"/>
+                                <f:selectItem itemLabel="Name Z - A" itemValue="Name: Z - A"/>
+                                <f:selectItem itemLabel="Oldest online" itemValue="Oldest online"/>
+                                <f:selectItem itemLabel="Newest online" itemValue="Newest online"/>
+                                <f:ajax listener="#{userManagementController.applySortBy}" render=":usersForm:userTable :usersForm:pagination"/>
                             </h:selectOneMenu>
-                            <span
-                                class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-text-sub pointer-events-none text-[18px]">expand_more</span>
+                            <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-text-sub pointer-events-none text-[18px]">expand_more</span>
+                        </div>
+                    </div>
+                </h:form>
+
+                <!-- Data Table -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-color shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <h:form id="usersForm">
+                            <h:panelGroup id="userTable">
+
+                                <!-- Inline CSS for badges & actions (keeps changes self-contained) -->
+                                <style>
+                                    .role-badge{
+                                        font-weight:800;
+                                        padding:4px 10px;
+                                        border-radius:9999px;
+                                        display:inline-flex;
+                                        align-items:center;
+                                        gap:6px;
+                                        font-size:12px;
+                                        letter-spacing:.2px;
+                                        border:1px solid transparent;
+                                    }
+                                    .role-admin{
+                                        background:#fdecea;
+                                        color:#c62828;
+                                        border-color:#f5c6cb;
+                                    }
+                                    .role-staff{
+                                        background:#e3f2fd;
+                                        color:#1565c0;
+                                        border-color:#bbdefb;
+                                    }
+                                    .role-customer{
+                                        background:#e8f5e9;
+                                        color:#2e7d32;
+                                        border-color:#c8e6c9;
+                                    }
+                                    .role-admin::before{
+                                        content:"🛡️";
+                                    }
+                                    .role-staff::before{
+                                        content:"👔";
+                                    }
+                                    .role-customer::before{
+                                        content:"🧑";
+                                    }
+
+                                    .status-badge{
+                                        padding:4px 10px;
+                                        border-radius:8px;
+                                        font-weight:700;
+                                        font-size:12px;
+                                        display:inline-flex;
+                                        align-items:center;
+                                        border:1px solid transparent;
+                                    }
+                                    .status-active{
+                                        background:#e8f5e9;
+                                        color:#2e7d32;
+                                        border-color:#c8e6c9;
+                                    }
+                                    .status-inactive{
+                                        background:#eeeeee;
+                                        color:#616161;
+                                        border-color:#e0e0e0;
+                                    }
+                                    .status-banned{
+                                        background:#fdecea;
+                                        color:#c62828;
+                                        border-color:#f5c6cb;
+                                    }
+
+                                    .online-badge{
+                                        padding:4px 10px;
+                                        border-radius:8px;
+                                        font-weight:700;
+                                        font-size:12px;
+                                        display:inline-flex;
+                                        align-items:center;
+                                        border:1px solid transparent;
+                                    }
+                                    .online-now{
+                                        background:#e8f5e9;
+                                        color:#2e7d32;
+                                        border-color:#c8e6c9;
+                                    }
+                                    .online-off{
+                                        background:#eeeeee;
+                                        color:#616161;
+                                        border-color:#e0e0e0;
+                                    }
+                                    .online-offline{
+                                        background:#f5f5f5;
+                                        color:#9e9e9e;
+                                        border-color:#e0e0e0;
+                                    }
+                                    .online-now::before{
+                                        content:"●";
+                                        margin-right:6px;
+                                        font-size:10px;
+                                    }
+                                    .online-off::before{
+                                        content:"●";
+                                        margin-right:6px;
+                                        font-size:10px;
+                                    }
+                                    .online-offline::before{
+                                        content:"○";
+                                        margin-right:6px;
+                                        font-size:10px;
+                                    }
+
+                                    .user-avatar{
+                                        width:40px;
+                                        height:40px;
+                                        border-radius:9999px;
+                                        background-size:cover;
+                                        background-position:center;
+                                        border:1px solid rgba(0,0,0,.06);
+                                        flex:0 0 auto;
+                                    }
+
+                                    .action-icons{
+                                        display:flex;
+                                        justify-content:flex-end;
+                                        gap:10px;
+                                        opacity:1 !important; /* always visible */
+                                    }
+                                    .action-icons img{
+                                        width:18px;
+                                        height:18px;
+                                        display:block;
+                                        cursor:pointer;
+                                    }
+                                    .action-icons a{
+                                        display:inline-flex;
+                                        align-items:center;
+                                        justify-content:center;
+                                        width:36px;
+                                        height:36px;
+                                        border-radius:10px;
+                                        border:1px solid rgba(0,0,0,.06);
+                                        transition:transform .12s ease, background-color .12s ease;
+                                        background:transparent;
+                                    }
+                                    .action-icons a:hover{
+                                        transform:scale(1.06);
+                                        background:rgba(20,184,75,.08);
+                                    }
+                                    .action-icons a.delete:hover{
+                                        background:rgba(220,38,38,.08);
+                                    }
+                                </style>
+
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-background-light dark:bg-background-dark border-b border-border-color">
+                                            <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">User</th>
+                                            <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">Role</th>
+                                            <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">Status</th>
+                                            <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">Joined Date</th>
+                                            <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">Online</th>
+                                            <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody class="divide-y divide-border-color">
+                                        <ui:repeat value="#{userManagementController.users}" var="u">
+                                            <tr class="hover:bg-primary/5 transition-colors">
+                                                <td class="py-4 px-6">
+                                                    <div class="flex items-center gap-3">
+                                                        <!-- Avatar: ALWAYS use controller fallback -->
+                                                        <div class="user-avatar"
+                                                             style='background-image: url("#{userManagementController.avatarSrc(u)}");'></div>
+                                                        <div>
+                                                            <p class="font-medium text-text-main dark:text-white">#{u.displayName}</p>
+                                                            <p class="text-sm text-text-sub">#{u.email}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                                <td class="py-4 px-6">
+                                                    <span class="role-badge role-#{u.role.toLowerCase()}">#{u.role}</span>
+                                                </td>
+
+                                                <td class="py-4 px-6">
+                                                    <span class="status-badge status-#{u.status.toLowerCase()}">#{u.status}</span>
+                                                </td>
+
+                                                <td class="py-4 px-6 text-sm text-text-sub">
+                                                    <h:outputText value="#{u.createdAt}">
+                                                        <f:convertDateTime pattern="MMM dd, yyyy"/>
+                                                    </h:outputText>
+                                                </td>
+
+                                                <td class="py-4 px-6">
+                                                    <span class="#{userManagementController.getOnlineStatusCssClass(u)}">
+                                                        #{userManagementController.getFormattedOnlineTime(u)}
+                                                    </span>
+                                                </td>
+
+                                                <td class="py-4 px-6 text-right">
+                                                    <!-- Always-visible actions using existing /web/images/edit.png & delete.png -->
+                                                    <div class="action-icons">
+                                                        <h:commandLink title="Edit"
+                                                                       styleClass="edit"
+                                                                       action="#{userManagementController.editUser(u.userID)}">
+                                                            <img src="#{request.contextPath}/resources/images/edit.png" alt="Edit"/>
+                                                            <f:ajax execute="@this" render=":editUserForm" onevent="handleEditUserLoad"/>
+                                                        </h:commandLink>
+
+                                                        <h:commandLink title="#{userManagementController.getDeleteActionText(u)}"
+                                                                       styleClass="delete"
+                                                                       onclick="showDeleteModal('#{u.userID}', '#{u.username}', '#{u.status}'); return false;">
+                                                            <img src="#{request.contextPath}/resources/images/delete.png" alt="#{userManagementController.getDeleteActionText(u)}"/>
+                                                        </h:commandLink>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </ui:repeat>
+                                    </tbody>
+                                </table>
+                            </h:panelGroup>
+
+                            <!-- Hidden ajax refresh trigger (for near real-time updates) -->
+                            <h:commandLink id="refreshLink" action="#{userManagementController.refreshUsers}" style="display:none">
+                                <f:ajax render="userTable pagination"/>
+                            </h:commandLink>
+                            
+                            <!-- Pagination Controls -->
+                            <h:panelGroup id="pagination" layout="block" class="flex items-center justify-between mt-6 px-6 py-4 border-t border-border-color">
+                                <div class="text-sm text-text-sub">
+                                    Total: <span class="font-semibold text-text-main">#{userManagementController.allUsers.size()}</span> users
+                                </div>
+                                
+                                <div class="flex items-center gap-2">
+                                    <ui:repeat value="#{userManagementController.pageNumbers}" var="page">
+                                        <h:commandButton value="#{page}"
+                                                         action="#{userManagementController.updatePageDisplay}"
+                                                         styleClass="#{userManagementController.currentPage == page ? 'px-4 py-2 bg-primary text-white rounded-lg font-semibold text-sm' : 'px-4 py-2 bg-background-light border border-border-color rounded-lg hover:bg-primary/10 transition-all text-sm font-medium cursor-pointer'}">
+                                            <f:setPropertyActionListener target="#{userManagementController.currentPage}" value="#{page}"/>
+                                            <f:ajax render=":usersForm:userTable :usersForm:pagination"/>
+                                        </h:commandButton>
+                                    </ui:repeat>
+                                </div>
+                            </h:panelGroup>
+                        </h:form>
+                    </div>
+                </div>
+
+                <!-- Hidden form for delete actions -->
+                <h:form id="deleteForm" style="display:none;">
+                    <h:inputHidden id="deleteActionParam" value="#{userManagementController.deleteActionParam}"/>
+                    <h:inputHidden id="deleteUserIdParam" value="#{userManagementController.deleteUserIdParam}"/>
+                    <h:commandButton id="deleteActionButton" value="Delete" action="#{userManagementController.handleDeleteAction}">
+                        <f:ajax execute="@form" render=":usersForm:userTable :usersForm:pagination"/>
+                    </h:commandButton>
+                </h:form>
+
+                <h:outputScript>
+                    // Simple polling to refresh user table (updates names/avatars/status in near real-time)
+                    (function(){
+                    function refresh(){
+                    var el = document.getElementById('usersForm:refreshLink');
+                    if(el){ el.click(); }
+                    }
+                    setInterval(refresh, 5000);
+                    })();
+                </h:outputScript>
+
+                <!-- Success Modal -->
+                <div id="successModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" style="pointer-events: auto;">
+                    <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-8 flex flex-col items-center justify-center text-center">
+                        <!-- Checkmark Animation -->
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-green-600 animate-checkmark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <!-- Success Message -->
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Success!</h3>
+                        <p class="text-gray-600 mb-6">User Created Successfully</p>
+                        <!-- OK Button -->
+                        <button onclick="closeSuccessModal()" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                            OK
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Delete User Modal -->
+                <div id="deleteUserModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" style="pointer-events: auto;">
+                    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 flex flex-col items-center justify-center text-center">
+                        <!-- Warning Icon -->
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <!-- Modal Title -->
+                        <h3 class="text-xl font-bold text-gray-800 mb-4" id="deleteModalTitle">Confirm Action</h3>
+                        <!-- Modal Message -->
+                        <p class="text-gray-600 mb-6" id="deleteModalMessage">Are you sure you want to perform this action?</p>
+                        <!-- Action Buttons -->
+                        <div class="flex gap-4">
+                            <button onclick="closeDeleteModal()" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors font-medium">
+                                Cancel
+                            </button>
+                            <button onclick="confirmDelete()" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium" id="deleteConfirmButton">
+                                Confirm
+                            </button>
                         </div>
                     </div>
                 </div>
-                <!-- Data Table Card -->
-                <div
-                    class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-color shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-background-light dark:bg-background-dark border-b border-border-color">
-                                    <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">
-                                        User</th>
-                                    <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">
-                                        Role</th>
-                                    <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">
-                                        Status</th>
-                                    <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">
-                                        Joined Date</th>
-                                    <th class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub">
-                                        Online</th>
-                                    <th
-                                        class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-text-sub text-right">
-                                        Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-border-color">
-                                <ui:repeat var="user" value="#{userManagementController.users}">
-                                    <tr class="group hover:bg-primary/5 transition-colors">
-                                        <!-- User Info -->
-                                        <td class="py-4 px-6">
-                                            <div class="flex items-center gap-3">
-                                                <div class="size-10 rounded-full bg-cover bg-center shrink-0"
-                                                    style="background-image: url(&quot;#{userManagementController.getAvatarUrl(user)}&quot;);">
-                                                </div>
-                                                <div>
-                                                    <p class="font-medium text-text-main dark:text-white">#{user.displayName}</p>
-                                                    <p class="text-sm text-text-sub">#{user.email}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <!-- Role -->
-                                        <td class="py-4 px-6">
-                                            <div class="flex items-center gap-2 text-sm text-text-main dark:text-gray-300">
-                                                <h:panelGroup rendered="#{user.role eq 'ADMIN'}">
-                                                    <span class="material-symbols-outlined text-[18px]" style="color: #a855f7;">verified_user</span>
-                                                    Admin
-                                                </h:panelGroup>
-                                                <h:panelGroup rendered="#{user.role eq 'STAFF'}">
-                                                    <span class="material-symbols-outlined text-[18px]" style="color: #0ea5e9;">person_check</span>
-                                                    Staff
-                                                </h:panelGroup>
-                                                <h:panelGroup rendered="#{user.role eq 'CUSTOMER'}">
-                                                    <span class="material-symbols-outlined text-[18px]" style="color: #3b82f6;">shopping_bag</span>
-                                                    Customer
-                                                </h:panelGroup>
-                                            </div>
-                                        </td>
-                                        <!-- Status -->
-                                        <td class="py-4 px-6">
-                                            <h:panelGroup rendered="#{user.status eq 'ACTIVE'}">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Active</span>
-                                            </h:panelGroup>
-                                            <h:panelGroup rendered="#{user.status eq 'INACTIVE'}">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400">Inactive</span>
-                                            </h:panelGroup>
-                                            <h:panelGroup rendered="#{user.status eq 'BANNED'}">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">Banned</span>
-                                            </h:panelGroup>
-                                        </td>
-                                        <!-- Joined Date -->
-                                        <td class="py-4 px-6 text-sm text-text-sub">
-                                            <h:outputText value="#{user.createdAt}" pattern="MMM dd, yyyy" />
-                                        </td>
-                                        <!-- Online Status -->
-                                        <td class="py-4 px-6 text-sm">
-                                            <h:panelGroup rendered="#{userManagementController.isUserOnline(user)}">
-                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30">
-                                                    <span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
-                                                    <span class="text-green-600 dark:text-green-400 font-medium text-xs">Online</span>
-                                                </span>
-                                            </h:panelGroup>
-                                            <h:panelGroup rendered="#{!userManagementController.isUserOnline(user)}">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-gray-100 dark:bg-gray-900/30 text-gray-600 dark:text-gray-400">
-                                                    #{userManagementController.getFormattedOnlineTime(user)}
-                                                </span>
-                                            </h:panelGroup>
-                                        </td>
-                                        <!-- Actions -->
-                                        <td class="py-4 px-6 text-right">
-                                            <div class="flex items-center justify-end gap-2">
-                                                <button
-                                                    class="p-2 rounded-lg text-text-sub hover:text-primary hover:bg-primary/10 transition-colors"
-                                                    title="Edit"
-                                                    onclick="alert('Feature coming soon');">
-                                                    <span class="material-symbols-outlined text-[20px]">edit</span>
-                                                </button>
-                                                <h:commandButton action="#{userManagementController.deleteUser(user.userID)}"
-                                                    class="p-2 rounded-lg text-text-sub hover:text-red-500 hover:bg-red-50 transition-colors"
-                                                    title="Delete"
-                                                    onclick="return confirm('Bạn chắc chắn muốn xóa user này?');">
-                                                    <span class="material-symbols-outlined text-[20px]">delete</span>
-                                                </h:commandButton>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </ui:repeat>
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Pagination Footer -->
-                    <div
-                        class="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-border-color gap-4">
-                        <p class="text-sm text-text-sub">Showing <span
-                                class="font-medium text-text-main dark:text-white">#{userManagementController.users.size()}</span> users</p>
-                        <div class="flex items-center gap-2">
-                            <button
-                                class="p-2 rounded-lg border border-border-color text-text-sub hover:bg-background-light hover:text-primary disabled:opacity-50 transition-colors"
-                                disabled="">
-                                <span class="material-symbols-outlined text-[20px]">chevron_left</span>
-                            </button>
-                            <button
-                                class="px-3.5 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors shadow-sm shadow-primary/30">1</button>
-                            <button
-                                class="p-2 rounded-lg border border-border-color text-text-sub hover:bg-background-light hover:text-primary transition-colors">
-                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+
+                <!-- Add User Modal -->
+                <div id="addUserModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" style="pointer-events: auto;">
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col" style="background-color: #ffffff; pointer-events: auto;">
+                        <!-- Modal Header -->
+                        <div class="flex-shrink-0 flex items-center justify-between p-6 border-b border-border-color bg-surface-light dark:bg-surface-dark">
+                            <h3 class="text-xl font-bold text-text-main dark:text-white">Add New User</h3>
+                            <button type="button" 
+                                    onclick="document.getElementById('addUserModal').classList.add('hidden'); document.getElementById('addUserForm:resetButton').click();"
+                                    class="text-text-sub hover:text-text-main transition-colors">
+                                <span class="material-symbols-outlined">close</span>
                             </button>
                         </div>
+
+                        <h:form id="addUserForm" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+                            <!-- Success indicator for JS callback -->
+                            <h:outputText id="successIndicator"
+                                         rendered="#{userManagementController.formSaveSuccess}"
+                                         value="success"
+                                         style="display:none;"/>
+
+                            <!-- Modal Body -->
+                            <div class="flex-1 overflow-y-auto p-6 space-y-6" style="overflow-y: scroll;">
+                                <!-- Part 1: Account Information -->
+                                <div class="space-y-4">
+                                    <h4 class="font-semibold text-text-main dark:text-white flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-primary">security</span>
+                                        Account Information
+                                    </h4>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Username *</label>
+                                            <h:inputText id="username" value="#{userManagementController.newUserUsername}"
+                                                         styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                         pt:placeholder="Enter username"/>
+                                            <h:messages for="username" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Password *</label>
+                                            <h:inputSecret id="password" value="#{userManagementController.newUserPassword}"
+                                                          styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                          pt:placeholder="Enter password"/>
+                                            <h:messages for="password" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Role *</label>
+                                        <h:selectOneMenu id="role" value="#{userManagementController.newUserRole}"
+                                                         styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer">
+                                            <f:selectItem itemLabel="-- Select Role --" itemValue=""/>
+                                            <f:selectItem itemLabel="Admin" itemValue="ADMIN"/>
+                                            <f:selectItem itemLabel="Staff" itemValue="STAFF"/>
+                                            <f:selectItem itemLabel="Customer" itemValue="CUSTOMER"/>
+                                        </h:selectOneMenu>
+                                        <h:messages for="role" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                    </div>
+                                </div>
+
+                                <!-- Part 2: Personal Information -->
+                                <div class="space-y-4 pt-4 border-t border-border-color">
+                                    <h4 class="font-semibold text-text-main dark:text-white flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-primary">person</span>
+                                        Personal Information
+                                    </h4>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">First Name *</label>
+                                            <h:inputText id="firstName" value="#{userManagementController.newUserFirstName}"
+                                                         styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                         pt:placeholder="First name"/>
+                                            <h:messages for="firstName" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Middle Name</label>
+                                            <h:inputText value="#{userManagementController.newUserMiddleName}"
+                                                         styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                         pt:placeholder="Middle name"/>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Last Name *</label>
+                                            <h:inputText id="lastName" value="#{userManagementController.newUserLastName}"
+                                                         styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                         pt:placeholder="Last name"/>
+                                            <h:messages for="lastName" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Email Address *</label>
+                                        <h:inputText id="email" value="#{userManagementController.newUserEmail}"
+                                                     styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                     pt:placeholder="user@example.com"
+                                                     pt:type="email"/>
+                                        <h:messages for="email" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Phone Number (Mobile) *</label>
+                                        <h:inputText id="phone" value="#{userManagementController.newUserPhone}"
+                                                     styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                     pt:placeholder="+84 123 456 7890"
+                                                     pt:type="tel"/>
+                                        <h:messages for="phone" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Modal Footer -->
+                            <div class="flex-shrink-0 flex items-center justify-end gap-4 p-6 border-t border-border-color bg-surface-light dark:bg-surface-dark">
+                                <h:commandButton value="Cancel"
+                                                 type="button"
+                                                 onclick="document.getElementById('addUserModal').classList.add('hidden'); document.getElementById('addUserForm:resetButton').click(); return false;"
+                                                 styleClass="px-3 py-1.5 bg-background-light border border-border-color rounded-lg text-sm font-medium text-text-main hover:bg-background-light hover:border-primary hover:text-primary transition-all duration-200 cursor-pointer"/>
+                                <h:commandButton value="Save"
+                                                 action="#{userManagementController.createNewUser}"
+                                                 styleClass="px-3 py-1.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/80 active:scale-95 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md"
+                                                 type="button"
+                                                 onclick="console.log('Save button clicked'); return handleSaveClick();">
+                                    <f:ajax execute="@form" render="@form :usersForm:userTable :usersForm:pagination" onevent="handleAjaxEvent"/>
+                                </h:commandButton>
+                            </div>
+                            
+                            <h:commandButton id="resetButton" value="Reset" style="display:none" action="#{userManagementController.resetNewUserForm}"/>
+                        </h:form>
+                    </div>
+                </div>
+
+                <!-- Edit User Modal -->
+                <div id="editUserModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" style="pointer-events: auto;">
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col" style="background-color: #ffffff; pointer-events: auto;">
+                        <!-- Modal Header -->
+                        <div class="flex-shrink-0 flex items-center justify-between p-6 border-b border-border-color bg-surface-light dark:bg-surface-dark">
+                            <div>
+                                <h3 class="text-xl font-bold text-text-main dark:text-white">Edit User Detail</h3>
+                                <p class="text-text-sub text-sm mt-1">Update account, personal info, and status controls.</p>
+                            </div>
+                            <button type="button"
+                                    onclick="closeEditUserModal();"
+                                    class="text-text-sub hover:text-text-main transition-colors">
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        <h:form id="editUserForm" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+                            <h:outputText id="editSuccessIndicator"
+                                         rendered="#{userManagementController.editFormSaveSuccess}"
+                                         value="success"
+                                         style="display:none;"/>
+
+                            <!-- Modal Body -->
+                            <div class="flex-1 overflow-y-auto p-6 space-y-6" style="overflow-y: scroll;">
+                                <!-- Part 1: Account Information -->
+                                <div class="space-y-4">
+                                    <h4 class="font-semibold text-text-main dark:text-white flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-primary">security</span>
+                                        Account Information
+                                    </h4>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Username *</label>
+                                            <h:inputText id="editUsername" value="#{userManagementController.editUsername}"
+                                                         styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                         pt:placeholder="Enter username"/>
+                                            <h:messages for="editUsername" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Password</label>
+                                            <h:inputSecret id="editPassword" value="#{userManagementController.editPassword}"
+                                                          styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                          pt:placeholder="Leave blank to keep current password"/>
+                                            <p class="text-xs text-text-sub mt-2">For security, current password is not shown. Fill this field only if you want to change it.</p>
+                                            <h:messages for="editPassword" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Role *</label>
+                                        <h:selectOneMenu id="editRole" value="#{userManagementController.editRole}"
+                                                         styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer">
+                                            <f:selectItem itemLabel="-- Select Role --" itemValue=""/>
+                                            <f:selectItem itemLabel="Admin" itemValue="ADMIN"/>
+                                            <f:selectItem itemLabel="Staff" itemValue="STAFF"/>
+                                            <f:selectItem itemLabel="Customer" itemValue="CUSTOMER"/>
+                                        </h:selectOneMenu>
+                                        <h:messages for="editRole" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                    </div>
+                                </div>
+
+                                <!-- Part 2: Personal Information -->
+                                <div class="space-y-4 pt-4 border-t border-border-color">
+                                    <h4 class="font-semibold text-text-main dark:text-white flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-primary">person</span>
+                                        Personal Information
+                                    </h4>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">First name *</label>
+                                            <h:inputText id="editFirstName" value="#{userManagementController.editFirstName}"
+                                                         styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                         pt:placeholder="First name"/>
+                                            <h:messages for="editFirstName" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Middle name</label>
+                                            <h:inputText id="editMiddleName" value="#{userManagementController.editMiddleName}"
+                                                         styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                         pt:placeholder="Middle name"/>
+                                            <h:messages for="editMiddleName" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Last name *</label>
+                                            <h:inputText id="editLastName" value="#{userManagementController.editLastName}"
+                                                         styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                         pt:placeholder="Last name"/>
+                                            <h:messages for="editLastName" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Email Address *</label>
+                                        <h:inputText id="editEmail" value="#{userManagementController.editEmail}"
+                                                     styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                     pt:placeholder="user@example.com"
+                                                     pt:type="email"/>
+                                        <h:messages for="editEmail" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Phone Number (Mobile) *</label>
+                                        <h:inputText id="editPhone" value="#{userManagementController.editPhone}"
+                                                     styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                                     pt:placeholder="+84XXXXXXXXX or 0XXXXXXXXX"
+                                                     pt:type="tel"/>
+                                        <h:messages for="editPhone" errorClass="error-field-message" infoClass="success-field-message" globalOnly="false" layout="list" style="margin: 4px 0; padding: 0; list-style: none;"/>
+                                    </div>
+                                </div>
+
+                                <!-- Part 3: User Status -->
+                                <div class="space-y-4 pt-4 border-t border-border-color">
+                                    <h4 class="font-semibold text-text-main dark:text-white flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-primary">toggle_on</span>
+                                        User Status
+                                    </h4>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Status *</label>
+                                            <h:selectOneMenu id="editStatus" value="#{userManagementController.editStatus}"
+                                                             pt:onchange="toggleEditBanFields()"
+                                                             styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer">
+                                                <f:selectItem itemLabel="Active" itemValue="ACTIVE"/>
+                                                <f:selectItem itemLabel="Inactive" itemValue="INACTIVE"/>
+                                            </h:selectOneMenu>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Banned</label>
+                                            <div class="flex items-center justify-between px-3 py-2.5 bg-background-light border border-border-color rounded-lg">
+                                                <div>
+                                                    <p class="text-sm font-medium text-text-main">Ban this user</p>
+                                                    <p class="text-xs text-text-sub">When ON, user cannot login until the ban ends.</p>
+                                                </div>
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <h:selectBooleanCheckbox id="editBanned" value="#{userManagementController.editBanned}"
+                                                                            pt:onchange="toggleEditBanFields()"
+                                                                            styleClass="sr-only peer"/>
+                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/50 rounded-full peer dark:bg-gray-700 peer-checked:bg-red-500"></div>
+                                                    <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h:panelGroup id="banDaysWrap" layout="block" styleClass="#{(userManagementController.editBanned and userManagementController.editStatus eq 'ACTIVE') ? '' : 'hidden'}">
+                                        <div class="mt-2">
+                                            <label class="block text-sm font-medium text-text-main dark:text-white mb-2">Ban duration</label>
+                                            <h:selectOneMenu id="editBanDays" value="#{userManagementController.editBanDays}"
+                                                             styleClass="w-full px-3 py-2.5 bg-background-light dark:bg-background-dark border border-border-color rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer">
+                                                <f:selectItem itemLabel="1 day" itemValue="1"/>
+                                                <f:selectItem itemLabel="3 days" itemValue="3"/>
+                                                <f:selectItem itemLabel="7 days" itemValue="7"/>
+                                                <f:selectItem itemLabel="14 days" itemValue="14"/>
+                                                <f:selectItem itemLabel="30 days" itemValue="30"/>
+                                            </h:selectOneMenu>
+
+                                            <h:panelGroup layout="block" rendered="#{not empty userManagementController.editBanUntilDisplay}" styleClass="text-xs text-text-sub mt-2">
+                                                Current ban ends at: <span class="font-semibold text-text-main">#{userManagementController.editBanUntilDisplay}</span>
+                                            </h:panelGroup>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+
+                            <!-- Modal Footer -->
+                            <div class="flex-shrink-0 flex items-center justify-end gap-4 p-6 border-t border-border-color bg-surface-light dark:bg-surface-dark">
+                                <h:commandButton value="Cancel"
+                                                 type="button"
+                                                 onclick="closeEditUserModal(); return false;"
+                                                 styleClass="px-3 py-1.5 bg-background-light border border-border-color rounded-lg text-sm font-medium text-text-main hover:bg-background-light hover:border-primary hover:text-primary transition-all duration-200 cursor-pointer"/>
+                                <h:commandButton value="Save Changes"
+                                                 action="#{userManagementController.updateUser}"
+                                                 styleClass="px-3 py-1.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/80 active:scale-95 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md"
+                                                 type="button"
+                                                 onclick="return true;">
+                                    <f:ajax execute="@form" render="@form :usersForm:userTable :usersForm:pagination" onevent="handleEditAjaxEvent"/>
+                                </h:commandButton>
+                            </div>
+
+                            <h:commandButton id="resetEditButton" value="Reset" style="display:none" action="#{userManagementController.resetEditUserForm}"/>
+                        </h:form>
                     </div>
                 </div>
             </div>
         </div>
-    </ui:define>
-    
-    <!-- Auto-refresh script for real-time updates -->
-    <ui:define name="scripts">
-        <script type="text/javascript">
-            // Store previous user data for change detection
-            let previousUserData = {};
-            
-            // Real-time update every 1 second without full page reload
-            setInterval(function() {
-                // Use JSF AJAX to call refresh() on controller
-                var form = document.querySelector('form');
-                if (form) {
-                    // Call the refresh() action without full page reload
-                    jsf.ajax.request(form, event, {
-                        execute: 'j_id1',
-                        render: 'j_id1:userTable',
-                        onevent: function(data) {
-                            if(data.status === 'success') {
-                                console.log('User list updated');
-                                // Update online status colors immediately
-                                updateOnlineStatusUI();
+        
+        <h:outputScript>
+            // <![CDATA[
+            console.log('User management script loaded');
+
+            function openEditUserModal() {
+                const modal = document.getElementById('editUserModal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                }
+                toggleEditBanFields();
+            }
+
+            function closeEditUserModal() {
+                const modal = document.getElementById('editUserModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+                try {
+                    const resetBtn = document.getElementById('editUserForm:resetEditButton');
+                    if (resetBtn) resetBtn.click();
+                } catch (e) {
+                    console.warn('Edit reset failed:', e);
+                }
+            }
+
+            function toggleEditBanFields() {
+                const statusEl = document.getElementById('editUserForm:editStatus');
+                const bannedEl = document.getElementById('editUserForm:editBanned');
+                const wrap = document.getElementById('editUserForm:banDaysWrap');
+                if (!statusEl || !bannedEl || !wrap) {
+                    return;
+                }
+                const status = (statusEl.value || '').toUpperCase();
+                if (status !== 'ACTIVE') {
+                    wrap.classList.add('hidden');
+                    return;
+                }
+                if (bannedEl.checked) {
+                    wrap.classList.remove('hidden');
+                } else {
+                    wrap.classList.add('hidden');
+                }
+            }
+
+            function handleEditUserLoad(data) {
+                if (data.status === 'success') {
+                    openEditUserModal();
+                }
+            }
+
+            function handleEditAjaxEvent(data) {
+                if (data.status === 'success') {
+                    setTimeout(function () {
+                        const form = document.getElementById('editUserForm');
+                        const errorElements = form ? form.querySelectorAll('.error-field-message') : [];
+                        if (errorElements && errorElements.length > 0) {
+                            errorElements[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            return;
+                        }
+
+                        const successIndicator = document.getElementById('editUserForm:editSuccessIndicator');
+                        const isSuccess = successIndicator && successIndicator.textContent.trim() === 'success';
+                        if (isSuccess) {
+                            closeEditUserModal();
+                        }
+                    }, 200);
+                }
+            }
+
+            // Handle save button click
+            function handleSaveClick() {
+                console.log('handleSaveClick called');
+                return true; // Allow form submission
+            }
+
+            // Submit form via AJAX
+            function submitUserForm() {
+                console.log('submitUserForm called');
+                // Use a simple approach - trigger the commandButton programmatically
+                const saveButton = document.querySelector('#addUserForm button[type="button"]');
+                if (saveButton) {
+                    // Temporarily change to submit to trigger JSF action
+                    saveButton.type = 'submit';
+                    // Let the f:ajax handle the submission
+                    saveButton.click();
+                    // Change back to button type
+                    setTimeout(() => {
+                        saveButton.type = 'button';
+                    }, 100);
+                }
+            }
+
+            // Handle AJAX events
+            function handleAjaxEvent(data) {
+                console.log('AJAX event:', data.status, 'data:', data);
+
+                if (data.status === 'success') {
+                    console.log('AJAX success - checking form state');
+
+                    // Wait a bit for JSF to update the DOM
+                    setTimeout(function() {
+                        // Check for validation errors in the form - try multiple selectors
+                        const form = document.getElementById('addUserForm');
+                        const errorSelectors = [
+                            '.error-field-message',
+                            '.error-message-box',
+                            '.ui-message-error',
+                            '[class*="error"]',
+                            '.ui-messages-error li'
+                        ];
+
+                        let errorElements = [];
+                        errorSelectors.forEach(selector => {
+                            const elements = form.querySelectorAll(selector);
+                            if (elements.length > 0) {
+                                errorElements = errorElements.concat(Array.from(elements));
+                            }
+                        });
+
+                        // Also check global messages
+                        const globalMessages = document.querySelectorAll('.ui-messages-error, [id*="messages"]');
+                        const allErrorElements = [...errorElements, ...Array.from(globalMessages)];
+
+                        console.log('Error elements found:', allErrorElements.length);
+                        console.log('Error selectors tried:', errorSelectors);
+                        console.log('Error details:', allErrorElements.map(el => ({
+                            text: el.textContent.trim(),
+                            class: el.className,
+                            tag: el.tagName
+                        })));
+
+                        // Check success indicator
+                        const successIndicator = document.getElementById('addUserForm:successIndicator');
+                        const isSuccess = successIndicator && successIndicator.textContent.trim() === 'success';
+                        console.log('Success indicator present:', !!successIndicator, 'Value:', successIndicator ? successIndicator.textContent.trim() : 'N/A', 'Is success:', isSuccess);
+
+                        // Check if there are any error messages at all
+                        const hasErrors = allErrorElements.length > 0;
+                        console.log('Has errors:', hasErrors);
+
+                        if (hasErrors) {
+                            console.log('Validation errors detected - keeping modal open');
+                            // Scroll to first error
+                            if (allErrorElements.length > 0) {
+                                allErrorElements[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }
+                            return; // Keep modal open, don't show success modal
+                        }
+
+                        if (isSuccess) {
+                            console.log('Success indicator found - showing success modal');
+
+                            // Close the add user modal first
+                            const addUserModal = document.getElementById('addUserModal');
+                            if (addUserModal) {
+                                addUserModal.classList.add('hidden');
+                            }
+
+                            // Reset form
+                            try {
+                                const resetBtn = document.getElementById('addUserForm:resetButton');
+                                if (resetBtn) resetBtn.click();
+                            } catch(e) {
+                                console.warn('Reset failed:', e);
+                            }
+
+                            // Show success modal
+                            const successModal = document.getElementById('successModal');
+                            if (successModal) {
+                                successModal.classList.remove('hidden');
+                                console.log('Success modal displayed');
+                            } else {
+                                console.error('Success modal not found!');
+                                alert('Success! (but modal not found)');
+                            }
+                        } else {
+                            console.log('No success indicator - keeping modal open');
+                        }
+                    }, 200); // Increased delay to let JSF update the DOM
+                } else if (data.status === 'complete') {
+                    console.log('AJAX complete');
+                }
+            }
+
+            // Handle save completion
+            function handleSaveComplete(xhr, status, args) {
+                console.log('=== handleSaveComplete called ===');
+                console.log('Status:', status);
+                console.log('Args:', args);
+
+                const form = document.getElementById('addUserForm');
+                if (!form) {
+                    console.error('Form not found');
+                    return;
+                }
+
+                // Check for error messages in the rendered form
+                const errorElements = form.querySelectorAll('.error-field-message, .error-message-box');
+                console.log('Error messages found:', errorElements.length);
+
+                if (errorElements.length > 0) {
+                    console.log('Validation errors detected - keeping modal open');
+                    // Scroll to first error
+                    errorElements[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    return; // Keep modal open
+                }
+
+                // Check if there are any Faces messages (global errors)
+                const globalMessages = form.querySelectorAll('.ui-messages-error, [id*="messages"]');
+                console.log('Global messages found:', globalMessages.length);
+
+                if (globalMessages.length > 0) {
+                    console.log('Global error messages detected - keeping modal open');
+                    return; // Keep modal open
+                }
+
+                // If AJAX status is success and no errors, show success
+                if (status === 'success') {
+                    console.log('AJAX success with no errors - showing success modal');
+
+                    // Close the add user modal first
+                    const addUserModal = document.getElementById('addUserModal');
+                    if (addUserModal) {
+                        addUserModal.classList.add('hidden');
+                    }
+
+                    // Reset form
+                    try {
+                        const resetBtn = document.getElementById('addUserForm:resetButton');
+                        if (resetBtn) resetBtn.click();
+                    } catch(e) {
+                        console.warn('Reset failed:', e);
+                    }
+
+                    // Show success modal
+                    const successModal = document.getElementById('successModal');
+                    if (successModal) {
+                        successModal.classList.remove('hidden');
+                        console.log('Success modal displayed');
+                    } else {
+                        console.error('Success modal not found!');
+                        alert('Success! (but modal not found)');
+                    }
+                } else {
+                    console.log('AJAX status not success - keeping modal open');
+                }
+            }
+
+            // Close success modal
+            function closeSuccessModal() {
+                const successModal = document.getElementById('successModal');
+                if (successModal) {
+                    successModal.classList.add('hidden');
+                    console.log('Success modal closed by user');
+                }
+            }
+
+            // Delete modal functions
+            let currentDeleteUserId = null;
+            let currentDeleteAction = null;
+
+            function showDeleteModal(userId, username, status) {
+                currentDeleteUserId = userId;
+                const modal = document.getElementById('deleteUserModal');
+                const title = document.getElementById('deleteModalTitle');
+                const message = document.getElementById('deleteModalMessage');
+                const confirmButton = document.getElementById('deleteConfirmButton');
+
+                const normalizedStatus = (status || '').toUpperCase();
+                if (normalizedStatus === 'INACTIVE') {
+                    title.textContent = 'Delete User Permanently';
+                    message.textContent = 'Are you sure you want to delete this user? This action cannot be reversed.';
+                    confirmButton.textContent = 'Delete Permanently';
+                    currentDeleteAction = 'permanent';
+                } else {
+                    title.textContent = 'Deactivate User';
+                    message.textContent = 'First deletion will deactivate this account (Inactive), and the second deletion will remove the account permanently. Are you sure you want to deactivate (Inactive) this account?';
+                    confirmButton.textContent = 'Deactivate';
+                    currentDeleteAction = 'deactivate';
+                }
+
+                if (modal) {
+                    modal.classList.remove('hidden');
+                }
+            }
+
+            function closeDeleteModal() {
+                const modal = document.getElementById('deleteUserModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+                currentDeleteUserId = null;
+                currentDeleteAction = null;
+            }
+
+            function confirmDelete() {
+                if (currentDeleteUserId && currentDeleteAction) {
+                    // Set values in the hidden form
+                    const deleteForm = document.getElementById('deleteForm');
+                    if (deleteForm) {
+                        // JSF prefixes client IDs with the form id (deleteForm:...).
+                        // Use getElementById to avoid CSS escaping issues.
+                        const actionInput = document.getElementById('deleteForm:deleteActionParam');
+                        const userIdInput = document.getElementById('deleteForm:deleteUserIdParam');
+
+                        if (actionInput) actionInput.value = currentDeleteAction;
+                        if (userIdInput) userIdInput.value = currentDeleteUserId;
+
+                        // Submit the JSF commandButton (will trigger f:ajax)
+                        const submitButton = document.getElementById('deleteForm:deleteActionButton');
+                        if (submitButton) submitButton.click();
+                    }
+
+                    closeDeleteModal();
+                }
+            }
+
+            // Debug function to monitor modal visibility
+            (function() {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            const target = mutation.target;
+                            if (target.id === 'successModal') {
+                                const hasHidden = target.classList.contains('hidden');
+                                console.log('Success modal visibility changed:', hasHidden ? 'hidden' : 'visible');
+                                if (hasHidden) {
+                                    console.log('Modal was hidden by:', new Error().stack);
+                                }
                             }
                         }
                     });
-                }
-            }, 1000); // Every 1 second
-            
-            // Update online status UI elements (green/gray badges)
-            function updateOnlineStatusUI() {
-                const statusElements = document.querySelectorAll('[data-last-online]');
-                statusElements.forEach(el => {
-                    const lastOnlineTime = el.getAttribute('data-last-online');
-                    const isOnlineAttr = el.getAttribute('data-is-online');
-                    
-                    // Update badge class based on online status
-                    if (isOnlineAttr === 'true') {
-                        el.className = 'inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200';
-                    } else {
-                        el.className = 'inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
+                });
+
+                // Start observing when DOM is ready
+                document.addEventListener('DOMContentLoaded', function() {
+                    const successModal = document.getElementById('successModal');
+                    if (successModal) {
+                        observer.observe(successModal, { attributes: true });
                     }
                 });
+            })();
+
+            // Handle save form completion
+            function handleAddUserComplete(xhr, status, args) {
+                console.log('=== handleAddUserComplete called ===');
+                console.log('Status:', status);
+                console.log('Args:', args);
+                console.log('XHR:', xhr);
+
+                const form = document.getElementById('addUserForm');
+                if (!form) {
+                    console.error('Form not found');
+                    return;
+                }
+
+                // Check for error messages in the rendered form
+                const errorElements = form.querySelectorAll('.error-field-message, .error-message-box');
+                console.log('Error messages found:', errorElements.length);
+
+                if (errorElements.length > 0) {
+                    console.log('Validation errors detected - keeping modal open');
+                    // Scroll to first error
+                    errorElements[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    return; // Keep modal open
+                }
+
+                // Check if there are any Faces messages (global errors)
+                const globalMessages = form.querySelectorAll('.ui-messages-error, [id*="messages"]');
+                console.log('Global messages found:', globalMessages.length);
+
+                if (globalMessages.length > 0) {
+                    console.log('Global error messages detected - keeping modal open');
+                    return; // Keep modal open
+                }
+
+                // If AJAX status is success and no errors, show success
+                if (status === 'success') {
+                    console.log('AJAX success with no errors - showing success modal');
+
+                    // Close the add user modal first
+                    const addUserModal = document.getElementById('addUserModal');
+                    if (addUserModal) {
+                        addUserModal.classList.add('hidden');
+                    }
+
+                    // Reset form
+                    try {
+                        const resetBtn = document.getElementById('addUserForm:resetButton');
+                        if (resetBtn) {
+                            resetBtn.click();
+                            console.log('Form reset triggered');
+                        }
+                    } catch(e) {
+                        console.warn('Reset failed:', e);
+                    }
+
+                    // Show success modal
+                    const successModal = document.getElementById('successModal');
+                    if (successModal) {
+                        successModal.classList.remove('hidden');
+                        console.log('Success modal displayed');
+                    } else {
+                        console.error('Success modal not found!');
+                        alert('Success! (but modal not found)');
+                    }
+
+
+                } else {
+                    console.log('AJAX status not success - keeping modal open');
+                }
             }
-        </script>
+            
+            // Notification system for user management
+            function showUserNotification(message, type) {
+                let container = document.getElementById('notificationsContainer');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.id = 'notificationsContainer';
+                    container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; pointer-events: none; display: flex; flex-direction: column; gap: 10px;';
+                    document.body.appendChild(container);
+                }
+                
+                const bgColor = type === 'success' ? '#10b981' : '#ef4444';
+                const borderColor = type === 'success' ? '#059669' : '#dc2626';
+                
+                const notif = document.createElement('div');
+                notif.className = 'user-notification-toast';
+                notif.textContent = message;
+                
+                notif.style.cssText = 'background-color: ' + bgColor + '; ' +
+                    'color: white; ' +
+                    'padding: 14px 20px; ' +
+                    'border-radius: 8px; ' +
+                    'font-size: 14px; ' +
+                    'font-weight: 500; ' +
+                    'box-shadow: 0 4px 12px rgba(0,0,0,0.15); ' +
+                    'border-left: 4px solid ' + borderColor + '; ' +
+                    'animation: slideInNotif 0.3s ease-out forwards; ' +
+                    'pointer-events: auto; ' +
+                    'min-width: 250px; ' +
+                    'max-width: 400px;';
+                
+                container.appendChild(notif);
+                
+                // Auto-remove after 4 seconds
+                const timeout = setTimeout(function() {
+                    notif.style.animation = 'slideOutNotif 0.3s ease-out forwards';
+                    setTimeout(function() {
+                        try { notif.parentNode.removeChild(notif); } catch(e) {}
+                    }, 300);
+                }, 4000);
+                
+                return { element: notif, timeout: timeout };
+            }
+            
+            // Add animations for notifications
+            (function addNotificationStyles() {
+                const styleId = 'notif-animations-user-mgmt';
+                if (document.getElementById(styleId)) return;
+                
+                const style = document.createElement('style');
+                style.id = styleId;
+                style.textContent = `
+                    @keyframes slideInNotif {
+                        from { 
+                            transform: translateX(420px); 
+                            opacity: 0; 
+                        }
+                        to { 
+                            transform: translateX(0); 
+                            opacity: 1; 
+                        }
+                    }
+                    @keyframes slideOutNotif {
+                        from { 
+                            transform: translateX(0); 
+                            opacity: 1; 
+                        }
+                        to { 
+                            transform: translateX(420px); 
+                            opacity: 0; 
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            })();
+            // ]]>
+        </h:outputScript>
     </ui:define>
 </ui:composition>

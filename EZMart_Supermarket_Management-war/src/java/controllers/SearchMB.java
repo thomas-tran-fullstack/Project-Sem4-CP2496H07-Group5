@@ -26,11 +26,23 @@ public class SearchMB implements Serializable {
 
     @PostConstruct
     public void init() {
-        loadCategories();
+        try {
+            loadCategories();
+        } catch (Exception e) {
+            System.err.println("SearchMB.init: Error loading categories: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void loadCategories() {
-        categories = categoriesFacade.findAll();
+        try {
+            if (categoriesFacade != null) {
+                categories = categoriesFacade.findAll();
+            }
+        } catch (Exception e) {
+            System.err.println("SearchMB.loadCategories: Error: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public String search() {

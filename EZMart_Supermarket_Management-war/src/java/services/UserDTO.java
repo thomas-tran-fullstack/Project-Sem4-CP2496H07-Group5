@@ -136,15 +136,33 @@ public class UserDTO implements Serializable {
     }
 
     /**
-     * Get full name for display
+     * Get full name for display (First Middle Last format)
      */
     public String getDisplayName() {
-        if (firstName != null || lastName != null) {
-            String name = (firstName != null ? firstName : "") + 
-                         (middleName != null ? " " + middleName : "") +
-                         (lastName != null ? " " + lastName : "");
-            return name.trim();
+        StringBuilder sb = new StringBuilder();
+        
+        // Add first name
+        if (firstName != null && !firstName.trim().isEmpty()) {
+            sb.append(firstName.trim());
         }
-        return username;
+        
+        // Add middle name
+        if (middleName != null && !middleName.trim().isEmpty()) {
+            if (sb.length() > 0) sb.append(" ");
+            sb.append(middleName.trim());
+        }
+        
+        // Add last name
+        if (lastName != null && !lastName.trim().isEmpty()) {
+            if (sb.length() > 0) sb.append(" ");
+            sb.append(lastName.trim());
+        }
+        
+        String fullName = sb.toString();
+        if (!fullName.isEmpty()) {
+            return fullName;
+        }
+        
+        return username != null ? username : "";
     }
 }

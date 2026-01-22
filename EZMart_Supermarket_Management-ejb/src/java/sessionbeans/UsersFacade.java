@@ -53,8 +53,12 @@ public class UsersFacade extends AbstractFacade<Users> implements UsersFacadeLoc
 
     public Users findByEmail(String email) {
         try {
-            return em.createNamedQuery("Users.findByEmail", Users.class)
-                    .setParameter("email", email)
+            if (email == null) return null;
+            String normalized = email.trim().toLowerCase();
+            if (normalized.isEmpty()) return null;
+            return em.createQuery(
+                    "SELECT u FROM Users u WHERE LOWER(u.email) = :email", Users.class)
+                    .setParameter("email", normalized)
                     .getSingleResult();
         } catch (NoResultException ex) {
             return null;
@@ -72,8 +76,11 @@ public class UsersFacade extends AbstractFacade<Users> implements UsersFacadeLoc
             } catch (NoResultException nre) {
                 // try email
                 try {
-                    u = em.createNamedQuery("Users.findByEmail", Users.class)
-                            .setParameter("email", identifier)
+                    String normalized = identifier != null ? identifier.trim().toLowerCase() : null;
+                    if (normalized == null || normalized.isEmpty()) return null;
+                    u = em.createQuery(
+                            "SELECT u FROM Users u WHERE LOWER(u.email) = :email", Users.class)
+                            .setParameter("email", normalized)
                             .getSingleResult();
                 } catch (NoResultException ex) {
                     return null;

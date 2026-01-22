@@ -48,7 +48,6 @@ public class GoogleOAuthProcessor extends HttpServlet {
         if (existingUser != null) {
             // mark session as logged in
             System.out.println("GoogleOAuthProcessor: existingUser found id=" + existingUser.getUserID() + ", email=" + email);
-            // Update session attributes for compatibility
             session.setAttribute("currentUser", existingUser);
             session.setAttribute("currentUserId", existingUser.getUserID());
             if (existingUser.getCustomersList() != null && !existingUser.getCustomersList().isEmpty()) {
@@ -72,7 +71,19 @@ public class GoogleOAuthProcessor extends HttpServlet {
                 }
             }
             System.out.println("GoogleOAuthProcessor: session attributes set currentUserId=" + existingUser.getUserID() + ", currentCustomerId=" + (existingUser.getCustomersList() != null && !existingUser.getCustomersList().isEmpty() ? existingUser.getCustomersList().get(0).getCustomerID() : "null") + ", loggedIn=true");
-            response.sendRedirect(request.getContextPath() + "/pages/user/index.xhtml");
+            // Redirect based on role
+            String role = existingUser.getRole();
+            if (role != null) {
+                if (role.equalsIgnoreCase("admin")) {
+                    response.sendRedirect(request.getContextPath() + "/pages/admin/dashboard.xhtml");
+                } else if (role.equalsIgnoreCase("staff")) {
+                    response.sendRedirect(request.getContextPath() + "/pages/staff/dashboard.xhtml");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/pages/user/index.xhtml");
+                }
+            } else {
+                response.sendRedirect(request.getContextPath() + "/pages/user/index.xhtml");
+            }
             return;
         }
 

@@ -9,6 +9,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import jakarta.ejb.EJB;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
@@ -20,19 +22,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
-import jakarta.ejb.EJB;
-import entityclass.Customers;
-import sessionbeans.CustomersFacadeLocal;
+
+import entityclass.Users;
+import sessionbeans.UsersFacadeLocal;
 
 @WebServlet(name = "AvatarUploadServlet", urlPatterns = {"/avatar-upload"})
 @MultipartConfig(maxFileSize = 5242880) // 5 MB max
 public class AvatarUploadServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    
+
     @EJB
-    private CustomersFacadeLocal customersFacade;
-    
+    private UsersFacadeLocal usersFacade;
+
     private static final long MAX_BYTES = 5 * 1024 * 1024; // 5 MB
     private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<>(
         Arrays.asList("jpg", "jpeg", "png", "gif")
@@ -40,7 +42,7 @@ public class AvatarUploadServlet extends HttpServlet {
     private static final Set<String> ALLOWED_MIME_TYPES = new HashSet<>(
         Arrays.asList("image/jpeg", "image/png", "image/gif")
     );
-    private static final String RATE_LIMIT_SESSION_KEY = "avatar_upload_last_time";
+    private static final String RATE_LIMIT_SESSION_KEY = "avatar_upload_last_time_";
     private static final long UPLOAD_COOLDOWN_MS = 10000; // 10 seconds
 
     @Override
@@ -48,35 +50,35 @@ public class AvatarUploadServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         JsonObjectBuilder jsonBuilder = Json.createObjectBuilder();
-        
+
         try {
-            // Authenticate user from session
-            Integer userId = authenticateUser(request, response);
-            System.out.println("AvatarUploadServlet: incoming upload request, sessionId=" + (request.getSession(false)!=null?request.getSession(false).getId():"null"));
+            // Authenticate user from session (MUST be USER ID, not customerId)
+            Integer userId = authenticateUser(request);
+            System.out.println("AvatarUploadServlet: incoming upload request, sessionId="
+                    + (request.getSession(false) != null ? request.getSession(false).getId() : "null"));
+
             if (request.getSession(false) != null) {
                 HttpSession s = request.getSession(false);
-                System.out.println("AvatarUploadServlet: session attributes: ");
+                System.out.println("AvatarUploadServlet: session attributes:");
                 java.util.Enumeration<String> names = s.getAttributeNames();
                 while (names.hasMoreElements()) {
                     String n = names.nextElement();
                     System.out.println("  " + n + "=" + s.getAttribute(n));
                 }
             }
+
             if (userId == null) {
                 jsonBuilder.add("success", false).add("error", "Not authenticated");
                 sendJsonResponse(response, jsonBuilder.build(), HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
-            // Check rate limiting (max 1 upload per minute)
-            // Temporarily disabled for testing
-            /*
-            if (!checkRateLimit(request, userId)) {
-                jsonBuilder.add("success", false).add("error", "Rate limit exceeded");
-                sendJsonResponse(response, jsonBuilder.build(), 429); // Too Many Requests
-                return;
-            }
-            */
+            // Rate limit (optional)
+            // if (!checkRateLimit(request, userId)) {
+            //     jsonBuilder.add("success", false).add("error", "Rate limit exceeded");
+            //     sendJsonResponse(response, jsonBuilder.build(), 429);
+            //     return;
+            // }
 
             // Validate file
             Part filePart = request.getPart("avatarFile");
@@ -86,14 +88,12 @@ public class AvatarUploadServlet extends HttpServlet {
                 return;
             }
 
-            // File size validation
             if (filePart.getSize() > MAX_BYTES) {
                 jsonBuilder.add("success", false).add("error", "File too large");
                 sendJsonResponse(response, jsonBuilder.build(), HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 
-            // MIME type validation
             String contentType = filePart.getContentType();
             if (contentType == null || !ALLOWED_MIME_TYPES.contains(contentType)) {
                 jsonBuilder.add("success", false).add("error", "Invalid file type");
@@ -101,15 +101,14 @@ public class AvatarUploadServlet extends HttpServlet {
                 return;
             }
 
-            // Determine file extension from MIME type
             String extension = getExtensionFromMimeType(contentType);
-            if (extension == null) {
+            if (extension == null || !ALLOWED_EXTENSIONS.contains(extension)) {
                 jsonBuilder.add("success", false).add("error", "Invalid file type");
                 sendJsonResponse(response, jsonBuilder.build(), HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 
-            // Validate file name doesn't contain path traversal attempts
+            // Prevent path traversal
             String fileName = filePart.getSubmittedFileName();
             if (fileName != null && (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\"))) {
                 jsonBuilder.add("success", false).add("error", "Invalid filename");
@@ -117,68 +116,80 @@ public class AvatarUploadServlet extends HttpServlet {
                 return;
             }
 
-            // Save file
-            String uploadsPath = getServletContext().getRealPath("/WEB-INF/uploads/avatars");
-            if (uploadsPath == null) {
-                // Fallback: use a persistent directory in user's home if getRealPath returns null
-                uploadsPath = System.getProperty("user.home") + File.separator + ".ezmart_avatars";
-            }
-            File uploadsDir = new File(uploadsPath);
-            if (!uploadsDir.exists()) {
-                uploadsDir.mkdirs();
-            }
-
-            File outFile = new File(uploadsDir, "user_" + userId + "." + extension);
-            
-            // Validate file to ensure it's actually an image (magic bytes check)
+            // Validate magic bytes
             if (!isValidImageFile(filePart, contentType)) {
                 jsonBuilder.add("success", false).add("error", "Invalid image file");
                 sendJsonResponse(response, jsonBuilder.build(), HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 
+            // Save file to persistent folder OUTSIDE WAR
+            String uploadsPath = System.getProperty("user.home") + File.separator + ".ezmart_avatars";
+            File uploadsDir = new File(uploadsPath);
+            if (!uploadsDir.exists() && !uploadsDir.mkdirs()) {
+                // Fallback only if cannot create persistent folder
+                uploadsPath = getServletContext().getRealPath("/WEB-INF/uploads/avatars");
+                uploadsDir = new File(uploadsPath != null ? uploadsPath : "");
+                if (!uploadsDir.exists()) {
+                    uploadsDir.mkdirs();
+                }
+            }
+
+            File outFile = new File(uploadsDir, "user_" + userId + "." + extension);
+
             try (InputStream in = filePart.getInputStream()) {
-                System.out.println("AvatarUploadServlet: writing file to " + outFile.getAbsolutePath() + " (size=" + filePart.getSize() + ", contentType=" + contentType + ")");
+                System.out.println("AvatarUploadServlet: writing file to " + outFile.getAbsolutePath()
+                        + " (size=" + filePart.getSize() + ", contentType=" + contentType + ")");
                 Files.copy(in, outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
-            // debug log: saved path
-            System.out.println("AvatarUploadServlet: saved avatar to " + outFile.getAbsolutePath() + ", exists=" + outFile.exists());
+            System.out.println("AvatarUploadServlet: saved avatar to " + outFile.getAbsolutePath()
+                    + ", exists=" + outFile.exists());
 
-            // Update rate limit timestamp
+            // Update rate limit timestamp + marker
             HttpSession session = request.getSession();
             session.setAttribute(RATE_LIMIT_SESSION_KEY + userId, System.currentTimeMillis());
-            // Persist a simple marker in session so UI can detect immediate update if needed
             session.setAttribute("avatarUpdatedAt", System.currentTimeMillis());
 
-            // Build avatar URL and return success JSON
-            long ts = System.currentTimeMillis();
-            String avatarUrl = request.getContextPath() + "/avatar?userId=" + userId + "&t=" + ts;
-            String absoluteBase = request.getScheme() + "://" + request.getServerName() + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : (":" + request.getServerPort())) + request.getContextPath();
-            String avatarUrlAbsolute = absoluteBase + "/avatar?userId=" + userId + "&t=" + ts;
-            
-            // Save avatarUrl to database
+            // IMPORTANT:
+            // - DB should store stable URL WITHOUT &t=...
+            // - Response can return cache-busted URL so UI updates immediately
+            String avatarUrlToStore = request.getContextPath() + "/avatar?userId=" + userId;
+            String avatarUrlForClient = avatarUrlToStore + "&t=" + System.currentTimeMillis();
+
+            // Absolute (optional debug)
+            String absoluteBase = request.getScheme() + "://" + request.getServerName()
+                    + ((request.getServerPort() == 80 || request.getServerPort() == 443) ? "" : (":" + request.getServerPort()))
+                    + request.getContextPath();
+            String avatarUrlAbsoluteForClient = absoluteBase + "/avatar?userId=" + userId + "&t=" + System.currentTimeMillis();
+
+            // Save to Users table
             try {
-                Customers customer = customersFacade.find(userId);
-                if (customer != null) {
-                    customer.setAvatarUrl(avatarUrl);
-                    customersFacade.edit(customer);
-                    System.out.println("AvatarUploadServlet: Updated customer " + userId + " with avatarUrl: " + avatarUrl);
+                Users user = usersFacade.find(userId);
+                if (user != null) {
+                    user.setAvatarUrl(avatarUrlToStore); // store stable link
+                    usersFacade.edit(user);
+                    System.out.println("AvatarUploadServlet: Updated user " + userId + " with avatarUrl: " + avatarUrlToStore);
+                    
+                    // Update session with new avatar URL so profile page immediately reflects change
+                    session.setAttribute("currentUserProfileImageUrl", avatarUrlForClient);
+                    System.out.println("AvatarUploadServlet: Updated session currentUserProfileImageUrl: " + avatarUrlForClient);
                 } else {
-                    System.out.println("AvatarUploadServlet: Customer " + userId + " not found in database");
+                    System.out.println("AvatarUploadServlet: User " + userId + " not found in database");
                 }
             } catch (Exception e) {
                 System.err.println("AvatarUploadServlet: Error saving avatar URL to database: " + e.getMessage());
                 e.printStackTrace();
-                // Don't fail the upload, just log the error
+                // do not fail upload
             }
-            
+
             jsonBuilder.add("success", true)
-                       .add("message", "Avatar uploaded successfully")
-                       .add("userId", userId)
-                       .add("avatarUrl", avatarUrl)
-                       .add("avatarUrlAbsolute", avatarUrlAbsolute)
-                       .add("timestamp", ts);
-            sendJsonResponse(response, jsonBuilder.build(), 200);
+                    .add("message", "Avatar uploaded successfully")
+                    .add("userId", userId)
+                    .add("avatarUrl", avatarUrlForClient)
+                    .add("avatarUrlAbsolute", avatarUrlAbsoluteForClient)
+                    .add("timestamp", System.currentTimeMillis());
+
+            sendJsonResponse(response, jsonBuilder.build(), HttpServletResponse.SC_OK);
 
         } catch (Exception e) {
             System.err.println("Error in AvatarUploadServlet: " + e.getMessage());
@@ -196,123 +207,77 @@ public class AvatarUploadServlet extends HttpServlet {
     }
 
     /**
-     * Authenticate user from session and return customer ID
+     * Authenticate user from session and return USER ID (not customerId).
      */
-    private Integer authenticateUser(HttpServletRequest request, HttpServletResponse response) {
+    private Integer authenticateUser(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
             System.out.println("AvatarUploadServlet: No session found");
             return null;
         }
 
-        // Try to get userId from multiple possible session attributes
-        Integer customerId = null;
-        
-        // Method 1: Direct currentCustomerId attribute (set by auth controller)
-        Object idObj = session.getAttribute("currentCustomerId");
-        if (idObj != null) {
-            if (idObj instanceof Integer) customerId = (Integer) idObj;
-            else if (idObj instanceof String) {
-                try {
-                    customerId = Integer.valueOf((String) idObj);
-                } catch (NumberFormatException e) {
-                    // ignore
-                }
-            }
-            System.out.println("AvatarUploadServlet: Got customerId from currentCustomerId: " + customerId);
+        // Method 1: Direct currentUserId attribute (recommended)
+        Object idObj = session.getAttribute("currentUserId");
+        Integer userId = tryParseInt(idObj);
+        if (userId != null) {
+            System.out.println("AvatarUploadServlet: Got userId from currentUserId: " + userId);
+            return userId;
         }
-        
-        // Method 2: Check for JSF sessionMap stored currentCustomer
-        // JSF stores the customer object which has a customerID
-        if (customerId == null) {
-            Object customerObj = session.getAttribute("currentCustomer");
-            if (customerObj != null) {
-                try {
-                    // Use reflection to get customerID if it's a Customers entity
-                    java.lang.reflect.Method getIdMethod = customerObj.getClass().getMethod("getCustomerID");
-                    Object id = getIdMethod.invoke(customerObj);
-                    if (id instanceof Integer) {
-                        customerId = (Integer) id;
-                    }
-                    System.out.println("AvatarUploadServlet: Got customerId from currentCustomer: " + customerId);
-                } catch (Exception e) {
-                    System.out.println("AvatarUploadServlet: Failed to extract customer ID via reflection: " + e.getMessage());
+
+        // Method 2: From currentUser object via reflection getUserID()
+        Object userObj = session.getAttribute("currentUser");
+        if (userObj != null) {
+            try {
+                java.lang.reflect.Method getIdMethod = userObj.getClass().getMethod("getUserID");
+                Object id = getIdMethod.invoke(userObj);
+                userId = tryParseInt(id);
+                if (userId != null) {
+                    System.out.println("AvatarUploadServlet: Got userId from currentUser: " + userId);
+                    return userId;
                 }
-            }
-        }
-        
-        // Method 3: Try from currentUser
-        if (customerId == null) {
-            Object userObj = session.getAttribute("currentUser");
-            if (userObj != null) {
-                try {
-                    java.lang.reflect.Method getIdMethod = userObj.getClass().getMethod("getUserID");
-                    Object id = getIdMethod.invoke(userObj);
-                    if (id instanceof Integer) {
-                        // Try to get customer for that user
-                        try {
-                            java.lang.reflect.Method getCustomersMethod = userObj.getClass().getMethod("getCustomersList");
-                            Object customersList = getCustomersMethod.invoke(userObj);
-                            if (customersList instanceof java.util.List) {
-                                java.util.List<?> list = (java.util.List<?>) customersList;
-                                if (!list.isEmpty()) {
-                                    Object firstCustomer = list.get(0);
-                                    java.lang.reflect.Method getCustIdMethod = firstCustomer.getClass().getMethod("getCustomerID");
-                                    Object custId = getCustIdMethod.invoke(firstCustomer);
-                                    if (custId instanceof Integer) {
-                                        customerId = (Integer) custId;
-                                    }
-                                }
-                            }
-                        } catch (Exception e2) {
-                            // ignore, use userId from user object
-                        }
-                    }
-                    System.out.println("AvatarUploadServlet: Got customerId from currentUser: " + customerId);
-                } catch (Exception e) {
-                    System.out.println("AvatarUploadServlet: Failed to extract customerId from currentUser: " + e.getMessage());
-                }
+            } catch (Exception e) {
+                System.out.println("AvatarUploadServlet: Failed to extract userId from currentUser: " + e.getMessage());
             }
         }
 
-        if (customerId != null) {
-            System.out.println("AvatarUploadServlet: User authenticated, customerId=" + customerId);
-        } else {
-            System.out.println("AvatarUploadServlet: User not authenticated");
-            // Debug: print all session attributes
-            java.util.Enumeration<String> names = session.getAttributeNames();
-            System.out.println("AvatarUploadServlet: Available session attributes:");
-            while (names.hasMoreElements()) {
-                String n = names.nextElement();
-                try {
-                    System.out.println("  " + n + "=" + session.getAttribute(n).getClass().getSimpleName());
-                } catch (Exception e) {
-                    System.out.println("  " + n + "=(error reading)");
-                }
-            }
+        System.out.println("AvatarUploadServlet: User not authenticated");
+        java.util.Enumeration<String> names = session.getAttributeNames();
+        System.out.println("AvatarUploadServlet: Available session attributes:");
+        while (names.hasMoreElements()) {
+            String n = names.nextElement();
+            Object v = session.getAttribute(n);
+            System.out.println("  " + n + "=" + (v == null ? "null" : v.getClass().getSimpleName()));
         }
 
-        return customerId;
+        return null;
+    }
+
+    private Integer tryParseInt(Object obj) {
+        if (obj == null) return null;
+        try {
+            if (obj instanceof Integer) return (Integer) obj;
+            if (obj instanceof Long) return ((Long) obj).intValue();
+            if (obj instanceof String) return Integer.valueOf((String) obj);
+        } catch (Exception ignore) {}
+        return null;
     }
 
     /**
-     * Check if user has exceeded rate limit (1 upload per 60 seconds)
+     * Check if user has exceeded rate limit (1 upload per cooldown)
      */
     private boolean checkRateLimit(HttpServletRequest request, Integer userId) {
         HttpSession session = request.getSession();
         String lastUploadKey = RATE_LIMIT_SESSION_KEY + userId;
         Object lastUploadObj = session.getAttribute(lastUploadKey);
 
-        if (lastUploadObj == null) {
-            return true; // First upload, allowed
-        }
+        if (lastUploadObj == null) return true;
 
         try {
             long lastUploadTime = (Long) lastUploadObj;
             long elapsed = System.currentTimeMillis() - lastUploadTime;
             return elapsed >= UPLOAD_COOLDOWN_MS;
-        } catch (ClassCastException e) {
-            return true; // Invalid format, allow upload
+        } catch (Exception e) {
+            return true; // invalid format, allow
         }
     }
 
@@ -339,20 +304,21 @@ public class AvatarUploadServlet extends HttpServlet {
             if (read < 2) return false;
         }
 
-        // Check PNG signature (89 50 4E 47)
+        // PNG signature (89 50 4E 47)
         if (contentType.contains("png")) {
             return magic[0] == (byte) 0x89 && magic[1] == (byte) 0x50;
         }
 
-        // Check JPEG signature (FF D8 FF)
+        // JPEG signature (FF D8)
         if (contentType.contains("jpeg") || contentType.contains("jpg")) {
             return magic[0] == (byte) 0xFF && magic[1] == (byte) 0xD8;
         }
 
-        // Check GIF signature (47 49 46)
+        // GIF signature (47 49)
         if (contentType.contains("gif")) {
             return magic[0] == (byte) 0x47 && magic[1] == (byte) 0x49;
         }
 
         return false;
-    }}
+    }
+}

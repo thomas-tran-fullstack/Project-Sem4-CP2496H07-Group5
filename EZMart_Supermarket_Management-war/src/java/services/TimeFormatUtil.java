@@ -10,19 +10,31 @@ import java.util.concurrent.TimeUnit;
 public class TimeFormatUtil {
 
     /**
+     * Threshold (in seconds) to consider a user "online" for the admin UI.
+     * Requirement: user is actively logged in (within 60 seconds of last activity)
+     */
+    private static final long ONLINE_THRESHOLD_SECONDS = 60;
+    
+    /**
+     * Threshold (in seconds) for "Just Now" status after logout
+     * If user logged out within 60 seconds, show "Just Now"
+     */
+    private static final long JUST_NOW_THRESHOLD_SECONDS = 60;
+
+    /**
      * Format the online time to readable format
      * Example: "Just now", "5 minutes ago", "2 hours ago", "1 day ago", etc.
      */
     public static String formatOnlineTime(Date lastOnlineAt) {
         if (lastOnlineAt == null) {
-            return "Just now"; // New user
+            return "Offline"; // New user / never seen online
         }
 
         Date now = new Date();
         long diffInMillis = now.getTime() - lastOnlineAt.getTime();
 
         if (diffInMillis < 0) {
-            return "Just now";
+            return "Just Now";
         }
 
         long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(diffInMillis);
@@ -34,7 +46,7 @@ public class TimeFormatUtil {
         long diffInYears = diffInDays / 365;
 
         if (diffInSeconds < 60) {
-            return "Just now";
+            return "Just Now";
         } else if (diffInMinutes == 1) {
             return "1 minute ago";
         } else if (diffInMinutes < 60) {
@@ -63,7 +75,8 @@ public class TimeFormatUtil {
     }
 
     /**
-     * Check if user is currently online (last online within 5 minutes)
+     * Check if user is currently online (last online within ONLINE_THRESHOLD_SECONDS)
+     * Returns true only for actively logged-in users
      */
     public static boolean isOnline(Date lastOnlineAt) {
         if (lastOnlineAt == null) {
@@ -72,8 +85,43 @@ public class TimeFormatUtil {
         
         Date now = new Date();
         long diffInMillis = now.getTime() - lastOnlineAt.getTime();
-        long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis);
+        long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(diffInMillis);
+        return diffInSeconds >= 0 && diffInSeconds < ONLINE_THRESHOLD_SECONDS;
+    }
+    
+    /**
+     * Check if user recently went offline (within JUST_NOW_THRESHOLD_SECONDS)
+     * Used to display "Just Now" status for recently logged-out users
+     */
+    public static boolean isJustNow(Date lastOnlineAt) {
+        if (lastOnlineAt == null) {
+            return false;
+        }
         
-        return diffInMinutes <= 5;
+        Date now = new Date();
+        long diffInMillis = now.getTime() - lastOnlineAt.getTime();
+        long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(diffInMillis);
+        
+        // Between 60-1800 seconds (1 minute to 30 minutes) show "Just Now"
+        return diffInSeconds >= ONLINE_THRESHOLD_SECONDS && diffInSeconds < JUST_NOW_THRESHOLD_SECONDS;
+    }
+    
+    /**
+     * Get online status type for display
+     * Returns: "Online" | "Just Now" | "Offline"
+     */
+    public static String getOnlineStatus(Date lastOnlineAt) {
+        if (lastOnlineAt == null) {
+            return "Offline";
+        }
+        
+        if (isOnline(lastOnlineAt)) {
+            return "Online";
+        } else if (isJustNow(lastOnlineAt)) {
+            return "Just Now";
+        } else {
+            return "Offline";
+        }
     }
 }
+

@@ -42,6 +42,16 @@ import java.util.List;
     @NamedQuery(name = "Users.findByStatus", query = "SELECT u FROM Users u WHERE u.status = :status"),
     @NamedQuery(name = "Users.findByCreatedAt", query = "SELECT u FROM Users u WHERE u.createdAt = :createdAt")})
 public class Users implements Serializable {
+    @Size(max = 500)
+    @Column(name = "AvatarUrl")
+    private String avatarUrl;
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -75,6 +85,9 @@ public class Users implements Serializable {
     @Column(name = "LastOnlineAt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastOnlineAt;
+    @Column(name = "BanUntil")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date banUntil;
     @OneToMany(mappedBy = "userID")
     private List<AuditLogs> auditLogsList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userID")
@@ -157,6 +170,14 @@ public class Users implements Serializable {
 
     public void setLastOnlineAt(Date lastOnlineAt) {
         this.lastOnlineAt = lastOnlineAt;
+    }
+
+    public Date getBanUntil() {
+        return banUntil;
+    }
+
+    public void setBanUntil(Date banUntil) {
+        this.banUntil = banUntil;
     }
 
     @XmlTransient

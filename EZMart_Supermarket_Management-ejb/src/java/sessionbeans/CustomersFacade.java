@@ -15,6 +15,13 @@ import jakarta.persistence.PersistenceContext;
  */
 @Stateless
 public class CustomersFacade extends AbstractFacade<Customers> implements CustomersFacadeLocal {
+    @Override
+    public void edit(Customers customer) {
+        super.edit(customer);
+            Customers managed = em.merge(customer);
+            em.flush();
+            em.refresh(managed);
+    }
 
     @PersistenceContext(unitName = "EZMart_Supermarket-ejbPU")
     private EntityManager em;
@@ -47,6 +54,15 @@ public class CustomersFacade extends AbstractFacade<Customers> implements Custom
                     .getSingleResult();
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    // Update avatarUrl for a customer
+    public void updateAvatar(Integer customerId, String avatarUrl) {
+        Customers c = em.find(Customers.class, customerId);
+        if (c != null) {
+            c.setAvatarUrl(avatarUrl);
+            em.merge(c);
         }
     }
 

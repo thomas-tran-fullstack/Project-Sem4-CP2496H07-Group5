@@ -32,8 +32,7 @@ import java.util.Date;
 @NamedQueries({
     @NamedQuery(name = "Admins.findAll", query = "SELECT a FROM Admins a"),
     @NamedQuery(name = "Admins.findByAdminID", query = "SELECT a FROM Admins a WHERE a.adminID = :adminID"),
-    @NamedQuery(name = "Admins.findByAdminLevel", query = "SELECT a FROM Admins a WHERE a.adminLevel = :adminLevel"),
-    @NamedQuery(name = "Admins.findByCreatedAt", query = "SELECT a FROM Admins a WHERE a.createdAt = :createdAt")})
+    @NamedQuery(name = "Admins.findByAdminLevel", query = "SELECT a FROM Admins a WHERE a.adminLevel = :adminLevel")})
 public class Admins implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -45,9 +44,9 @@ public class Admins implements Serializable {
     @Size(max = 20)
     @Column(name = "AdminLevel")
     private String adminLevel;
-    @Column(name = "CreatedAt")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    // @Column(name = "CreatedAt")
+    // @Temporal(TemporalType.TIMESTAMP)
+    // private Date createdAt;
     @JoinColumn(name = "UserID", referencedColumnName = "UserID")
     @ManyToOne(optional = false)
     private Users userID;
@@ -75,13 +74,13 @@ public class Admins implements Serializable {
         this.adminLevel = adminLevel;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+    // public Date getCreatedAt() {
+    //     return createdAt;
+    // }
+    //
+    // public void setCreatedAt(Date createdAt) {
+    //     this.createdAt = createdAt;
+    // }
 
     public Users getUserID() {
         return userID;

@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.text.Normalizer;
+import java.text.SimpleDateFormat;
 import jakarta.ejb.EJB;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
@@ -36,7 +37,7 @@ public class AuthController implements Serializable {
     private OtpService otpService;
     @EJB
     private EmailService emailService;
-    
+
     @Inject
     private LocaleController localeController;
 
@@ -59,7 +60,7 @@ public class AuthController implements Serializable {
     private Double longitude;
     private String addressType;
     private String addressLabel;
-    
+
     // Google OAuth fields
     private String googleEmail;
     private String googleFullName;
@@ -80,7 +81,7 @@ public class AuthController implements Serializable {
     private boolean rememberMe = false;
     private boolean editingProfile = false;
 
-     public String login() {
+    public String login() {
         System.out.println("AuthController.login: identifier=" + identifier + ", password provided=" + (password != null ? "yes" : "no"));
         String hash = hashPassword(password);
         System.out.println("AuthController.login: hashed password=" + hash);
@@ -89,17 +90,75 @@ public class AuthController implements Serializable {
         if (u != null) {
             System.out.println("AuthController.login: user status=" + u.getStatus() + ", role=" + u.getRole());
         }
+        // Block INACTIVE accounts from logging in
+        if (u != null && "INACTIVE".equalsIgnoreCase(u.getStatus())) {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            fc.addMessage(null, new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Your account had been Inactived.", null
+            ));
+            return null;
+        }
+
+        // Block BANNED accounts from logging in (BanUntil)
+        if (u != null) {
+            try {
+                Date now = new Date();
+                Date banUntil = u.getBanUntil();
+                if (banUntil != null) {
+                    if (banUntil.after(now)) {
+                        FacesContext fc = FacesContext.getCurrentInstance();
+                        String timeStr = new SimpleDateFormat("HH:mm").format(banUntil);
+                        String dateStr = new SimpleDateFormat("dd/MM/yyyy").format(banUntil);
+                        fc.addMessage(null, new jakarta.faces.application.FacesMessage(
+                                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                                "Your account had been banned. It will end at '" + timeStr + "' '" + dateStr + "'", null
+                        ));
+                        return null;
+                    }
+
+                    // Ban expired -> clear
+                    u.setBanUntil(null);
+                    if ("BANNED".equalsIgnoreCase(u.getStatus())) {
+                        u.setStatus("ACTIVE");
+                    }
+                    usersFacade.edit(u);
+                }
+            } catch (Exception e) {
+                // ignore ban normalization errors
+            }
+        }
         if (u != null) {
             currentUser = u;
-            // Update last online time
-            currentUser.setLastOnlineAt(new Date());
-            usersFacade.edit(currentUser);
             
-            // Try to set customer profile if exists
+            // Load customer profile - try both relationship and direct query
             if (u.getCustomersList() != null && !u.getCustomersList().isEmpty()) {
                 currentCustomer = u.getCustomersList().get(0);
+                System.out.println("AuthController.login: Got currentCustomer from relationship");
+            } else if ("CUSTOMER".equalsIgnoreCase(u.getRole())) {
+                // Fallback: query directly from database
+                try {
+                    currentCustomer = customersFacade.findByUserID(u.getUserID());
+                    System.out.println("AuthController.login: Got currentCustomer from direct query");
+                } catch (Exception e) {
+                    System.out.println("AuthController.login: Failed to load customer from direct query: " + e.getMessage());
+                }
             }
+            
             loggedIn = true;
+            
+            // Mark user as online in registry (for "Online" status determination)
+            utils.OnlineUserRegistry.markOnline(u.getUserID());
+            
+            // Update lastOnlineAt to mark user as currently online
+            try {
+                u.setLastOnlineAt(new Date());
+                usersFacade.edit(u);
+                System.out.println("AuthController.login: Updated lastOnlineAt for user " + u.getUsername());
+            } catch (Exception e) {
+                System.out.println("AuthController.login: Warning - could not update lastOnlineAt: " + e.getMessage());
+            }
+            
             // Store in session for filter access (JSF session map)
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("currentUser", currentUser);
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("currentCustomer", currentCustomer);
@@ -107,7 +166,7 @@ public class AuthController implements Serializable {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("currentCustomerId", currentCustomer.getCustomerID());
             }
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("loggedIn", loggedIn);
-            
+
             // Also store in HttpSession for servlet access (critical for REST APIs)
             try {
                 Object sessionObj = FacesContext.getCurrentInstance().getExternalContext().getSession(false);
@@ -124,7 +183,7 @@ public class AuthController implements Serializable {
             } catch (Exception e) {
                 System.out.println("AuthController.login: Warning - could not store in HttpSession: " + e.getMessage());
             }
-            
+
             FacesContext fc = FacesContext.getCurrentInstance();
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
                     jakarta.faces.application.FacesMessage.SEVERITY_INFO,
@@ -132,12 +191,13 @@ public class AuthController implements Serializable {
             ));
             // Role-based redirect
             String redirectUrl;
+            String role = (u.getRole() != null) ? u.getRole().toUpperCase() : "CUSTOMER";
 
-            if ("admin".equalsIgnoreCase(u.getRole())) {
+            if ("ADMIN".equals(role)) {
                 redirectUrl = "/pages/admin/dashboard.xhtml";
-            } else if ("staff".equalsIgnoreCase(u.getRole())) {
+            } else if ("STAFF".equals(role)) {
                 redirectUrl = "/pages/staff/dashboard.xhtml";
-            } else if ("customer".equalsIgnoreCase(u.getRole())) {
+            } else if ("CUSTOMER".equals(role)) {
                 redirectUrl = "/pages/user/index.xhtml";
             } else {
                 redirectUrl = "/pages/user/profile.xhtml";
@@ -163,47 +223,67 @@ public class AuthController implements Serializable {
         ));
         return null;
     }
-    
+
     /**
      * Ensures session attributes are synced to HttpSession for servlet access.
-     * Call this method on page load to ensure REST APIs can access session data.
+     * Call this method on page load to ensure REST APIs can access session
+     * data.
      */
     public void ensureHttpSessionSync() {
         try {
             Object sessionObj = FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-            if (sessionObj instanceof jakarta.servlet.http.HttpSession) {
-                jakarta.servlet.http.HttpSession httpSession = (jakarta.servlet.http.HttpSession) sessionObj;
-                
-                if (currentUser != null) {
-                    httpSession.setAttribute("currentUser", currentUser);
-                    System.out.println("AuthController.ensureHttpSessionSync: Synced currentUser");
-                }
-                
-                if (currentCustomer != null) {
-                    httpSession.setAttribute("currentCustomer", currentCustomer);
-                    System.out.println("AuthController.ensureHttpSessionSync: Synced currentCustomer");
-                }
-                
-                if (currentCustomer != null && currentCustomer.getCustomerID() != null) {
-                    httpSession.setAttribute("currentCustomerId", currentCustomer.getCustomerID());
-                    System.out.println("AuthController.ensureHttpSessionSync: Synced currentCustomerId=" + currentCustomer.getCustomerID());
-                }
-                
-                httpSession.setAttribute("loggedIn", loggedIn);
-                System.out.println("AuthController.ensureHttpSessionSync: Session sync complete, sessionId=" + httpSession.getId());
+            if (!(sessionObj instanceof jakarta.servlet.http.HttpSession)) {
+                return;
             }
+
+            jakarta.servlet.http.HttpSession httpSession = (jakarta.servlet.http.HttpSession) sessionObj;
+
+            // Hydrate từ session nếu bean chưa có
+            getCurrentUserLazy();
+
+            // Ưu tiên trạng thái loggedIn trong HttpSession nếu đã có (vd GoogleOAuthProcessor set)
+            Object sessLoggedIn = httpSession.getAttribute("loggedIn");
+            if (sessLoggedIn instanceof Boolean) {
+                this.loggedIn = (Boolean) sessLoggedIn;
+            } else if (this.currentUser != null) {
+                this.loggedIn = true;
+            }
+
+            if (currentUser != null) {
+                httpSession.setAttribute("currentUser", currentUser);
+            }
+            if (currentCustomer != null) {
+                httpSession.setAttribute("currentCustomer", currentCustomer);
+            }
+            if (currentCustomer != null && currentCustomer.getCustomerID() != null) {
+                httpSession.setAttribute("currentCustomerId", currentCustomer.getCustomerID());
+            }
+
+            // Chỉ set loggedIn sau khi đã resolve ở trên
+            httpSession.setAttribute("loggedIn", this.loggedIn);
+
         } catch (Exception e) {
             System.out.println("AuthController.ensureHttpSessionSync: Warning - could not sync: " + e.getMessage());
         }
     }
- 
-   public String logout() {
-        // Update last online time before logout
-        if (currentUser != null) {
-            currentUser.setLastOnlineAt(new Date());
-            usersFacade.edit(currentUser);
-        }
+
+    public String logout() {
         String redirectUrl = "/pages/user/index.xhtml";
+        
+        // Persist last activity timestamp and mark offline before destroying session
+        try {
+            if (currentUser != null && currentUser.getUserID() != null) {
+                utils.OnlineUserRegistry.markOffline(currentUser.getUserID());
+                Users u = usersFacade.find(currentUser.getUserID());
+                if (u != null) {
+                    u.setLastOnlineAt(new Date());
+                    usersFacade.edit(u);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("AuthController.logout: Warning - could not update LastOnlineAt: " + e.getMessage());
+        }
+        
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
         loggedIn = false;
         currentUser = null;
@@ -218,49 +298,49 @@ public class AuthController implements Serializable {
 
     public String register() {
         FacesContext fc = FacesContext.getCurrentInstance();
-        
+
         // Validate username
         if (regUsername == null || regUsername.trim().isEmpty()) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, localeController.getMessage("error.usernameRequired"), null));
             return null;
         }
-        
+
         // Validate first name
         if (firstName == null || firstName.trim().isEmpty()) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, localeController.getMessage("error.firstNameRequired"), null));
             return null;
         }
-        
+
         // Validate last name
         if (lastName == null || lastName.trim().isEmpty()) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, localeController.getMessage("error.lastNameRequired"), null));
             return null;
         }
-        
+
         // Validate password
         if (regPassword == null || regPassword.trim().isEmpty()) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, localeController.getMessage("error.passwordRequired"), null));
             return null;
         }
-        
+
         // Validate confirm password
         if (regConfirmPassword == null || regConfirmPassword.trim().isEmpty()) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, localeController.getMessage("error.confirmPasswordRequired"), null));
             return null;
         }
-        
+
         // Check passwords match
         if (!regPassword.equals(regConfirmPassword)) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, localeController.getMessage("error.passwordMismatch"), null));
             return null;
         }
-        
+
         // Validate email
         if (regEmail == null || regEmail.trim().isEmpty()) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, localeController.getMessage("error.emailRequired"), null));
             return null;
         }
-        
+
         // Validate mobile phone
         if (mobilePhone == null || mobilePhone.trim().isEmpty()) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, localeController.getMessage("error.mobilePhoneRequired"), null));
@@ -276,7 +356,7 @@ public class AuthController implements Serializable {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, localeController.getMessage("error.mobilePhoneLength"), null));
             return null;
         }
-        
+
         // check username/email exist
         if (usersFacade.findByUsername(regUsername) != null) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, localeController.getMessage("error.usernameAlreadyExists"), null));
@@ -286,7 +366,7 @@ public class AuthController implements Serializable {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, localeController.getMessage("error.emailAlreadyExists"), null));
             return null;
         }
-        
+
         // Check if mobile phone already exists
         if (customersFacade.findByMobilePhone(mobilePhone) != null) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, localeController.getMessage("error.mobilePhoneAlreadyExists"), null));
@@ -308,7 +388,6 @@ public class AuthController implements Serializable {
             c.setMiddleName(middleName);
             c.setLastName(lastName);
             c.setMobilePhone(mobilePhone);
-            c.setAvatarUrl(null); // Default avatar - no custom URL set yet
             if (street != null && !street.trim().isEmpty()) {
                 c.setStreet(street);
             }
@@ -330,12 +409,12 @@ public class AuthController implements Serializable {
             c.setCreatedAt(new Date());
             c.setUserID(u);
             customersFacade.create(c);
-            
+
             // Create Address record if address data was provided during registration
-            if (country != null && !country.trim().isEmpty() && 
-                city != null && !city.trim().isEmpty() && 
-                street != null && !street.trim().isEmpty()) {
-                
+            if (country != null && !country.trim().isEmpty()
+                    && city != null && !city.trim().isEmpty()
+                    && street != null && !street.trim().isEmpty()) {
+
                 Addresses addr = new Addresses();
                 addr.setCustomerID(c);
                 addr.setType(addressType != null && !addressType.isEmpty() ? addressType : "Home");
@@ -355,7 +434,7 @@ public class AuthController implements Serializable {
             currentUser = u;
             currentCustomer = c;
             loggedIn = true;
-            
+
             // Clear registration form data
             regUsername = null;
             regEmail = null;
@@ -389,7 +468,9 @@ public class AuthController implements Serializable {
     }
 
     private String hashPassword(String pwd) {
-        if (pwd == null) return null;
+        if (pwd == null) {
+            return null;
+        }
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] bytes = md.digest(pwd.getBytes());
@@ -404,51 +485,166 @@ public class AuthController implements Serializable {
     }
 
     // Getters and setters
-    public String getIdentifier() { return identifier; }
-    public void setIdentifier(String identifier) { this.identifier = identifier; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getIdentifier() {
+        return identifier;
+    }
 
-    public boolean isRememberMe() { return rememberMe; }
-    public void setRememberMe(boolean rememberMe) { this.rememberMe = rememberMe; }
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
-    public String getRegUsername() { return regUsername; }
-    public void setRegUsername(String regUsername) { this.regUsername = regUsername; }
-    public String getRegEmail() { return regEmail; }
-    public void setRegEmail(String regEmail) { this.regEmail = regEmail; }
-    public String getRegPassword() { return regPassword; }
-    public void setRegPassword(String regPassword) { this.regPassword = regPassword; }
-    public String getRegConfirmPassword() { return regConfirmPassword; }
-    public void setRegConfirmPassword(String regConfirmPassword) { this.regConfirmPassword = regConfirmPassword; }
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-    public String getMiddleName() { return middleName; }
-    public void setMiddleName(String middleName) { this.middleName = middleName; }
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
-    public String getMobilePhone() { return mobilePhone; }
-    public void setMobilePhone(String mobilePhone) { this.mobilePhone = mobilePhone; }
-    
-    public String getStreet() { return street; }
-    public void setStreet(String street) { this.street = street; }
-    public String getCity() { return city; }
-    public void setCity(String city) { this.city = city; }
-    public String getState() { return state; }
-    public void setState(String state) { this.state = state; }
-    public String getCountry() { return country; }
-    public void setCountry(String country) { this.country = country; }
-    public Double getLatitude() { return latitude; }
-    public void setLatitude(Double latitude) { this.latitude = latitude; }
-    public Double getLongitude() { return longitude; }
-    public void setLongitude(Double longitude) { this.longitude = longitude; }
-    public String getAddressType() { return addressType; }
-    public void setAddressType(String addressType) { this.addressType = addressType; }
+    public String getPassword() {
+        return password;
+    }
 
-    public String getAddressLabel() { return addressLabel; }
-    public void setAddressLabel(String addressLabel) { this.addressLabel = addressLabel; }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-    public Users getCurrentUser() { return currentUser; }
-    public Customers getCurrentCustomer() { return currentCustomer; }
+    public boolean isRememberMe() {
+        return rememberMe;
+    }
+
+    public void setRememberMe(boolean rememberMe) {
+        this.rememberMe = rememberMe;
+    }
+
+    public String getRegUsername() {
+        return regUsername;
+    }
+
+    public void setRegUsername(String regUsername) {
+        this.regUsername = regUsername;
+    }
+
+    public String getRegEmail() {
+        return regEmail;
+    }
+
+    public void setRegEmail(String regEmail) {
+        this.regEmail = regEmail;
+    }
+
+    public String getRegPassword() {
+        return regPassword;
+    }
+
+    public void setRegPassword(String regPassword) {
+        this.regPassword = regPassword;
+    }
+
+    public String getRegConfirmPassword() {
+        return regConfirmPassword;
+    }
+
+    public void setRegConfirmPassword(String regConfirmPassword) {
+        this.regConfirmPassword = regConfirmPassword;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getMobilePhone() {
+        return mobilePhone;
+    }
+
+    public void setMobilePhone(String mobilePhone) {
+        this.mobilePhone = mobilePhone;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getAddressType() {
+        return addressType;
+    }
+
+    public void setAddressType(String addressType) {
+        this.addressType = addressType;
+    }
+
+    public String getAddressLabel() {
+        return addressLabel;
+    }
+
+    public void setAddressLabel(String addressLabel) {
+        this.addressLabel = addressLabel;
+    }
+
+    public Users getCurrentUser() {
+        return currentUser;
+    }
+
+    public Customers getCurrentCustomer() {
+        return currentCustomer;
+    }
+
     public Users getCurrentUserLazy() {
         if (currentUser == null) {
             try {
@@ -456,9 +652,13 @@ public class AuthController implements Serializable {
                 Object idObj = fc.getExternalContext().getSessionMap().get("currentUserId");
                 if (idObj != null) {
                     Integer id = null;
-                    if (idObj instanceof Integer) id = (Integer) idObj;
-                    else if (idObj instanceof Long) id = ((Long) idObj).intValue();
-                    else if (idObj instanceof String) id = Integer.valueOf((String) idObj);
+                    if (idObj instanceof Integer) {
+                        id = (Integer) idObj;
+                    } else if (idObj instanceof Long) {
+                        id = ((Long) idObj).intValue();
+                    } else if (idObj instanceof String) {
+                        id = Integer.valueOf((String) idObj);
+                    }
                     if (id != null) {
                         Users u = usersFacade.find(id);
                         if (u != null) {
@@ -480,7 +680,9 @@ public class AuthController implements Serializable {
         try {
             FacesContext fc = FacesContext.getCurrentInstance();
             Object val = fc.getExternalContext().getSessionMap().get("loggedIn");
-            if (val instanceof Boolean) return (Boolean) val;
+            if (val instanceof Boolean) {
+                return (Boolean) val;
+            }
         } catch (Exception e) {
             // ignore
         }
@@ -489,7 +691,9 @@ public class AuthController implements Serializable {
 
     // Normalize name: remove diacritics (e.g., "Trần Bảo Toàn" -> "Tran Bao Toan")
     private String normalize(String s) {
-        if (s == null) return null;
+        if (s == null) {
+            return null;
+        }
         String tmp = Normalizer.normalize(s, Normalizer.Form.NFD);
         // remove diacritic marks
         tmp = tmp.replaceAll("\\p{M}", "");
@@ -501,113 +705,229 @@ public class AuthController implements Serializable {
     }
 
     public String getGoogleFullName() {
-        if (googleFullName == null) return null;
+        if (googleFullName == null) {
+            return null;
+        }
         return googleFullName;
     }
 
     // Setters to allow external code (servlets) to update session-scoped bean state
-    public void setCurrentUser(Users user) { this.currentUser = user; }
-    public void setCurrentCustomer(Customers customer) { this.currentCustomer = customer; }
-    public void setLoggedIn(boolean loggedIn) { this.loggedIn = loggedIn; }
+    public void setCurrentUser(Users user) {
+        this.currentUser = user;
+    }
+
+    public void setCurrentCustomer(Customers customer) {
+        this.currentCustomer = customer;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
+
     public String getDisplayName() {
         // Ensure currentUser/currentCustomer are loaded from session if not present
         getCurrentUserLazy();
 
         if (currentCustomer != null) {
             StringBuilder sb = new StringBuilder();
-            if (currentCustomer.getFirstName() != null && !currentCustomer.getFirstName().isEmpty()) sb.append(currentCustomer.getFirstName()).append(' ');
-            if (currentCustomer.getMiddleName() != null && !currentCustomer.getMiddleName().isEmpty()) sb.append(currentCustomer.getMiddleName()).append(' ');
-            if (currentCustomer.getLastName() != null && !currentCustomer.getLastName().isEmpty()) sb.append(currentCustomer.getLastName());
+            if (currentCustomer.getFirstName() != null && !currentCustomer.getFirstName().isEmpty()) {
+                sb.append(currentCustomer.getFirstName()).append(' ');
+            }
+            if (currentCustomer.getMiddleName() != null && !currentCustomer.getMiddleName().isEmpty()) {
+                sb.append(currentCustomer.getMiddleName()).append(' ');
+            }
+            if (currentCustomer.getLastName() != null && !currentCustomer.getLastName().isEmpty()) {
+                sb.append(currentCustomer.getLastName());
+            }
             String name = sb.toString().trim();
-            if (!name.isEmpty()) return name;
+            if (!name.isEmpty()) {
+                return name;
+            }
         }
-        if (currentUser != null && currentUser.getUsername() != null) return normalize(currentUser.getUsername());
+        if (currentUser != null && currentUser.getUsername() != null) {
+            return normalize(currentUser.getUsername());
+        }
         return "";
     }
-    
+
     // Google OAuth methods
     /**
-     * Handle Google OAuth callback.
-     * If email exists, log in directly.
-     * If email doesn't exist, generate OTP and show verification form.
+     * Handle Google OAuth callback. If email exists, log in directly. If email
+     * doesn't exist, generate OTP and show verification form.
      */
     public String handleGoogleAuth(String email, String fullName) {
         FacesContext fc = FacesContext.getCurrentInstance();
-        
+        if (email != null) {
+            email = email.trim();
+        }
+
         // Check if user exists
         Users existingUser = usersFacade.findByEmail(email);
         if (existingUser != null) {
+            // Check if user account is inactive
+            if ("INACTIVE".equalsIgnoreCase(existingUser.getStatus())) {
+                fc.addMessage(null, new jakarta.faces.application.FacesMessage(
+                        jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                        "Your account had been Inactived.", null
+                ));
+                try {
+                    FacesContext.getCurrentInstance().getExternalContext().redirect(
+                            FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/pages/user/login.xhtml"
+                    );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            // Check if user is banned
+            try {
+                Date now = new Date();
+                Date banUntil = existingUser.getBanUntil();
+                if (banUntil != null) {
+                    if (banUntil.after(now)) {
+                        String timeStr = new SimpleDateFormat("HH:mm").format(banUntil);
+                        String dateStr = new SimpleDateFormat("dd/MM/yyyy").format(banUntil);
+                        fc.addMessage(null, new jakarta.faces.application.FacesMessage(
+                                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                                "Your account had been banned. It will end at '" + timeStr + "' '" + dateStr + "'", null
+                        ));
+                        try {
+                            FacesContext.getCurrentInstance().getExternalContext().redirect(
+                                    FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/pages/user/login.xhtml"
+                            );
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+
+                    // Ban expired -> clear
+                    existingUser.setBanUntil(null);
+                    if ("BANNED".equalsIgnoreCase(existingUser.getStatus())) {
+                        existingUser.setStatus("ACTIVE");
+                    }
+                    usersFacade.edit(existingUser);
+                }
+            } catch (Exception e) {
+                // ignore
+            }
+
             // User exists, log them in
             currentUser = existingUser;
             if (existingUser.getCustomersList() != null && !existingUser.getCustomersList().isEmpty()) {
                 currentCustomer = existingUser.getCustomersList().get(0);
             }
+
+            // Update LastOnlineAt (used for Online indicator in admin user management)
+            try {
+                existingUser.setLastOnlineAt(new Date());
+                usersFacade.edit(existingUser);
+            } catch (Exception e) {
+                System.out.println("AuthController.handleGoogleAuth: Warning - could not update LastOnlineAt: " + e.getMessage());
+            }
+
             loggedIn = true;
             // Store in session for filter access
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("currentUser", currentUser);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("currentCustomer", currentCustomer);
+            if (currentCustomer != null) {
+                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("currentCustomerId", currentCustomer.getCustomerID());
+            }
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("loggedIn", loggedIn);
+
+            // Also store in HttpSession for servlet access (match normal login())
+            try {
+                Object sessionObj = FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+                if (sessionObj instanceof jakarta.servlet.http.HttpSession) {
+                    jakarta.servlet.http.HttpSession httpSession = (jakarta.servlet.http.HttpSession) sessionObj;
+                    httpSession.setAttribute("currentUser", currentUser);
+                    httpSession.setAttribute("currentCustomer", currentCustomer);
+                    if (currentCustomer != null) {
+                        httpSession.setAttribute("currentCustomerId", currentCustomer.getCustomerID());
+                    }
+                    httpSession.setAttribute("loggedIn", loggedIn);
+                }
+            } catch (Exception e) {
+                System.out.println("AuthController.handleGoogleAuth: Warning - could not store in HttpSession: " + e.getMessage());
+            }
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-                jakarta.faces.application.FacesMessage.SEVERITY_INFO,
-                localeController.getMessage("success.googleLoginSuccess"), null
+                    jakarta.faces.application.FacesMessage.SEVERITY_INFO,
+                    localeController.getMessage("success.googleLoginSuccess"), null
             ));
+            // Role-based redirect (match normal login())
+            String redirectUrl;
+            String role = (existingUser.getRole() != null) ? existingUser.getRole().toUpperCase() : "CUSTOMER";
+            
+            if ("ADMIN".equals(role)) {
+                redirectUrl = "/pages/admin/dashboard.xhtml";
+            } else if ("STAFF".equals(role)) {
+                redirectUrl = "/pages/staff/dashboard.xhtml";
+            } else if ("CUSTOMER".equals(role)) {
+                redirectUrl = "/pages/user/index.xhtml";
+            } else {
+                redirectUrl = "/pages/user/profile.xhtml";
+            }
+
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect(
-                    FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/pages/user/index.xhtml"
+                        FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + redirectUrl
                 );
             } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
         }
-        
+
         // User doesn't exist, initiate registration flow
         googleEmail = email;
         googleFullName = fullName;
         googleRegistering = true;
-        
+
         // Store email and name in session for reliable retrieval (e.g., during resendOtp)
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("googleEmail", email);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("googleFullName", fullName);
-        
+
         // Generate OTP
         String otp = otpService.generateOtp(email);
         googleOtp = otp;
-        
+
         // Send OTP email
         try {
             emailService.sendOtpEmail(email, otp);
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-                jakarta.faces.application.FacesMessage.SEVERITY_INFO,
-                localeController.getMessage("success.otpSent") + " " + email, null
+                    jakarta.faces.application.FacesMessage.SEVERITY_INFO,
+                    localeController.getMessage("success.otpSent") + " " + email, null
             ));
         } catch (Exception e) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                "Failed to send verification code: " + e.getMessage(), null
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Failed to send verification code: " + e.getMessage(), null
             ));
             return null;
         }
-        
+
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect(
-                FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/pages/user/verify-otp.xhtml"
+                    FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/pages/user/verify-otp.xhtml"
             );
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
-    
+
     /**
-     * Unified OTP verification: handles Google registration flow and password-reset flow.
+     * Unified OTP verification: handles Google registration flow and
+     * password-reset flow.
      */
     public String verifyOtp() {
         FacesContext fc = FacesContext.getCurrentInstance();
 
         if (otpInputValue == null || otpInputValue.trim().isEmpty()) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                localeController.getMessage("error.otpEmpty"), null
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    localeController.getMessage("error.otpEmpty"), null
             ));
             return null;
         }
@@ -623,23 +943,27 @@ public class AuthController implements Serializable {
             email = sessionPasswordResetEmail;
         } else {
             email = (String) fc.getExternalContext().getSessionMap().get("googleEmail");
-            if (email == null || email.isEmpty()) email = googleEmail;
+            if (email == null || email.isEmpty()) {
+                email = googleEmail;
+            }
             fullName = (String) fc.getExternalContext().getSessionMap().get("googleFullName");
-            if (fullName == null || fullName.isEmpty()) fullName = googleFullName;
+            if (fullName == null || fullName.isEmpty()) {
+                fullName = googleFullName;
+            }
         }
 
         if (email == null || email.isEmpty()) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                "Email not found. Please restart verification.", null
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Email not found. Please restart verification.", null
             ));
             return null;
         }
 
         if (!otpService.verifyOtp(email, otpInputValue.trim())) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                "Invalid or expired verification code", null
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Invalid or expired verification code", null
             ));
             return null;
         }
@@ -673,30 +997,40 @@ public class AuthController implements Serializable {
             u.setEmail(email);
             String username = email.split("@")[0];
             int counter = 1;
-            while (usersFacade.findByUsername(username + counter) != null) counter++;
+            while (usersFacade.findByUsername(username + counter) != null) {
+                counter++;
+            }
             u.setUsername(username + counter);
             u.setPasswordHash(hashPassword(java.util.UUID.randomUUID().toString()));
             u.setRole("customer");
             u.setStatus("ACTIVE");
             u.setCreatedAt(new Date());
+            // New Google-created account must start with default avatar (user.png)
+            // Keep AvatarUrl null/empty and let UI fall back to /images/user.png
+            u.setAvatarUrl(null);
+            u.setLastOnlineAt(new Date());
             usersFacade.create(u);
 
             Customers c = new Customers();
             String[] nameParts = fullName.split(" ");
-            if (nameParts.length >= 1) c.setFirstName(nameParts[0]);
+            if (nameParts.length >= 1) {
+                c.setFirstName(nameParts[0]);
+            }
             if (nameParts.length >= 2) {
-                if (nameParts.length == 2) c.setLastName(nameParts[1]);
-                else {
+                if (nameParts.length == 2) {
+                    c.setLastName(nameParts[1]);
+                } else {
                     StringBuilder middle = new StringBuilder();
                     for (int i = 1; i < nameParts.length - 1; i++) {
-                        if (i > 1) middle.append(" ");
+                        if (i > 1) {
+                            middle.append(" ");
+                        }
                         middle.append(nameParts[i]);
                     }
                     c.setMiddleName(middle.toString());
                     c.setLastName(nameParts[nameParts.length - 1]);
                 }
             }
-            c.setAvatarUrl(null); // Default avatar - no custom URL set yet
             c.setCreatedAt(new Date());
             c.setUserID(u);
             customersFacade.create(c);
@@ -706,7 +1040,23 @@ public class AuthController implements Serializable {
             loggedIn = true;
             // Store in session for filter access
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("currentUser", currentUser);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("currentCustomer", currentCustomer);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("currentCustomerId", currentCustomer.getCustomerID());
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("loggedIn", loggedIn);
+
+            // Also store in HttpSession for servlet access (match normal login())
+            try {
+                Object sessionObj = FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+                if (sessionObj instanceof jakarta.servlet.http.HttpSession) {
+                    jakarta.servlet.http.HttpSession httpSession = (jakarta.servlet.http.HttpSession) sessionObj;
+                    httpSession.setAttribute("currentUser", currentUser);
+                    httpSession.setAttribute("currentCustomer", currentCustomer);
+                    httpSession.setAttribute("currentCustomerId", currentCustomer.getCustomerID());
+                    httpSession.setAttribute("loggedIn", loggedIn);
+                }
+            } catch (Exception e) {
+                System.out.println("AuthController.verifyOtp: Warning - could not store in HttpSession: " + e.getMessage());
+            }
 
             try {
                 emailService.sendWelcomeEmail(email, fullName);
@@ -730,7 +1080,7 @@ public class AuthController implements Serializable {
 
         return null;
     }
-    
+
     /**
      * Resend OTP code for either Google registration or password reset.
      */
@@ -741,13 +1091,15 @@ public class AuthController implements Serializable {
             boolean isReset = email != null && !email.isEmpty();
             if (!isReset) {
                 email = (String) fc.getExternalContext().getSessionMap().get("googleEmail");
-                if (email == null || email.isEmpty()) email = googleEmail;
+                if (email == null || email.isEmpty()) {
+                    email = googleEmail;
+                }
             }
 
             if (email == null || email.isEmpty()) {
                 fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                    "Email not found. Please restart verification.", null
+                        jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                        "Email not found. Please restart verification.", null
                 ));
                 return null;
             }
@@ -760,38 +1112,87 @@ public class AuthController implements Serializable {
             }
             emailService.sendOtpEmail(email, otp);
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-                jakarta.faces.application.FacesMessage.SEVERITY_INFO,
-                "Verification code resent to " + email, null
+                    jakarta.faces.application.FacesMessage.SEVERITY_INFO,
+                    "Verification code resent to " + email, null
             ));
         } catch (Exception e) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                "Failed to resend verification code: " + e.getMessage(), null
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Failed to resend verification code: " + e.getMessage(), null
             ));
         }
         return null;
     }
-     
-    // Getters and setters for Google OAuth and password reset
-    public String getGoogleEmail() { return googleEmail; }
-    public void setGoogleEmail(String googleEmail) { this.googleEmail = googleEmail; }
-    public void setGoogleFullName(String googleFullName) { this.googleFullName = googleFullName; }
-    public String getOtpInputValue() { return otpInputValue; }
-    public void setOtpInputValue(String otpInputValue) { this.otpInputValue = otpInputValue; }
-    public boolean isGoogleRegistering() { return googleRegistering; }
-    public void setGoogleRegistering(boolean googleRegistering) { this.googleRegistering = googleRegistering; }
 
-    public String getForgotEmail() { return forgotEmail; }
-    public void setForgotEmail(String forgotEmail) { this.forgotEmail = forgotEmail; }
-    public String getPasswordResetEmail() { return passwordResetEmail; }
-    public void setPasswordResetEmail(String passwordResetEmail) { this.passwordResetEmail = passwordResetEmail; }
-    public boolean isPasswordResetVerified() { return passwordResetVerified; }
-    public void setPasswordResetVerified(boolean passwordResetVerified) { this.passwordResetVerified = passwordResetVerified; }
-    public String getResetNewPassword() { return resetNewPassword; }
-    public void setResetNewPassword(String resetNewPassword) { this.resetNewPassword = resetNewPassword; }
-    public String getResetConfirmPassword() { return resetConfirmPassword; }
-    public void setResetConfirmPassword(String resetConfirmPassword) { this.resetConfirmPassword = resetConfirmPassword; }
-    
+    // Getters and setters for Google OAuth and password reset
+    public String getGoogleEmail() {
+        return googleEmail;
+    }
+
+    public void setGoogleEmail(String googleEmail) {
+        this.googleEmail = googleEmail;
+    }
+
+    public void setGoogleFullName(String googleFullName) {
+        this.googleFullName = googleFullName;
+    }
+
+    public String getOtpInputValue() {
+        return otpInputValue;
+    }
+
+    public void setOtpInputValue(String otpInputValue) {
+        this.otpInputValue = otpInputValue;
+    }
+
+    public boolean isGoogleRegistering() {
+        return googleRegistering;
+    }
+
+    public void setGoogleRegistering(boolean googleRegistering) {
+        this.googleRegistering = googleRegistering;
+    }
+
+    public String getForgotEmail() {
+        return forgotEmail;
+    }
+
+    public void setForgotEmail(String forgotEmail) {
+        this.forgotEmail = forgotEmail;
+    }
+
+    public String getPasswordResetEmail() {
+        return passwordResetEmail;
+    }
+
+    public void setPasswordResetEmail(String passwordResetEmail) {
+        this.passwordResetEmail = passwordResetEmail;
+    }
+
+    public boolean isPasswordResetVerified() {
+        return passwordResetVerified;
+    }
+
+    public void setPasswordResetVerified(boolean passwordResetVerified) {
+        this.passwordResetVerified = passwordResetVerified;
+    }
+
+    public String getResetNewPassword() {
+        return resetNewPassword;
+    }
+
+    public void setResetNewPassword(String resetNewPassword) {
+        this.resetNewPassword = resetNewPassword;
+    }
+
+    public String getResetConfirmPassword() {
+        return resetConfirmPassword;
+    }
+
+    public void setResetConfirmPassword(String resetConfirmPassword) {
+        this.resetConfirmPassword = resetConfirmPassword;
+    }
+
     /**
      * Request password reset: validate email exists, generate OTP and send.
      */
@@ -825,27 +1226,27 @@ public class AuthController implements Serializable {
      */
     public String redirectToGoogleOAuth() {
         try {
-            String authUrl = GoogleOAuthConfig.AUTHORIZATION_URL 
-                + "?client_id=" + java.net.URLEncoder.encode(GoogleOAuthConfig.CLIENT_ID, "UTF-8")
-                + "&redirect_uri=" + java.net.URLEncoder.encode(GoogleOAuthConfig.REDIRECT_URI, "UTF-8")
-                + "&response_type=code"
-                + "&scope=" + java.net.URLEncoder.encode(GoogleOAuthConfig.SCOPE, "UTF-8")
-                + "&prompt=select_account"
-                + "&access_type=offline"
-                + "&state=" + System.nanoTime();
-            
+            String authUrl = GoogleOAuthConfig.AUTHORIZATION_URL
+                    + "?client_id=" + java.net.URLEncoder.encode(GoogleOAuthConfig.CLIENT_ID, "UTF-8")
+                    + "&redirect_uri=" + java.net.URLEncoder.encode(GoogleOAuthConfig.REDIRECT_URI, "UTF-8")
+                    + "&response_type=code"
+                    + "&scope=" + java.net.URLEncoder.encode(GoogleOAuthConfig.SCOPE, "UTF-8")
+                    + "&prompt=select_account"
+                    + "&access_type=offline"
+                    + "&state=" + System.nanoTime();
+
             FacesContext.getCurrentInstance().getExternalContext().redirect(authUrl);
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, 
-                new jakarta.faces.application.FacesMessage(
-                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                    "Failed to redirect to Google: " + e.getMessage(), null
-                ));
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new jakarta.faces.application.FacesMessage(
+                            jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                            "Failed to redirect to Google: " + e.getMessage(), null
+                    ));
         }
         return null;
     }
-    
+
     /**
      * After OTP verification for password-reset, change the user's password.
      */
@@ -889,11 +1290,11 @@ public class AuthController implements Serializable {
     public String processGoogleOAuth() {
         FacesContext fc = FacesContext.getCurrentInstance();
         jakarta.servlet.http.HttpSession session = (jakarta.servlet.http.HttpSession) fc.getExternalContext().getSession(false);
-        
+
         if (session == null) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                "Session expired", null
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Session expired", null
             ));
             try {
                 fc.getExternalContext().redirect(fc.getExternalContext().getRequestContextPath() + "/pages/user/login.xhtml");
@@ -902,16 +1303,16 @@ public class AuthController implements Serializable {
             }
             return null;
         }
-        
+
         String email = (String) session.getAttribute("googleEmail");
         String name = (String) session.getAttribute("googleFullName");
 
         System.out.println("AuthController.processGoogleOAuth: session googleEmail=" + email + ", googleFullName=" + name);
-        
+
         if (email == null || name == null) {
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(
-                jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                "Failed to retrieve Google account information", null
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Failed to retrieve Google account information", null
             ));
             try {
                 fc.getExternalContext().redirect(fc.getExternalContext().getRequestContextPath() + "/pages/user/login.xhtml");
@@ -920,7 +1321,7 @@ public class AuthController implements Serializable {
             }
             return null;
         }
-        
+
         // Use the handleGoogleAuth method with real Google credentials
         System.out.println("AuthController.processGoogleOAuth: calling handleGoogleAuth for " + email);
         return handleGoogleAuth(email, name);
@@ -928,7 +1329,6 @@ public class AuthController implements Serializable {
 
     // ============= Profile Page Properties =============
     // Getters to provide user info to profile.xhtml
-
     public String getUserFullName() {
         getCurrentUserLazy();
         if (currentCustomer != null) {
@@ -943,7 +1343,9 @@ public class AuthController implements Serializable {
                 sb.append(currentCustomer.getLastName());
             }
             String result = sb.toString().trim();
-            if (!result.isEmpty()) return result;
+            if (!result.isEmpty()) {
+                return result;
+            }
         }
         if (currentUser != null && currentUser.getUsername() != null) {
             return normalize(currentUser.getUsername());
@@ -987,33 +1389,36 @@ public class AuthController implements Serializable {
         getCurrentUserLazy();
         try {
             String ctx = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
-            if (currentCustomer != null && currentCustomer.getCustomerID() != null) {
-                // Try to load avatar from database URL first if it exists
-                if (currentCustomer.getAvatarUrl() != null && !currentCustomer.getAvatarUrl().isEmpty()) {
-                    // Add timestamp for cache busting
-                    Object ts = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("avatarUpdatedAt");
-                    long t = ts instanceof Long ? (Long) ts : System.currentTimeMillis();
-                    String avatarUrl = currentCustomer.getAvatarUrl();
+            if (currentUser != null && currentUser.getUserID() != null) {
+                // Query fresh from DB to get latest avatar URL
+                Users freshUser = null;
+                try {
+                    freshUser = usersFacade.find(currentUser.getUserID());
+                } catch (Exception e) {
+                    System.out.println("getUserProfileImageUrl: Could not refresh user from DB: " + e.getMessage());
+                    freshUser = currentUser;
+                }
+                
+                // Use fresh user data for avatar URL
+                String avatarUrl = freshUser != null ? freshUser.getAvatarUrl() : currentUser.getAvatarUrl();
+                
+                // Always use current timestamp for cache-busting to prevent stale cache
+                long t = System.currentTimeMillis();
+                
+                if (avatarUrl != null && !avatarUrl.isEmpty()) {
                     if (avatarUrl.contains("?")) {
                         return avatarUrl + "&t=" + t;
                     } else {
                         return avatarUrl + "?t=" + t;
                     }
                 }
-                // Fallback to avatar endpoint with customerId
-                Object ts = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("avatarUpdatedAt");
-                long t = ts instanceof Long ? (Long) ts : System.currentTimeMillis();
-                return ctx + "/avatar?customerId=" + currentCustomer.getCustomerID() + "&t=" + t;
-            } else if (currentUser != null && currentUser.getUserID() != null) {
-                // Fallback to userId if customer not available
-                Object ts = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("avatarUpdatedAt");
-                long t = ts instanceof Long ? (Long) ts : System.currentTimeMillis();
-                return ctx + "/avatar?userId=" + currentUser.getUserID() + "&t=" + t;
+                // No avatar set -> use bundled default
+                return ctx + "/resources/images/user.png";
             }
             // fallback to bundled default image
-            return FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/images/user.png";
+            return ctx + "/resources/images/user.png";
         } catch (Exception e) {
-            return "/images/user.png";
+            return "/resources/images/user.png";
         }
     }
 
@@ -1034,88 +1439,116 @@ public class AuthController implements Serializable {
     // Profile editing bindings and actions
     public Integer getUserId() {
         getCurrentUserLazy();
-        if (currentUser != null) return currentUser.getUserID();
+        if (currentUser != null) {
+            return currentUser.getUserID();
+        }
         return null;
     }
 
-    public String getUserMiddleName() { 
+    public String getUserMiddleName() {
         getCurrentUserLazy();
-        if (currentCustomer != null && currentCustomer.getMiddleName() != null) return currentCustomer.getMiddleName();
+        if (currentCustomer != null && currentCustomer.getMiddleName() != null) {
+            return currentCustomer.getMiddleName();
+        }
         return "";
     }
 
     public void setUserMiddleName(String middleName) {
         getCurrentUserLazy();
         if (currentCustomer == null) {
-            if (currentUser != null) currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            if (currentUser != null) {
+                currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            }
             if (currentCustomer == null && currentUser != null) {
                 currentCustomer = new Customers();
                 currentCustomer.setUserID(currentUser);
                 currentCustomer.setCreatedAt(new Date());
             }
         }
-        if (currentCustomer != null) currentCustomer.setMiddleName(middleName);
+        if (currentCustomer != null) {
+            currentCustomer.setMiddleName(middleName);
+        }
     }
 
     public String getUserHomePhone() {
         getCurrentUserLazy();
-        if (currentCustomer != null && currentCustomer.getHomePhone() != null) return currentCustomer.getHomePhone();
+        if (currentCustomer != null && currentCustomer.getHomePhone() != null) {
+            return currentCustomer.getHomePhone();
+        }
         return "";
     }
 
     public void setUserHomePhone(String homePhone) {
         getCurrentUserLazy();
         if (currentCustomer == null) {
-            if (currentUser != null) currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            if (currentUser != null) {
+                currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            }
             if (currentCustomer == null && currentUser != null) {
                 currentCustomer = new Customers();
                 currentCustomer.setUserID(currentUser);
                 currentCustomer.setCreatedAt(new Date());
             }
         }
-        if (currentCustomer != null) currentCustomer.setHomePhone(homePhone);
+        if (currentCustomer != null) {
+            currentCustomer.setHomePhone(homePhone);
+        }
     }
 
     public void setUserFirstName(String firstName) {
         getCurrentUserLazy();
         if (currentCustomer == null) {
-            if (currentUser != null) currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            if (currentUser != null) {
+                currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            }
             if (currentCustomer == null && currentUser != null) {
                 currentCustomer = new Customers();
                 currentCustomer.setUserID(currentUser);
                 currentCustomer.setCreatedAt(new Date());
             }
         }
-        if (currentCustomer != null) currentCustomer.setFirstName(firstName);
+        if (currentCustomer != null) {
+            currentCustomer.setFirstName(firstName);
+        }
     }
 
     public void setUserLastName(String lastName) {
         getCurrentUserLazy();
         if (currentCustomer == null) {
-            if (currentUser != null) currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            if (currentUser != null) {
+                currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            }
             if (currentCustomer == null && currentUser != null) {
                 currentCustomer = new Customers();
                 currentCustomer.setUserID(currentUser);
                 currentCustomer.setCreatedAt(new Date());
             }
         }
-        if (currentCustomer != null) currentCustomer.setLastName(lastName);
+        if (currentCustomer != null) {
+            currentCustomer.setLastName(lastName);
+        }
     }
 
     public void setUserPhoneNumber(String phone) {
         getCurrentUserLazy();
         if (currentCustomer == null) {
-            if (currentUser != null) currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            if (currentUser != null) {
+                currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
+            }
             if (currentCustomer == null && currentUser != null) {
                 currentCustomer = new Customers();
                 currentCustomer.setUserID(currentUser);
                 currentCustomer.setCreatedAt(new Date());
             }
         }
-        if (currentCustomer != null) currentCustomer.setMobilePhone(phone);
+        if (currentCustomer != null) {
+            currentCustomer.setMobilePhone(phone);
+        }
     }
 
-    public boolean isEditingProfile() { return editingProfile; }
+    public boolean isEditingProfile() {
+        return editingProfile;
+    }
 
     public String startEdit() {
         editingProfile = true;
@@ -1161,7 +1594,8 @@ public class AuthController implements Serializable {
             try {
                 currentCustomer = customersFacade.findByUserID(currentUser.getUserID());
                 setCurrentCustomer(currentCustomer);
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+            }
             editingProfile = false;
             String successMsg = localeController.getMessage("success.profileSaved");
             fc.addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_INFO, successMsg, null));
@@ -1177,4 +1611,3 @@ public class AuthController implements Serializable {
         return null;
     }
 }
-
