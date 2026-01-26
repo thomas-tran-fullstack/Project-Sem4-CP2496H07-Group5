@@ -53,7 +53,7 @@ public class Users implements Serializable {
         this.avatarUrl = avatarUrl;
     }
 
-    private static final long serialVersionUID = 1L;
+       private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

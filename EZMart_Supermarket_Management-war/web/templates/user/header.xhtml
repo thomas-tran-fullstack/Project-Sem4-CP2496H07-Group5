@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="jakarta.faces.html"
-                xmlns:ui="jakarta.faces.facelets">
-
-    <!-- Fallback avatar: nếu auth.userProfileImageUrl rỗng/null => /images/user.png -->
-    <ui:param name="headerAvatarUrl"
-              value="#{empty auth.userProfileImageUrl ? request.contextPath.concat('/resources/images/user.png') : auth.userProfileImageUrl}" />
-
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets">
     <h:panelGroup id="siteHeader" layout="block">
         <header class="sticky top-0 z-50 w-full flex-col shadow-sm">
             <!-- Utility Bar -->
@@ -21,10 +14,11 @@
                             <span class="material-symbols-outlined text-[18px]">storefront</span>
                             <span>#{locale.getMessage('header.storeLocator')}</span>
                         </a>
-                        <a class="flex items-center gap-1.5 hover:text-primary transition-colors" href="#">
+                        <h:link class="flex items-center gap-1.5 hover:text-primary transition-colors"
+                            outcome="customersupport">
                             <span class="material-symbols-outlined text-[18px]">support_agent</span>
                             <span>#{locale.getMessage('header.customerSupport')}</span>
-                        </a>
+                        </h:link>
                         <a class="flex items-center gap-1.5 hover:text-primary transition-colors" href="#">
                             <span class="material-symbols-outlined text-[18px]">local_shipping</span>
                             <span>#{locale.getMessage('header.trackOrder')}</span>
@@ -32,203 +26,232 @@
                     </div>
                 </div>
             </div>
-
             <!-- Main Navigation Bar -->
             <div class="w-full bg-white dark:bg-[#1e3326] border-b border-[#f0f4f2] dark:border-[#2a3e32]">
                 <div
                     class="max-w-[1440px] mx-auto px-4 sm:px-10 py-4 flex flex-col md:flex-row items-center gap-4 md:gap-8">
-
                     <!-- Logo & Brand -->
                     <div class="flex items-center gap-3 shrink-0 self-start md:self-auto">
                         <a href="#{facesContext.externalContext.requestContextPath}/pages/user/index.xhtml"
-                           aria-label="Home">
-                            <img src="#{request.contextPath}/resources/images/page_logo.png"
-                                 alt="EZMart Logo"
-                                 class="h-14 object-contain" />
+                            aria-label="Home">
+                            <img src="#{request.contextPath}/resources/images/page_logo.png" alt="EZMart Logo"
+                                class="h-14 object-contain" />
                         </a>
                     </div>
-
                     <!-- Search Bar Section -->
                     <div class="flex-1 w-full max-w-[640px]">
                         <h:form id="searchForm">
                             <div
                                 class="relative flex w-full items-center rounded-lg bg-[#f0f4f2] dark:bg-[#14231b] border border-transparent focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all h-12">
-
                                 <!-- Category Dropdown -->
                                 <div
                                     class="relative hidden sm:flex items-center pl-4 pr-3 border-r border-[#dbece4] dark:border-gray-700 h-2/3 group">
                                     <button type="button" id="category-dropdown-btn"
-                                            class="flex items-center text-sm font-medium text-[#111813] dark:text-gray-200 hover:text-primary whitespace-nowrap">
-                                        <span id="selected-category-text">#{locale.getMessage('header.allCategories')}</span>
-                                        <span class="material-symbols-outlined text-[#111813] dark:text-gray-200 ml-1 text-[18px]">arrow_drop_down</span>
+                                        class="flex items-center text-sm font-medium text-[#111813] dark:text-gray-200 hover:text-primary whitespace-nowrap">
+                                        <span
+                                            id="selected-category-text">#{locale.getMessage('header.allCategories')}</span>
+                                        <span
+                                            class="material-symbols-outlined text-[#111813] dark:text-gray-200 ml-1 text-[18px]">arrow_drop_down</span>
                                     </button>
-
                                     <!-- Dropdown Menu -->
                                     <div id="category-dropdown-menu"
-                                         class="absolute top-full left-0 mt-1 w-80 bg-white dark:bg-[#14231b] border border-[#e8ecea] dark:border-[#2a4034] rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out delay-200 z-50">
+                                        class="absolute top-full left-0 mt-1 w-80 bg-white dark:bg-[#14231b] border border-[#e8ecea] dark:border-[#2a4034] rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out delay-200 z-50">
                                         <!-- Search Input -->
                                         <div class="p-3 border-b border-[#e8ecea] dark:border-[#2a4034]">
                                             <input type="text" id="category-filter-input"
-                                                   placeholder="#{locale.getMessage('header.searchCategories')}"
-                                                   class="w-full px-3 py-2 text-sm bg-[#f0f4f2] dark:bg-[#1a2e22] border border-[#dbece4] dark:border-gray-700 rounded-md text-[#111813] dark:text-white placeholder:text-[#63886f] dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                                                placeholder="#{locale.getMessage('header.searchCategories')}"
+                                                class="w-full px-3 py-2 text-sm bg-[#f0f4f2] dark:bg-[#1a2e22] border border-[#dbece4] dark:border-gray-700 rounded-md text-[#111813] dark:text-white placeholder:text-[#63886f] dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/20" />
                                         </div>
-
                                         <!-- Categories List -->
                                         <div class="max-h-80 overflow-y-auto">
                                             <div class="p-2">
                                                 <!-- All Categories Option -->
                                                 <button type="button"
-                                                        class="w-full flex items-center px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors category-option"
-                                                        data-category-id=""
-                                                        data-category-name="#{locale.getMessage('header.allCategories')}">
-                                                    <span class="material-symbols-outlined text-[#111813] dark:text-gray-200 mr-3 text-[20px]">category</span>
-                                                    <span class="text-sm font-medium text-[#111813] dark:text-gray-200">#{locale.getMessage('header.allCategories')}</span>
+                                                    class="w-full flex items-center px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors category-option"
+                                                    data-category-id=""
+                                                    data-category-name="#{locale.getMessage('header.allCategories')}">
+                                                    <span
+                                                        class="material-symbols-outlined text-[#111813] dark:text-gray-200 mr-3 text-[20px]">category</span>
+                                                    <span
+                                                        class="text-sm font-medium text-[#111813] dark:text-gray-200">#{locale.getMessage('header.allCategories')}</span>
                                                 </button>
-
                                                 <!-- Dynamic Categories -->
                                                 <ui:repeat value="#{searchMB.categories}" var="category">
                                                     <button type="button"
-                                                            class="w-full flex items-center px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors category-option"
-                                                            data-category-id="#{category.categoryID}"
-                                                            data-category-name="#{category.categoryName}">
+                                                        class="w-full flex items-center px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors category-option"
+                                                        data-category-id="#{category.categoryID}"
+                                                        data-category-name="#{category.categoryName}">
                                                         <img src="#{request.contextPath}/images/categories/#{category.imageURL}"
-                                                             class="w-8 h-8 rounded-md object-cover mr-3" />
-                                                        <span class="text-sm font-medium text-[#111813] dark:text-gray-200">#{category.categoryName}</span>
+                                                            class="w-8 h-8 rounded-md object-cover mr-3" />
+                                                        <span
+                                                            class="text-sm font-medium text-[#111813] dark:text-gray-200">#{category.categoryName}</span>
                                                     </button>
                                                 </ui:repeat>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                                 <!-- Input -->
                                 <h:inputText value="#{searchMB.searchTerm}" aria-label="Search"
-                                             styleClass="flex w-full min-w-0 flex-1 bg-transparent border-none text-[#111813] dark:text-white placeholder:text-[#63886f] dark:placeholder:text-gray-500 focus:ring-0 px-4 text-base"
-                                             placeholder="#{locale.getMessage('header.search')}" />
+                                    styleClass="flex w-full min-w-0 flex-1 bg-transparent border-none text-[#111813] dark:text-white placeholder:text-[#63886f] dark:placeholder:text-gray-500 focus:ring-0 px-4 text-base"
+                                    placeholder="#{locale.getMessage('header.search')}" />
                                 <h:inputHidden value="#{searchMB.selectedCategoryId}" id="selectedCategoryId" />
-
                                 <!-- Search Button -->
                                 <h:commandLink action="#{searchMB.search()}"
-                                               styleClass="h-10 mr-1 px-5 rounded-md bg-primary hover:bg-primary/90 text-[#111813] font-bold text-sm transition-colors flex items-center justify-center">
+                                    styleClass="h-10 mr-1 px-5 rounded-md bg-primary hover:bg-primary/90 text-[#111813] font-bold text-sm transition-colors flex items-center justify-center">
                                     <span class="material-symbols-outlined mr-0 sm:mr-2">search</span>
                                     <span class="hidden sm:inline">#{locale.getMessage('header.searchButton')}</span>
                                 </h:commandLink>
                             </div>
                         </h:form>
                     </div>
-
                     <!-- Right Navigation & Actions -->
                     <div class="flex w-full md:w-auto items-center justify-between md:justify-end gap-2 md:gap-6">
                         <!-- Text Links -->
                         <nav class="hidden lg:flex items-center gap-6">
-                            <h:link class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors"
-                                    value="#{locale.getMessage('header.aisles')}" outcome="products" />
-                            <h:link class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors"
-                                    value="#{locale.getMessage('header.deals')}" outcome="deals" />
-                            <h:link class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors"
-                                    value="#{locale.getMessage('header.orders')}" outcome="orderhistory" />
+                            <h:link
+                                class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors"
+                                value="#{locale.getMessage('header.aisles')}" outcome="products" />
+                            <h:link
+                                class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors"
+                                value="#{locale.getMessage('header.deals')}" outcome="deals" />
+                            <h:link
+                                class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors"
+                                value="#{locale.getMessage('header.orders')}" outcome="orderhistory" />
+                            <h:link
+                                class="text-[#111813] dark:text-gray-200 hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors"
+                                value="Blogs" outcome="community" />
                         </nav>
-
                         <!-- Icon Actions -->
                         <div class="flex items-center gap-3">
-
-                            <!-- Sign In -->
+                            <!-- Sign In Button (Mobile: hidden text, Desktop: full) -->
                             <h:panelGroup rendered="#{not auth.loggedIn}">
                                 <h:link outcome="login"
-                                        styleClass="flex items-center justify-center rounded-lg h-10 px-4 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
-                                    <span class="material-symbols-outlined text-[#111813] dark:text-white mr-2">person</span>
+                                    styleClass="flex items-center justify-center rounded-lg h-10 px-4 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
+
+                                    <span
+                                        class="material-symbols-outlined text-[#111813] dark:text-white mr-2">person</span>
                                     <div class="flex flex-col items-start leading-none">
-                                        <span class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">#{locale.getMessage('header.signIn')}</span>
-                                        <span class="text-sm text-[#111813] dark:text-white font-bold">#{locale.getMessage('header.account')}</span>
+                                        <span
+                                            class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">#{locale.getMessage('header.signIn')}</span>
+                                        <span
+                                            class="text-sm text-[#111813] dark:text-white font-bold">#{locale.getMessage('header.account')}</span>
                                     </div>
+
                                 </h:link>
                             </h:panelGroup>
 
-                            <!-- Logged In Dropdown -->
+                            <!-- Logged In User Dropdown -->
                             <h:panelGroup rendered="#{auth.loggedIn}" styleClass="relative">
                                 <div class="group" id="user-dropdown-menu">
-                                    <button class="flex items-center justify-center rounded-lg h-10 px-4 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
-                                        <!-- ✅ FIX: avatar fallback -->
-                                        <img src="#{headerAvatarUrl}" alt="avatar"
-                                             class="w-8 h-8 rounded-full mr-2 object-cover" />
+                                    <button
+                                        class="flex items-center justify-center rounded-lg h-10 px-4 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
+                                        <img src="#{auth.userProfileImageUrl}" alt="avatar"
+                                            class="w-8 h-8 rounded-full mr-2 object-cover" />
                                         <div class="flex flex-col items-start leading-none">
-                                            <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                                #{auth.currentUser != null ? auth.currentUser.username : ''}
-                                            </span>
-                                            <span class="text-sm text-[#111813] dark:text-white font-bold">#{auth.displayName}</span>
+                                            <span
+                                                class="text-xs text-gray-500 dark:text-gray-400 font-medium">#{auth.currentUser
+                                                != null ? auth.currentUser.username : ''}</span>
+                                            <span
+                                                class="text-sm text-[#111813] dark:text-white font-bold">#{auth.displayName}</span>
                                         </div>
                                     </button>
-
-                                    <div class="absolute right-0 mt-2 w-44 bg-white dark:bg-[#14231b] border border-[#e8ecea] dark:border-[#2a4034] rounded-md shadow-lg hidden dropdown-menu-content">
+                                    <!-- Dropdown -->
+                                    <div
+                                        class="absolute right-0 mt-2 w-44 bg-white dark:bg-[#14231b] border border-[#e8ecea] dark:border-[#2a4034] rounded-md shadow-lg hidden dropdown-menu-content">
                                         <div class="flex flex-col p-2">
-                                            <h:link outcome="profile" styleClass="px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800">User Profile</h:link>
-                                            <h:link outcome="myvouchers" styleClass="px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800">My Vouchers</h:link>
+                                            <h:link outcome="profile"
+                                                styleClass="px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800">User
+                                                Profile</h:link>
+                                            <h:link outcome="myvouchers"
+                                                styleClass="px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800">My
+                                                Vouchers</h:link>
+                                            <h:link outcome="wishlist"
+                                                styleClass="px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2">
+                                                <span>My Wishlist</span>
+                                                <h:panelGroup layout="block" styleClass="ml-auto">
+                                                    <h:panelGroup rendered="#{wishlistMB.wishlistItemCount > 0}"
+                                                        layout="block"
+                                                        styleClass="flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white">
+                                                        #{wishlistMB.wishlistItemCount}
+                                                    </h:panelGroup>
+                                                </h:panelGroup>
+                                            </h:link>
                                             <h:form>
                                                 <h:commandButton action="#{auth.logout}"
-                                                                 styleClass="px-3 py-2 text-red-600 hover:bg-gray-50 dark:hover:bg-gray-800 w-full text-left"
-                                                                 value="Log Out" />
+                                                    styleClass="px-3 py-2 text-red-600 hover:bg-gray-50 dark:hover:bg-gray-800 w-full text-left"
+                                                    value="Log Out" />
                                             </h:form>
                                         </div>
                                     </div>
                                 </div>
                             </h:panelGroup>
 
-                            <!-- Language -->
+                            <!-- Language Selector -->
                             <div class="relative group">
-                                <button class="flex items-center justify-center rounded-lg h-10 px-3 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
-                                    <span class="material-symbols-outlined text-[#111813] dark:text-white mr-1">language</span>
-                                    <span class="hidden sm:inline text-sm font-bold text-[#111813] dark:text-white">#{locale.currentLanguage.toUpperCase()}</span>
+                                <button
+                                    class="flex items-center justify-center rounded-lg h-10 px-3 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors">
+                                    <span
+                                        class="material-symbols-outlined text-[#111813] dark:text-white mr-1">language</span>
+                                    <span
+                                        class="hidden sm:inline text-sm font-bold text-[#111813] dark:text-white">#{locale.currentLanguage.toUpperCase()}</span>
                                 </button>
-                                <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-[#14231b] border border-[#e8ecea] dark:border-[#2a4034] rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out delay-200 z-50 max-h-96 overflow-y-auto">
+                                <div
+                                    class="absolute right-0 mt-2 w-48 bg-white dark:bg-[#14231b] border border-[#e8ecea] dark:border-[#2a4034] rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out delay-200 z-50 max-h-96 overflow-y-auto">
                                     <h:form styleClass="flex flex-col">
                                         <h:commandButton value="English" action="#{locale.setCurrentLanguage('en')}"
-                                                         styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
+                                            styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 border-b dark:border-gray-700" />
                                         <h:commandButton value="Tiếng Việt" action="#{locale.setCurrentLanguage('vi')}"
-                                                         styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800" />
+                                            styleClass="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800" />
                                     </h:form>
                                 </div>
                             </div>
 
-                            <!-- Theme -->
+                            <!-- Theme Toggle Button -->
                             <button id="theme-toggle-btn"
-                                    class="flex items-center justify-center rounded-lg h-10 w-12 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors group"
-                                    title="Toggle theme">
+                                class="flex items-center justify-center rounded-lg h-10 w-12 border border-[#f0f4f2] dark:border-gray-700 hover:bg-background-light dark:hover:bg-gray-800 transition-colors group"
+                                title="Toggle theme">
                                 <span id="theme-icon"
-                                      class="material-symbols-outlined text-[#111813] dark:text-white group-hover:text-primary transition-colors">
+                                    class="material-symbols-outlined text-[#111813] dark:text-white group-hover:text-primary transition-colors">
                                     light_mode
                                 </span>
                             </button>
-
-                            <!-- Cart -->
+                            <!-- Cart Button -->
                             <h:link outcome="cart"
-                                    styleClass="relative flex items-center justify-center rounded-lg h-10 w-12 bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 transition-colors group">
-                                <span class="material-symbols-outlined text-[#111813] dark:text-white group-hover:text-primary transition-colors">
+                                styleClass="relative flex items-center justify-center rounded-lg h-10 w-12 bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 transition-colors group">
+
+                                <span
+                                    class="material-symbols-outlined text-[#111813] dark:text-white group-hover:text-primary transition-colors">
                                     shopping_cart
                                 </span>
-                                <h:panelGroup id="cartBadge" layout="block"
-                                              styleClass="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full
-                                              bg-primary text-[10px] font-bold text-[#111813]
-                                              shadow-sm ring-2 ring-white dark:ring-[#1e3326]">
+                                <!-- Badge -->
+                                <h:panelGroup id="cartBadge" layout="block" styleClass="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full
+                                  bg-primary text-[10px] font-bold text-[#111813]
+                                  shadow-sm ring-2 ring-white dark:ring-[#1e3326]">
                                     #{cartMB.cartItemCount}
                                 </h:panelGroup>
+
                             </h:link>
 
                         </div>
                     </div>
                 </div>
-
-                <!-- Mobile Secondary Nav -->
-                <div class="flex lg:hidden overflow-x-auto px-4 py-2 gap-4 border-t border-[#f0f4f2] dark:border-[#2a3e32] no-scrollbar">
-                    <a class="text-[#111813] dark:text-gray-200 text-sm font-bold whitespace-nowrap" href="#">Fresh Produce</a>
-                    <a class="text-[#111813] dark:text-gray-200 text-sm font-bold whitespace-nowrap" href="#">Dairy &amp; Eggs</a>
-                    <a class="text-[#111813] dark:text-gray-200 text-sm font-bold whitespace-nowrap" href="#">Meat &amp; Seafood</a>
+                <!-- Mobile Secondary Nav (Optional, visible only on small screens) -->
+                <div
+                    class="flex lg:hidden overflow-x-auto px-4 py-2 gap-4 border-t border-[#f0f4f2] dark:border-[#2a3e32] no-scrollbar">
+                    <a class="text-[#111813] dark:text-gray-200 text-sm font-bold whitespace-nowrap" href="#">Fresh
+                        Produce</a>
+                    <a class="text-[#111813] dark:text-gray-200 text-sm font-bold whitespace-nowrap" href="#">Dairy
+                        &amp; Eggs</a>
+                    <a class="text-[#111813] dark:text-gray-200 text-sm font-bold whitespace-nowrap" href="#">Meat &amp;
+                        Seafood</a>
                     <a class="text-[#111813] dark:text-gray-200 text-sm font-bold whitespace-nowrap" href="#">Bakery</a>
-                    <a class="text-[#111813] dark:text-gray-200 text-sm font-bold whitespace-nowrap" href="#">Beverages</a>
+                    <a class="text-[#111813] dark:text-gray-200 text-sm font-bold whitespace-nowrap"
+                        href="#">Beverages</a>
                 </div>
             </div>
         </header>
     </h:panelGroup>
-
     <script>//<![CDATA[
         document.addEventListener('DOMContentLoaded', function () {
             // User Dropdown Menu Handler
@@ -238,8 +261,7 @@
                 var closeTimeout;
 
                 dropdown.addEventListener('mouseenter', function () {
-                    if (closeTimeout)
-                        clearTimeout(closeTimeout);
+                    if (closeTimeout) clearTimeout(closeTimeout);
                     dropdownContent.classList.remove('hidden');
                 });
 
@@ -256,23 +278,31 @@
             var selectedCategoryText = document.getElementById('selected-category-text');
             var categoryOptions = document.querySelectorAll('.category-option');
 
+            // Filter categories based on input
             if (categoryFilterInput) {
                 categoryFilterInput.addEventListener('input', function () {
                     var filterValue = this.value.toLowerCase();
                     categoryOptions.forEach(function (option) {
                         var categoryName = option.getAttribute('data-category-name').toLowerCase();
-                        option.style.display = categoryName.includes(filterValue) ? 'flex' : 'none';
+                        if (categoryName.includes(filterValue)) {
+                            option.style.display = 'flex';
+                        } else {
+                            option.style.display = 'none';
+                        }
                     });
                 });
             }
 
+            // Handle category selection
             categoryOptions.forEach(function (option) {
                 option.addEventListener('click', function () {
                     var categoryId = this.getAttribute('data-category-id');
                     var categoryName = this.getAttribute('data-category-name');
 
+                    // Update selected text
                     selectedCategoryText.textContent = categoryName;
 
+                    // Update hidden input for JSF
                     var hiddenInput = document.getElementById('selectedCategoryId');
                     if (!hiddenInput) {
                         hiddenInput = document.createElement('input');
@@ -283,32 +313,40 @@
                     }
                     hiddenInput.value = categoryId;
 
+                    // Close dropdown
                     categoryDropdown.classList.add('opacity-0', 'invisible');
 
+                    // Submit the form to perform search
                     var form = document.getElementById('searchForm');
-                    if (form)
+                    if (form) {
                         form.submit();
+                    }
                 });
             });
 
-            // Theme Toggle
+            // Theme Toggle Handler
             var themeToggleBtn = document.getElementById('theme-toggle-btn');
             var themeIcon = document.getElementById('theme-icon');
             var htmlElement = document.documentElement;
 
+            // Initialize theme from localStorage or system preference
             function initializeTheme() {
                 var savedTheme = localStorage.getItem('theme');
                 var theme = savedTheme;
 
                 if (!theme) {
-                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                    // Check system preference
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                         theme = 'dark';
-                    else
+                    } else {
                         theme = 'light';
+                    }
                 }
+
                 applyTheme(theme);
             }
 
+            // Apply theme and update icon
             function applyTheme(theme) {
                 if (theme === 'dark') {
                     htmlElement.classList.add('dark');
@@ -317,23 +355,36 @@
                     htmlElement.classList.remove('dark');
                     themeIcon.textContent = 'light_mode';
                 } else if (theme === 'system') {
-                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                         htmlElement.classList.add('dark');
-                    else
+                    } else {
                         htmlElement.classList.remove('dark');
+                    }
                     themeIcon.textContent = 'computer';
                 }
                 localStorage.setItem('theme', theme);
             }
 
+            // Theme cycle: light -> dark -> system -> light
             themeToggleBtn.addEventListener('click', function () {
                 var currentTheme = localStorage.getItem('theme') || 'light';
-                var nextTheme = (currentTheme === 'light') ? 'dark' : (currentTheme === 'dark') ? 'system' : 'light';
+                var nextTheme;
+
+                if (currentTheme === 'light') {
+                    nextTheme = 'dark';
+                } else if (currentTheme === 'dark') {
+                    nextTheme = 'system';
+                } else {
+                    nextTheme = 'light';
+                }
+
                 applyTheme(nextTheme);
             });
 
+            // Initialize on page load
             initializeTheme();
 
+            // Listen to system theme changes
             if (window.matchMedia) {
                 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
                     var currentTheme = localStorage.getItem('theme');

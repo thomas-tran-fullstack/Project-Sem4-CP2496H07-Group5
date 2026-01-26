@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+    xmlns:c="jakarta.tags.core">
+
+    <ui:define name="content">
+        <!-- Google Fonts & Icons (If not already in layout) -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap"
+            rel="stylesheet" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+            rel="stylesheet" />
+
+        <f:event type="preRenderView" listener="#{wishlistMB.onPreRender}" />
+
+        <style>
+            .font-display {
+                font-family: 'Inter', "Noto Sans", sans-serif;
+            }
+
+            .line-clamp-2 {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+        </style>
+
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+        <script>
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        colors: {
+                            "primary": "#17cf54",
+                            "primary-dark": "#12a643",
+                            "primary-light": "#e7f3eb",
+                            "text-main": "#0e1b12",
+                            "text-secondary": "#4e9767",
+                            "background-light": "#f8fcf9",
+                            "background-dark": "#112116",
+                            "surface": "#ffffff",
+                        },
+                        fontFamily: {
+                            "display": ["Inter", "Noto Sans", "sans-serif"],
+                            "body": ["Inter", "Noto Sans", "sans-serif"],
+                        },
+                    },
+                },
+            }
+        </script>
+
+        <div
+            class="bg-background-light dark:bg-background-dark text-text-main dark:text-white transition-colors duration-200 min-h-screen font-display">
+
+            <main class="flex-grow">
+                <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <!-- Breadcrumbs -->
+                    <nav aria-label="Breadcrumb" class="flex mb-4">
+                        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                            <li class="inline-flex items-center">
+                                <a class="inline-flex items-center text-sm font-medium text-text-secondary hover:text-primary"
+                                    href="#{request.contextPath}/pages/user/index.xhtml">
+                                    <span class="material-symbols-outlined text-[18px] mr-1">home</span>
+                                    Home
+                                </a>
+                            </li>
+                            <li aria-current="page">
+                                <div class="flex items-center">
+                                    <span
+                                        class="material-symbols-outlined text-text-secondary text-[18px]">chevron_right</span>
+                                    <span
+                                        class="ml-1 text-sm font-medium text-text-main dark:text-gray-200 md:ml-2">Wishlist</span>
+                                </div>
+                            </li>
+                        </ol>
+                    </nav>
+
+                    <!-- Page Header & Toolbar -->
+                    <div
+                        class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 border-b border-gray-100 dark:border-gray-800 pb-6">
+                        <div>
+                            <h1
+                                class="text-3xl sm:text-4xl font-black text-text-main dark:text-white tracking-tight mb-2">
+                                My Wishlist</h1>
+                            <p class="text-text-secondary dark:text-gray-400 font-medium">You have
+                                #{wishlistMB.wishlistItemCount} items in your list</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4 w-full md:w-auto">
+                            <!-- Search within wishlist -->
+                            <div class="relative flex-grow md:flex-grow-0 md:w-64">
+                                <h:form style="display:inline;">
+                                    <h:inputText value="#{wishlistMB.searchKeyword}"
+                                        styleClass="w-full h-10 pl-3 pr-8 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-primary focus:border-primary"
+                                        placeholder="Search wishlist...">
+                                        <f:ajax event="keyup" listener="#{wishlistMB.searchWishlist}"
+                                            render=":wishlistGrid" delay="300" />
+                                    </h:inputText>
+                                </h:form>
+                                <span
+                                    class="material-symbols-outlined absolute right-2.5 top-2.5 text-gray-400 text-[20px]">search</span>
+                            </div>
+
+                            <!-- Sort Dropdown & View Toggle Removed as requested -->
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <h:panelGroup id="wishlistGrid" layout="block">
+                        <!-- Empty State -->
+                        <h:panelGroup rendered="#{wishlistMB.wishlistItemCount == 0}">
+                            <div class="flex flex-col items-center justify-center py-20 text-center">
+                                <div
+                                    class="w-24 h-24 bg-primary-light rounded-full flex items-center justify-center mb-6">
+                                    <span class="material-symbols-outlined text-primary text-5xl">favorite_border</span>
+                                </div>
+                                <h3 class="text-xl font-bold text-text-main dark:text-white mb-2">Your wishlist is empty
+                                </h3>
+                                <p class="text-text-secondary mb-8 max-w-md">You haven't saved any items yet. Browse our
+                                    supermarket and add your favorite items!</p>
+                                <a href="#{request.contextPath}/pages/user/index.xhtml"
+                                    class="px-8 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-colors inline-block">
+                                    Continue Shopping
+                                </a>
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{wishlistMB.wishlistItemCount > 0}">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                <ui:repeat value="#{wishlistMB.wishlistItems}" var="item">
+                                    <!-- Product Card -->
+                                    <div
+                                        class="group bg-surface dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col overflow-hidden">
+
+                                        <!-- Remove Button -->
+                                        <h:form>
+                                            <h:commandLink
+                                                action="#{wishlistMB.removeFromWishlist(item.productID.productID)}"
+                                                styleClass="absolute top-3 right-3 z-10 p-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-full text-gray-400 hover:text-red-500 hover:bg-white dark:hover:bg-gray-700 transition-colors shadow-sm group/btn"
+                                                title="Remove from wishlist">
+                                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                                <f:ajax render="@this :wishlistGrid" /> <!-- Ajax removal -->
+                                            </h:commandLink>
+                                        </h:form>
+
+                                        <!-- Image Area -->
+                                        <div class="relative pt-[100%] bg-gray-50 dark:bg-gray-900 overflow-hidden">
+                                            <a href="#{request.contextPath}/pages/user/productdetail.xhtml?productId=#{item.productID.productID}"
+                                                class="absolute inset-0 block">
+                                                <h:graphicImage value="#{wishlistMB.getProductImageUrl(item.productID)}"
+                                                    alt="#{item.productID.productName}"
+                                                    styleClass="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            </a>
+                                            <!-- Out of stock overlay -->
+                                            <h:panelGroup rendered="#{item.productID.stockQuantity le 0}">
+                                                <div
+                                                    class="absolute bottom-0 left-0 right-0 bg-gray-900/60 backdrop-blur-[2px] p-2 text-center pointer-events-none">
+                                                    <span
+                                                        class="text-white text-xs font-bold uppercase tracking-wider">Temporarily
+                                                        Out of Stock</span>
+                                                </div>
+                                            </h:panelGroup>
+                                        </div>
+
+                                        <!-- Content Area -->
+                                        <div
+                                            class="p-4 flex flex-col flex-1 #{item.productID.stockQuantity le 0 ? 'opacity-75 group-hover:opacity-100 transition-opacity' : ''}">
+                                            <div class="flex-1">
+                                                <p class="text-xs text-text-secondary font-medium mb-1">
+                                                    #{item.productID.categoryID.categoryName}</p>
+                                                <a href="#{request.contextPath}/pages/user/productdetail.xhtml?productId=#{item.productID.productID}"
+                                                    class="text-base font-semibold text-text-main dark:text-white leading-tight mb-2 group-hover:text-primary transition-colors cursor-pointer line-clamp-2 block decoration-transparent">
+                                                    #{item.productID.productName}
+                                                </a>
+                                                <div class="flex items-baseline gap-2 mb-4">
+                                                    <span class="text-lg font-bold text-primary">
+                                                        <h:outputText value="#{item.productID.unitPrice}">
+                                                            <f:convertNumber type="currency" currencySymbol="$"
+                                                                locale="en_US" />
+                                                        </h:outputText>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Action Button -->
+                                            <h:form>
+                                                <h:commandLink action="#{cartMB.addToCart(item.productID, 1)}"
+                                                    styleClass="w-full flex items-center justify-center gap-2 #{item.productID.stockQuantity > 0 ? 'bg-primary hover:bg-primary-dark text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'} font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm active:scale-[0.98]"
+                                                    disabled="#{item.productID.stockQuantity le 0}">
+                                                    <ui:fragment rendered="#{item.productID.stockQuantity > 0}">
+                                                        <span
+                                                            class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+                                                        Add to Cart
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{item.productID.stockQuantity le 0}">
+                                                        <span
+                                                            class="material-symbols-outlined text-[20px]">notifications</span>
+                                                        Notify Me
+                                                    </ui:fragment>
+                                                </h:commandLink>
+                                            </h:form>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+
+
+                </div>
+            </main>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

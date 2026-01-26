@@ -1,17 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
 package sessionbeans;
 
 import entityclass.Carts;
 import jakarta.ejb.Local;
 import java.util.List;
 
-/**
- *
- * @author TRUONG LAM
- */
 @Local
 public interface CartsFacadeLocal {
 
@@ -31,4 +23,5 @@ public interface CartsFacadeLocal {
 
     List<Carts> findByCustomerID(Integer customerID);
 
+    Carts findLatestByCustomer(Integer customerID);
 }

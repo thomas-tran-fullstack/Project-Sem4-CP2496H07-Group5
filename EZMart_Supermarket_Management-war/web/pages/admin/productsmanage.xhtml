@@ -18,11 +18,123 @@
                             <span class="material-symbols-outlined text-lg">download</span>
                             Export Data
                         </button>
+                        <button onclick="openImportModal()"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                            <span class="material-symbols-outlined text-lg">upload_file</span>
+                            Import Excel
+                        </button>
                         <h:link outcome="addproduct"
                             class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors">
                             <span class="material-symbols-outlined text-lg">add</span>
                             Add Product
                         </h:link>
+                    </div>
+                </div>
+
+                <!-- Statistics Dashboard -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Total Products -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="h-12 w-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">inventory_2</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Total Products</p>
+                                <p class="text-2xl font-bold text-slate-900 dark:text-white">#{productMB.totalProducts}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Products -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="h-12 w-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">check_circle</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Active Products</p>
+                                <p class="text-2xl font-bold text-slate-900 dark:text-white">#{productMB.activeProductsCount}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Low Stock Alert -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="h-12 w-12 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-orange-600 dark:text-orange-400 text-2xl">warning</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Low Stock Items</p>
+                                <p class="text-2xl font-bold text-slate-900 dark:text-white">#{productMB.lowStockCount}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Out of Stock -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="h-12 w-12 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-2xl">cancel</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Out of Stock</p>
+                                <p class="text-2xl font-bold text-slate-900 dark:text-white">#{productMB.outOfStockCount}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Inventory Value -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="h-12 w-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-2xl">attach_money</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Inventory Value</p>
+                                <p class="text-2xl font-bold text-slate-900 dark:text-white">$#{productMB.totalInventoryValue}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Average Price -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="h-12 w-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-2xl">trending_up</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Average Price</p>
+                                <p class="text-2xl font-bold text-slate-900 dark:text-white">$#{productMB.averagePrice}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Stock Quantity -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="h-12 w-12 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-teal-600 dark:text-teal-400 text-2xl">package</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Total Stock</p>
+                                <p class="text-2xl font-bold text-slate-900 dark:text-white">#{productMB.totalStockQuantity}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inactive Products -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="h-12 w-12 rounded-xl bg-gray-100 dark:bg-gray-900/30 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-gray-600 dark:text-gray-400 text-2xl">block</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Inactive Products</p>
+                                <p class="text-2xl font-bold text-slate-900 dark:text-white">#{productMB.inactiveProductsCount}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -219,6 +331,86 @@
         </h:panelGroup>
 
         <script>
+            document.querySelectorAll('.toast-item').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                    el.style.transition = 'all 0.3s ease';
+                }, 100 * index);
+
+                setTimeout(() => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(-20px)';
+                    setTimeout(() => el.remove(), 300);
+                }, 3000);
+            });
+        </script>
+
+        <!-- Excel Import Modal -->
+        <div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full">
+                    <div class="p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="h-10 w-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-xl">upload_file</span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Import Products from Excel</h3>
+                                <p class="text-sm text-slate-600 dark:text-slate-400">Upload an Excel file to bulk import products</p>
+                            </div>
+                        </div>
+
+                        <h:form enctype="multipart/form-data" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Excel File</label>
+                                <h:inputFile value="#{productMB.excelFile}"
+                                    class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-600 file:text-white hover:file:bg-green-700" />
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    Supported format: .xlsx. First row should be headers.
+                                </p>
+                            </div>
+
+                            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                                <h4 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Expected Excel Format:</h4>
+                                <div class="text-xs text-blue-800 dark:text-blue-200 space-y-1">
+                                    <p><strong>Columns:</strong> Product Name, Category Name, Brand Name, Unit Price, Stock Quantity, Description,ImageUrl</p>
+                                    <p><strong>Note:</strong> Categories and brands must exist in the system. New products will be set as Active by default.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end gap-3 pt-4">
+                                <button type="button" onclick="closeImportModal()"
+                                    class="px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 font-medium">
+                                    Cancel
+                                </button>
+                                <h:commandButton action="#{productMB.importProductsFromExcel()}" value="Import Products"
+                                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium" />
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openImportModal() {
+                document.getElementById('importModal').classList.remove('hidden');
+            }
+
+            function closeImportModal() {
+                document.getElementById('importModal').classList.add('hidden');
+            }
+
+            // Close modal when clicking outside
+            document.getElementById('importModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeImportModal();
+                }
+            });
+
             document.querySelectorAll('.toast-item').forEach((el, index) => {
                 el.style.opacity = '0';
                 el.style.transform = 'translateY(-20px)';

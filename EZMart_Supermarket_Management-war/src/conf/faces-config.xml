@@ -1,0 +1,262 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="4.0"
+    xmlns="https://jakarta.ee/xml/ns/jakartaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+    https://jakarta.ee/xml/ns/jakartaee/web-facesconfig_4_0.xsd">
+
+    <!-- =============== COMMUNITY BLOG NAVIGATION RULES =============== -->
+    
+    <!-- From Community Hub Page -->
+    <navigation-rule>
+        <from-view-id>/pages/user/community.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>createpost</from-outcome>
+            <to-view-id>/pages/user/createpost.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>browse-posts</from-outcome>
+            <to-view-id>/pages/user/browse-posts.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>myposts</from-outcome>
+            <to-view-id>/pages/user/myposts.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>notifications</from-outcome>
+            <to-view-id>/pages/user/notifications.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>post-detail</from-outcome>
+            <to-view-id>/pages/user/post-detail.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>editpost</from-outcome>
+            <to-view-id>/pages/user/editpost.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <!-- From Create Post Page -->
+    <navigation-rule>
+        <from-view-id>/pages/user/createpost.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>community</from-outcome>
+            <to-view-id>/pages/user/community.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>browse-posts</from-outcome>
+            <to-view-id>/pages/user/browse-posts.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>myposts</from-outcome>
+            <to-view-id>/pages/user/myposts.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <!-- From Browse Posts Page -->
+    <navigation-rule>
+        <from-view-id>/pages/user/browse-posts.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>community</from-outcome>
+            <to-view-id>/pages/user/community.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>createpost</from-outcome>
+            <to-view-id>/pages/user/createpost.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>post-detail</from-outcome>
+            <to-view-id>/pages/user/post-detail.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <!-- From My Posts Page -->
+    <navigation-rule>
+        <from-view-id>/pages/user/myposts.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>community</from-outcome>
+            <to-view-id>/pages/user/community.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>createpost</from-outcome>
+            <to-view-id>/pages/user/createpost.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>post-detail</from-outcome>
+            <to-view-id>/pages/user/post-detail.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>editpost</from-outcome>
+            <to-view-id>/pages/user/editpost.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <!-- From Post Detail Page -->
+    <navigation-rule>
+        <from-view-id>/pages/user/post-detail.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>community</from-outcome>
+            <to-view-id>/pages/user/community.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>browse-posts</from-outcome>
+            <to-view-id>/pages/user/browse-posts.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>myposts</from-outcome>
+            <to-view-id>/pages/user/myposts.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <!-- From Edit Post Page -->
+    <navigation-rule>
+        <from-view-id>/pages/user/editpost.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>myposts</from-outcome>
+            <to-view-id>/pages/user/myposts.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>post-detail</from-outcome>
+            <to-view-id>/pages/user/post-detail.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <!-- From Notifications Page -->
+    <navigation-rule>
+        <from-view-id>/pages/user/notifications.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>community</from-outcome>
+            <to-view-id>/pages/user/community.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>post-detail</from-outcome>
+            <to-view-id>/pages/user/post-detail.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <!-- From Admin Community Admin Page -->
+    <navigation-rule>
+        <from-view-id>/pages/admin/community-admin.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>community-stats</from-outcome>
+            <to-view-id>/pages/admin/community-stats.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>dashboard</from-outcome>
+            <to-view-id>/pages/admin/dashboard.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <!-- From Admin Community Stats Page -->
+    <navigation-rule>
+        <from-view-id>/pages/admin/community-stats.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>community-admin</from-outcome>
+            <to-view-id>/pages/admin/community-admin.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <!-- Wishlist Navigation Rules -->
+    <navigation-rule>
+        <from-view-id>/pages/user/products.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>user/wishlist</from-outcome>
+            <to-view-id>/pages/user/wishlist.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <!-- Global Wildcard Rules - Matches Any Source View -->
+    <navigation-rule>
+        <from-view-id>*</from-view-id>
+        <navigation-case>
+            <from-outcome>wishlist</from-outcome>
+            <to-view-id>/pages/user/wishlist.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>user/wishlist</from-outcome>
+            <to-view-id>/pages/user/wishlist.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>community</from-outcome>
+            <to-view-id>/pages/user/community.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>createpost</from-outcome>
+            <to-view-id>/pages/user/createpost.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>browse-posts</from-outcome>
+            <to-view-id>/pages/user/browse-posts.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>myposts</from-outcome>
+            <to-view-id>/pages/user/myposts.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>notifications</from-outcome>
+            <to-view-id>/pages/user/notifications.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>post-detail</from-outcome>
+            <to-view-id>/pages/user/post-detail.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>editpost</from-outcome>
+            <to-view-id>/pages/user/editpost.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>community-admin</from-outcome>
+            <to-view-id>/pages/admin/community-admin.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>community-stats</from-outcome>
+            <to-view-id>/pages/admin/community-stats.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>/pages/user/community</from-outcome>
+            <to-view-id>/pages/user/community.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>/pages/user/createpost</from-outcome>
+            <to-view-id>/pages/user/createpost.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>/pages/user/browse-posts</from-outcome>
+            <to-view-id>/pages/user/browse-posts.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>/pages/user/myposts</from-outcome>
+            <to-view-id>/pages/user/myposts.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>/pages/user/notifications</from-outcome>
+            <to-view-id>/pages/user/notifications.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>/pages/user/post-detail</from-outcome>
+            <to-view-id>/pages/user/post-detail.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>/pages/user/editpost</from-outcome>
+            <to-view-id>/pages/user/editpost.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>/pages/admin/community-admin</from-outcome>
+            <to-view-id>/pages/admin/community-admin.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>/pages/admin/community-stats</from-outcome>
+            <to-view-id>/pages/admin/community-stats.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+
+</faces-config>

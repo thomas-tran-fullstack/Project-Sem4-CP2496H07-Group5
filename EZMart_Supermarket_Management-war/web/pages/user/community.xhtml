@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core">
+
+    <ui:define name="content">
+        <!-- Fonts and Styles -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;display=swap"
+            rel="stylesheet" />
+        <style>
+            .font-display {
+                font-family: 'Newsreader', serif;
+            }
+
+            .line-clamp-2 {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+        </style>
+
+        <h:form id="communityForm" prependId="false" enctype="multipart/form-data">
+
+            <main class="max-w-[1440px] mx-auto px-4 lg:px-40 py-8 flex flex-col lg:flex-row gap-8 font-display">
+                <!-- Left Column: Blog Post View / Feed -->
+                <div class="flex-1 max-w-full lg:max-w-[800px]">
+                    <!-- Breadcrumbs -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <a class="text-primary text-sm font-medium leading-normal"
+                            href="#{request.contextPath}/pages/user/index.xhtml">Home</a>
+                        <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                        <h:commandLink action="#{communityMB.changeTab('browse')}" value="Community"
+                            styleClass="text-primary text-sm font-medium leading-normal cursor-pointer" />
+
+                        <ui:fragment rendered="#{communityMB.currentTab == 'myPosts'}">
+                            <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                            <span
+                                class="text-[#111813] dark:text-white/60 text-sm font-medium leading-normal truncate">My
+                                Posts</span>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{communityMB.selectedPost != null}">
+                            <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
+                            <span
+                                class="text-[#111813] dark:text-white/60 text-sm font-medium leading-normal truncate">#{communityMB.selectedPost.title}</span>
+                        </ui:fragment>
+                    </div>
+
+                    <!-- Global Messages -->
+                    <h:messages id="messages" globalOnly="true"
+                        infoClass="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-200 block"
+                        warnClass="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg text-yellow-700 dark:text-yellow-200 block"
+                        errorClass="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-200 block"
+                        showDetail="true" closable="true" />
+
+
+                    <!-- VIEW: BROWSE (FEED) -->
+                    <h:panelGroup rendered="#{communityMB.currentTab == 'browse' and communityMB.selectedPost == null}">
+                        <!-- Featured Post (First Approved Post) -->
+                        <h:panelGroup rendered="#{not empty communityMB.approvedPosts}">
+                            <ui:param name="featuredPost" value="#{communityMB.approvedPosts[0]}" />
+                            <!-- Blog Post Container -->
+                            <article
+                                class="bg-white dark:bg-background-dark rounded-xl overflow-hidden shadow-sm border border-[#f0f4f2] dark:border-white/10 mb-8 cursor-pointer"
+                                onclick="#{communityMB.selectPost(featuredPost)}">
+                                <!-- Simple way to make card clickable, though JSF action needs link inside -->
+                                <!-- Header Image -->
+                                <div class="w-full relative">
+                                    <h:commandLink action="#{communityMB.selectPost(featuredPost)}"
+                                        styleClass="absolute inset-0 z-10 block">
+                                    </h:commandLink>
+                                    <div class="bg-cover bg-center flex flex-col justify-end overflow-hidden min-h-80 relative"
+                                        style="background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 40%), url('#{not empty featuredPost.coverImageUrl ? featuredPost.coverImageUrl : request.contextPath.concat('/resources/images/default-post.jpg')}');">
+                                        <div class="p-8 relative z-0 pointer-events-none"> <!-- content visible -->
+                                            <span
+                                                class="bg-primary text-white text-xs font-bold px-3 py-1 rounded-full mb-3 inline-block">FEATURED</span>
+                                            <h1
+                                                class="text-white text-3xl md:text-4xl font-bold leading-tight font-display">
+                                                #{featuredPost.title}</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Snippet -->
+                                <div class="p-6">
+                                    <p
+                                        class="text-[#111813] dark:text-white/90 leading-relaxed font-display text-lg line-clamp-2">
+                                        #{featuredPost.content}
+                                    </p>
+                                </div>
+                                <!-- Social Interaction -->
+                                <div
+                                    class="px-8 py-4 border-t border-[#f0f4f2] dark:border-white/10 flex items-center gap-6">
+                                    <div class="flex items-center gap-2 text-[#63886f]">
+                                        <span class="material-symbols-outlined">thumb_up</span>
+                                        <span class="text-sm font-medium">#{featuredPost.likeCount}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-[#63886f]">
+                                        <span class="material-symbols-outlined">mode_comment</span>
+                                        <span class="text-sm font-medium">#{featuredPost.commentCount}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-[#63886f] ml-auto">
+                                        <span class="text-sm font-medium">
+                                            <h:outputText value="#{featuredPost.submittedAt}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                                            </h:outputText>
+                                        </span>
+                                    </div>
+                                </div>
+                            </article>
+                        </h:panelGroup>
+
+                        <!-- List of Other Posts -->
+                        <h:panelGroup rendered="#{communityMB.approvedPosts.size() > 1}">
+                            <h3 class="text-2xl font-bold mb-6 text-[#111813] dark:text-white">Other Posts</h3>
+                            <div class="space-y-6">
+                                <ui:repeat value="#{communityMB.approvedPosts}" var="post" offset="1"
+                                    varStatus="status">
+                                    <div
+                                        class="bg-white dark:bg-background-dark rounded-xl overflow-hidden shadow-sm border border-[#f0f4f2] dark:border-white/10 flex flex-col md:flex-row hover:shadow-md transition-shadow">
+                                        <div class="md:w-64 h-48 md:h-auto overflow-hidden shrink-0">
+                                            <div class="w-full h-full bg-cover bg-center hover:scale-105 transition-transform duration-500"
+                                                style="background-image: url('#{not empty post.coverImageUrl ? post.coverImageUrl : request.contextPath.concat('/resources/images/default-post.jpg')}');">
+                                            </div>
+                                        </div>
+                                        <div class="flex-1 p-6 flex flex-col justify-between">
+                                            <div>
+                                                <h:commandLink action="#{communityMB.selectPost(post)}">
+                                                    <h4
+                                                        class="text-xl font-bold mb-2 hover:text-primary transition-colors cursor-pointer text-[#111813] dark:text-white">
+                                                        #{post.title}</h4>
+                                                </h:commandLink>
+                                                <p class="text-[#63886f] dark:text-white/60 text-sm line-clamp-2 mb-4">
+                                                    #{post.content}</p>
+                                            </div>
+                                            <div
+                                                class="flex items-center justify-between border-t border-[#f0f4f2] dark:border-white/10 pt-4">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="size-6 rounded-full bg-cover bg-center bg-gray-200"
+                                                        style="background-image: url('#{not empty post.authorUser.avatarUrl ? post.authorUser.avatarUrl : request.contextPath.concat('/resources/images/default-avatar.png')}');">
+                                                    </div>
+                                                    <span
+                                                        class="text-xs font-bold text-[#111813] dark:text-white">#{post.authorUser.username}</span>
+                                                </div>
+                                                <div class="flex gap-4 text-xs text-[#63886f]">
+                                                    <span class="flex items-center gap-1"><span
+                                                            class="material-symbols-outlined text-[16px]">thumb_up</span>
+                                                        #{post.likeCount}</span>
+                                                    <span class="flex items-center gap-1"><span
+                                                            class="material-symbols-outlined text-[16px]">mode_comment</span>
+                                                        #{post.commentCount}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{empty communityMB.approvedPosts}">
+                            <div
+                                class="text-center py-12 bg-white dark:bg-background-dark rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
+                                <p class="text-gray-500">No posts available.</p>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                    <!-- VIEW: POST DETAIL -->
+                    <h:panelGroup rendered="#{communityMB.selectedPost != null}">
+                        <article
+                            class="bg-white dark:bg-background-dark rounded-xl overflow-hidden shadow-sm border border-[#f0f4f2] dark:border-white/10">
+                            <!-- Header Image -->
+                            <div class="w-full">
+                                <div class="bg-cover bg-center flex flex-col justify-end overflow-hidden min-h-80 relative"
+                                    style="background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 40%), url('#{not empty communityMB.selectedPost.coverImageUrl ? communityMB.selectedPost.coverImageUrl : request.contextPath.concat('/resources/images/default-post.jpg')}');">
+                                    <div class="p-8">
+                                        <span
+                                            class="bg-primary text-white text-xs font-bold px-3 py-1 rounded-full mb-3 inline-block">DETAILS</span>
+                                        <h1
+                                            class="text-white text-3xl md:text-4xl font-bold leading-tight font-display">
+                                            #{communityMB.selectedPost.title}</h1>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Profile Header -->
+                            <div
+                                class="flex p-6 items-center justify-between border-b border-[#f0f4f2] dark:border-white/10">
+                                <div class="flex gap-4">
+                                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                                        style="background-image: url('#{not empty communityMB.selectedPost.authorUser.avatarUrl ? communityMB.selectedPost.authorUser.avatarUrl : request.contextPath.concat('/resources/images/default-avatar.png')}');">
+                                    </div>
+                                    <div class="flex flex-col justify-center">
+                                        <p class="text-[#111813] dark:text-white text-base font-bold leading-tight">
+                                            #{communityMB.selectedPost.authorUser.username}</p>
+                                        <p class="text-[#63886f] text-sm font-normal leading-normal">
+                                            Posted on <h:outputText value="#{communityMB.selectedPost.submittedAt}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                                            </h:outputText>
+                                        </p>
+                                    </div>
+                                </div>
+                                <h:commandLink action="#{communityMB.selectPost(null)}"
+                                    styleClass="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-9 px-4 bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all text-sm font-bold">
+                                    <span>Back</span>
+                                </h:commandLink>
+                            </div>
+                            <!-- Body Text -->
+                            <div
+                                class="p-6 md:p-8 prose dark:prose-invert max-w-none text-[#111813] dark:text-white/90 leading-relaxed font-display text-lg whitespace-pre-wrap">
+                                #{communityMB.selectedPost.content}</div>
+
+                            <!-- Social Interaction -->
+                            <div
+                                class="px-8 py-4 border-t border-[#f0f4f2] dark:border-white/10 flex items-center gap-6">
+                                <h:commandLink action="#{communityMB.likePost(communityMB.selectedPost)}"
+                                    styleClass="flex items-center gap-2 #{communityMB.isLikedByCurrentUser(communityMB.selectedPost) ? 'text-primary' : 'text-[#63886f]'} hover:text-primary transition-colors">
+                                    <span
+                                        class="material-symbols-outlined">#{communityMB.isLikedByCurrentUser(communityMB.selectedPost)
+                                        ? 'thumb_up' : 'thumb_up_off_alt'}</span>
+                                    <span class="text-sm font-medium">#{communityMB.selectedPost.likeCount}</span>
+                                </h:commandLink>
+                                <h:commandLink action="#{communityMB.toggleComments()}"
+                                    styleClass="flex items-center gap-2 text-[#63886f] hover:text-primary transition-colors">
+                                    <f:ajax render="commentsContainer" />
+                                    <span class="material-symbols-outlined">mode_comment</span>
+                                    <span class="text-sm font-medium">#{communityMB.selectedPost.commentCount}</span>
+                                </h:commandLink>
+                            </div>
+                        </article>
+
+                        <!-- Comments Section (Collapsible) -->
+                        <h:panelGroup id="commentsContainer" layout="block">
+                            <h:panelGroup rendered="#{communityMB.showComments}" layout="block"
+                                styleClass="mt-8 bg-white dark:bg-background-dark rounded-xl p-6 shadow-sm border border-[#f0f4f2] dark:border-white/10">
+                                <h3 class="text-[#111813] dark:text-white text-lg font-bold mb-6">Comments</h3>
+                                <!-- Add Comment -->
+                                <div class="flex gap-4 mb-8">
+                                    <div
+                                        class="size-10 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-primary">person</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h:inputTextarea value="#{communityMB.commentText}"
+                                            styleClass="w-full rounded-lg border-[#f0f4f2] dark:border-white/10 dark:bg-white/5 focus:border-primary focus:ring-1 focus:ring-primary text-sm p-3 block"
+                                            rows="2" />
+                                        <div class="flex justify-end mt-2">
+                                            <h:commandButton
+                                                action="#{communityMB.submitComment(communityMB.selectedPost)}"
+                                                value="Submit Comment"
+                                                styleClass="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- List Comments -->
+                                <ui:repeat value="#{communityMB.postComments}" var="comment">
+                                    <div class="flex gap-4 mb-6">
+                                        <div class="size-10 rounded-full bg-cover"
+                                            style="background-image: url('#{not empty comment.authorUser.avatarUrl ? comment.authorUser.avatarUrl : request.contextPath.concat('/resources/images/default-avatar.png')}');">
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span
+                                                    class="font-bold text-sm dark:text-white">#{comment.authorUser.username}</span>
+                                                <span class="text-[#63886f] text-xs">
+                                                    <h:outputText value="#{comment.createdAt}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                                                    </h:outputText>
+                                                </span>
+                                            </div>
+                                            <p class="text-sm text-[#111813] dark:text-white/80">#{comment.content}</p>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                    <!-- VIEW: MY POSTS -->
+                    <h:panelGroup rendered="#{communityMB.currentTab == 'myPosts'}">
+                        <h2 class="text-2xl font-bold mb-6 text-[#111813] dark:text-white">My Posts</h2>
+                        <h:panelGroup rendered="#{empty communityMB.userPosts}">
+                            <div
+                                class="text-center py-12 bg-white dark:bg-background-dark rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
+                                <p class="text-gray-500">You haven't posted anything yet.</p>
+                            </div>
+                        </h:panelGroup>
+                        <div class="space-y-4">
+                            <ui:repeat value="#{communityMB.userPosts}" var="post">
+                                <div
+                                    class="bg-white dark:bg-background-dark rounded-xl p-6 border border-[#f0f4f2] dark:border-white/10 flex justify-between items-center">
+                                    <div>
+                                        <h3 class="text-lg font-bold text-[#111813] dark:text-white">#{post.title}</h3>
+                                        <span
+                                            class="text-xs px-2 py-1 rounded #{post.status == 'APPROVED' ? 'bg-green-100 text-green-700' : post.status == 'PENDING' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}">#{post.status}</span>
+                                    </div>
+                                    <h:commandButton action="#{communityMB.selectPost(post)}" value="View"
+                                        styleClass="text-primary font-bold hover:underline" />
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </h:panelGroup>
+
+                </div>
+
+                <!-- Right Column: Sidebar / Create Post (Sticky) -->
+                <div class="w-full lg:w-[360px] flex flex-col gap-6">
+
+                    <!-- Create Post WIDGET (Toggle between Button and Form) -->
+                    <div
+                        class="bg-white dark:bg-background-dark rounded-xl p-6 shadow-md border border-primary/20 sticky top-24 transition-all duration-300">
+                        <h:panelGroup rendered="#{not communityMB.showSidebarForm}">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary text-2xl">edit_note</span>
+                                </div>
+                                <h3 class="text-[#111813] dark:text-white text-lg font-bold">Share your story?</h3>
+                            </div>
+                            <p class="text-sm text-[#63886f] mb-6 leading-relaxed">
+                                Do you have a delicious recipe or a useful tip? Share it with the EZMart community!
+                            </p>
+                            <h:commandLink action="#{communityMB.toggleSidebarForm()}"
+                                styleClass="w-full bg-primary text-white py-3 rounded-lg font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                                <span class="material-symbols-outlined">edit</span>
+                                <span>Write Post</span>
+                                <f:ajax render="@form" />
+                            </h:commandLink>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{communityMB.showSidebarForm}">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-[#111813] dark:text-white text-lg font-bold flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">edit_square</span>
+                                    New Post
+                                </h3>
+                                <h:commandLink action="#{communityMB.toggleSidebarForm()}"
+                                    styleClass="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
+                                    <span class="material-symbols-outlined">close</span>
+                                    <f:ajax render="@form" />
+                                </h:commandLink>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <h:inputText value="#{communityMB.title}"
+                                        styleClass="w-full rounded-lg border-[#f0f4f2] dark:border-white/10 dark:bg-white/5 focus:border-primary focus:ring-1 focus:ring-primary text-sm p-2"
+                                        placeholder="Title..." />
+                                </div>
+                                <div>
+                                    <h:inputTextarea value="#{communityMB.content}"
+                                        styleClass="w-full rounded-lg border-[#f0f4f2] dark:border-white/10 dark:bg-white/5 focus:border-primary focus:ring-1 focus:ring-primary text-sm p-2 min-h-[120px]"
+                                        placeholder="Content..." />
+                                </div>
+                                <div
+                                    class="border-2 border-dashed border-[#f0f4f2] dark:border-white/10 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 transition-colors relative">
+                                    <ui:fragment rendered="#{communityMB.imageFile == null}">
+                                        <span class="material-symbols-outlined text-[#63886f] text-2xl">image</span>
+                                        <p class="text-[10px] text-[#63886f] mt-1 text-center italic">Choose image...
+                                        </p>
+                                    </ui:fragment>
+                                    <h:inputFile value="#{communityMB.imageFile}"
+                                        styleClass="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                                </div>
+                                <div>
+                                    <h:selectOneMenu value="#{communityMB.visibility}"
+                                        styleClass="w-full rounded-lg border-[#f0f4f2] dark:border-white/10 dark:bg-white/5 focus:border-primary focus:ring-1 focus:ring-primary text-sm p-2">
+                                        <f:selectItem itemValue="PUBLIC" itemLabel="Public" />
+                                        <f:selectItem itemValue="PRIVATE" itemLabel="Private" />
+                                    </h:selectOneMenu>
+                                </div>
+
+                                <h:commandButton action="#{communityMB.submitPost}" value="Post"
+                                    styleClass="w-full bg-primary text-white py-2 rounded-lg font-bold shadow-md shadow-primary/20 hover:bg-primary/90 transition-all cursor-pointer" />
+                            </div>
+                        </h:panelGroup>
+                    </div>
+
+                </div>
+
+                <!-- Trending Topics & Community Stats Removed -->
+            </main>
+
+        </h:form>
+    </ui:define>
+</ui:composition>

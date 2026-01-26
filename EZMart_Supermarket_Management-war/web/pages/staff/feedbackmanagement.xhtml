@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/templates/staff/layout.xhtml">
+
+    <ui:define name="content">
+        <h:form id="feedbackForm">
+            <h:messages id="messages" 
+                        errorClass="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-200"
+                        infoClass="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-200"
+                        closable="true" />
+
+            <!-- Tab Navigation -->
+            <div class="flex gap-2 mb-6 border-b border-slate-200 dark:border-slate-700">
+            <h:commandButton value="Open (#{feedbackMB.openFeedbacks.size()})" 
+                             action="#{feedbackMB.changeTab('open')}"
+                             immediate="true"
+                             update="feedbackForm"
+                             styleClass="px-4 py-3 font-semibold border-b-2 #{feedbackMB.currentTab.equals('open') ? 'border-primary text-primary' : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}"/>
+            <h:commandButton value="Closed (#{feedbackMB.closedFeedbacks.size()})" 
+                             action="#{feedbackMB.changeTab('closed')}"
+                             immediate="true"
+                             update="feedbackForm"
+                             styleClass="px-4 py-3 font-semibold border-b-2 #{feedbackMB.currentTab.equals('closed') ? 'border-primary text-primary' : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}"/>
+            <h:commandButton value="All (#{feedbackMB.allFeedbacks.size()})" 
+                             action="#{feedbackMB.changeTab('all')}"
+                             immediate="true"
+                             update="feedbackForm"
+                             styleClass="px-4 py-3 font-semibold border-b-2 #{feedbackMB.currentTab.equals('all') ? 'border-primary text-primary' : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}"/>
+        </div>
+
+        <!-- Open Feedbacks Table -->
+        <h:panelGroup rendered="#{feedbackMB.currentTab.equals('open')}">
+            <h:panelGroup rendered="#{feedbackMB.openFeedbacks.size() > 0}">
+                <div class="overflow-x-auto bg-white dark:bg-[#1a2e22] rounded-lg border border-slate-200 dark:border-slate-700">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Subject</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Type</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Customer</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Date</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Rating</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-900 dark:text-white">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ui:repeat value="#{feedbackMB.openFeedbacks}" var="feedback">
+                                <tr class="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                                    <td class="px-6 py-4 text-sm text-slate-900 dark:text-white font-medium">
+                                        <span title="#{feedback.subject}">#{feedback.subject.length() > 30 ? feedback.subject.substring(0,30).concat('...') : feedback.subject}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm">
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold text-white #{feedback.feedbackType.equals('COMPLAINT') ? 'bg-red-500' : feedback.feedbackType.equals('SUGGESTION') ? 'bg-blue-500' : feedback.feedbackType.equals('BUG') ? 'bg-orange-500' : feedback.feedbackType.equals('FEATURE_REQUEST') ? 'bg-purple-500' : 'bg-slate-500'}">
+                                            #{feedback.feedbackType}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">#{feedback.customerID.userID.username}</td>
+                                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                        <h:outputText value="#{feedback.createdAt}" converterParam="yyyy-MM-dd HH:mm">
+                                            <f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+                                        </h:outputText>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                        <h:outputText rendered="#{feedback.rating != null}" value="#{feedback.rating} ⭐" />
+                                        <h:outputText rendered="#{feedback.rating == null}" value="-" />
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <h:commandButton value="View" 
+                                                         action="#{feedbackMB.selectFeedback(feedback)}"
+                                                         update="feedbackForm"
+                                                         styleClass="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold rounded transition-colors"/>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </tbody>
+                    </table>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{feedbackMB.openFeedbacks.size() == 0}">
+                <div class="text-center py-12 bg-white dark:bg-[#1a2e22] rounded-lg border border-slate-200 dark:border-slate-700">
+                    <p class="text-slate-500 dark:text-slate-400">No open feedback found</p>
+                </div>
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <!-- Closed Feedbacks Table -->
+        <h:panelGroup rendered="#{feedbackMB.currentTab.equals('closed')}">
+            <h:panelGroup rendered="#{feedbackMB.closedFeedbacks.size() > 0}">
+                <div class="overflow-x-auto bg-white dark:bg-[#1a2e22] rounded-lg border border-slate-200 dark:border-slate-700">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Subject</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Type</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Customer</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Date</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Status</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-900 dark:text-white">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ui:repeat value="#{feedbackMB.closedFeedbacks}" var="feedback">
+                                <tr class="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                                    <td class="px-6 py-4 text-sm text-slate-900 dark:text-white font-medium">
+                                        <span title="#{feedback.subject}">#{feedback.subject.length() > 30 ? feedback.subject.substring(0,30).concat('...') : feedback.subject}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm">
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold text-white #{feedback.feedbackType.equals('COMPLAINT') ? 'bg-red-500' : feedback.feedbackType.equals('SUGGESTION') ? 'bg-blue-500' : feedback.feedbackType.equals('BUG') ? 'bg-orange-500' : feedback.feedbackType.equals('FEATURE_REQUEST') ? 'bg-purple-500' : 'bg-slate-500'}">
+                                            #{feedback.feedbackType}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">#{feedback.customerID.userID.username}</td>
+                                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                        <h:outputText value="#{feedback.createdAt}" converterParam="yyyy-MM-dd HH:mm">
+                                            <f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+                                        </h:outputText>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm">
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold text-white bg-green-500">
+                                            CLOSED
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <h:commandButton value="View" 
+                                                         action="#{feedbackMB.selectFeedback(feedback)}"
+                                                         update="feedbackForm"
+                                                         styleClass="px-3 py-1 bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold rounded transition-colors"/>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </tbody>
+                    </table>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{feedbackMB.closedFeedbacks.size() == 0}">
+                <div class="text-center py-12 bg-white dark:bg-[#1a2e22] rounded-lg border border-slate-200 dark:border-slate-700">
+                    <p class="text-slate-500 dark:text-slate-400">No closed feedback found</p>
+                </div>
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <!-- All Feedbacks Table -->
+        <h:panelGroup rendered="#{feedbackMB.currentTab.equals('all')}">
+            <h:panelGroup rendered="#{feedbackMB.allFeedbacks.size() > 0}">
+                <div class="overflow-x-auto bg-white dark:bg-[#1a2e22] rounded-lg border border-slate-200 dark:border-slate-700">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Subject</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Type</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Customer</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Date</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Status</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900 dark:text-white">Rating</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-900 dark:text-white">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ui:repeat value="#{feedbackMB.allFeedbacks}" var="feedback">
+                                <tr class="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                                    <td class="px-6 py-4 text-sm text-slate-900 dark:text-white font-medium">
+                                        <span title="#{feedback.subject}">#{feedback.subject.length() > 25 ? feedback.subject.substring(0,25).concat('...') : feedback.subject}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm">
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold text-white #{feedback.feedbackType.equals('COMPLAINT') ? 'bg-red-500' : feedback.feedbackType.equals('SUGGESTION') ? 'bg-blue-500' : feedback.feedbackType.equals('BUG') ? 'bg-orange-500' : feedback.feedbackType.equals('FEATURE_REQUEST') ? 'bg-purple-500' : 'bg-slate-500'}">
+                                            #{feedback.feedbackType}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">#{feedback.customerID.userID.username}</td>
+                                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                        <h:outputText value="#{feedback.createdAt}" converterParam="yyyy-MM-dd HH:mm">
+                                            <f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+                                        </h:outputText>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm">
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold text-white #{feedback.status.equals('OPEN') ? 'bg-yellow-500' : 'bg-green-500'}">
+                                            #{feedback.status.equals('OPEN') ? 'OPEN' : 'CLOSED'}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                        <h:outputText rendered="#{feedback.rating != null}" value="#{feedback.rating}⭐" />
+                                        <h:outputText rendered="#{feedback.rating == null}" value="-" />
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <h:commandButton value="View" 
+                                                         action="#{feedbackMB.selectFeedback(feedback)}"
+                                                         update="feedbackForm"
+                                                         styleClass="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold rounded transition-colors"/>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </tbody>
+                    </table>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{feedbackMB.allFeedbacks.size() == 0}">
+                <div class="text-center py-12 bg-white dark:bg-[#1a2e22] rounded-lg border border-slate-200 dark:border-slate-700">
+                    <p class="text-slate-500 dark:text-slate-400">No feedback found</p>
+                </div>
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <!-- Feedback Detail Display -->
+        <h:panelGroup rendered="#{feedbackMB.selectedFeedback != null}">
+            <div class="mt-8 p-6 bg-white dark:bg-[#1a2e22] rounded-lg border border-slate-200 dark:border-slate-700">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6">Feedback Details</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">Subject</p>
+                        <p class="font-semibold text-slate-900 dark:text-white">#{feedbackMB.selectedFeedback.subject}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">Type</p>
+                        <p class="font-semibold text-slate-900 dark:text-white">#{feedbackMB.selectedFeedback.feedbackType}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">Customer</p>
+                        <p class="font-semibold text-slate-900 dark:text-white">#{feedbackMB.selectedFeedback.customerID.userID.username}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">Date</p>
+                        <p class="font-semibold text-slate-900 dark:text-white">
+                            <h:outputText value="#{feedbackMB.selectedFeedback.createdAt}" converterParam="yyyy-MM-dd HH:mm">
+                                <f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+                            </h:outputText>
+                        </p>
+                    </div>
+                    <h:panelGroup rendered="#{feedbackMB.selectedFeedback.rating != null}">
+                        <div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">Rating</p>
+                            <p class="font-semibold text-slate-900 dark:text-white">#{feedbackMB.selectedFeedback.rating}⭐</p>
+                        </div>
+                    </h:panelGroup>
+                </div>
+
+                <div class="mb-6">
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Message</p>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                        #{feedbackMB.selectedFeedback.content}
+                    </div>
+                </div>
+
+                <!-- Closed Feedback Reply Display -->
+                <h:panelGroup rendered="#{feedbackMB.selectedFeedback.status.equals('CLOSED')}">
+                    <div class="border-t border-slate-200 dark:border-slate-700 pt-6 bg-green-50 dark:bg-green-900/20 p-4 rounded border border-green-200 dark:border-green-800">
+                        <h3 class="font-bold text-green-900 dark:text-green-100 mb-3">✓ Staff Reply:</h3>
+                        <div class="text-green-900 dark:text-green-100 mb-3">
+                            #{feedbackMB.selectedFeedback.response}
+                        </div>
+                        <small class="text-green-700 dark:text-green-300">
+                            Replied on: <h:outputText value="#{feedbackMB.selectedFeedback.respondedAt}" converterParam="yyyy-MM-dd HH:mm">
+                                <f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+                            </h:outputText>
+                        </small>
+                        
+                        <div class="mt-4">
+                            <h:commandButton value="Close" 
+                                             action="#{feedbackMB.selectFeedback(null)}"
+                                             immediate="true"
+                                             update="feedbackForm"
+                                             styleClass="px-4 py-2 bg-slate-400 hover:bg-slate-500 text-white font-bold rounded transition-colors"/>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </div>
+        </h:panelGroup>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

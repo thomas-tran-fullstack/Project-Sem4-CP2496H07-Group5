@@ -28,5 +28,23 @@ public interface ReviewsFacadeLocal {
     List<Reviews> findRange(int[] range);
 
     int count();
-    
+
+    List<Reviews> findPublishedReviewsByProductID(entityclass.Products product);
+
+    List<Reviews> findPendingReviews();
+
+    List<Reviews> findFlaggedReviews();
+
+    List<Reviews> findByProductIDAndCustomerID(entityclass.Products product, entityclass.Customers customer);
+
+    List<Reviews> findAllReviews();
+
+    List<Reviews> findPublishedReviews();
+
+    List<Reviews> findByStatus(String status);
+
+    int countByStatus(String status);
+
+    List<Reviews> searchReviews(String searchTerm);
+
 }

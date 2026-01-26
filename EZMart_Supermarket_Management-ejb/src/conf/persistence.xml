@@ -2,6 +2,8 @@
 <persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <persistence-unit name="EZMart_Supermarket-ejbPU" transaction-type="JTA">
     <jta-data-source>jdbc/myEZMartSupermarket</jta-data-source>
+    <class>entityclass.Wishlists</class>
+    <class>entityclass.WishlistItems</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties/>
   </persistence-unit>

@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core">
+    <f:metadata>
+        <f:viewAction action="#{feedbackMB.checkLogin}" />
+    </f:metadata>
+    <ui:define name="content">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <!-- Feedback Submission Form -->
+            <div
+                class="rounded-2xl bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 p-8 md:p-12 max-w-2xl mx-auto mb-12">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3">
+                        Send Us Your Feedback
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Your feedback helps us improve our service
+                    </p>
+                </div>
+
+                <!-- Feedback Form -->
+                <h:form id="feedbackForm">
+                    <!-- Success Message Area -->
+                    <div id="successMessage"
+                        class="hidden mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-200 flex items-start gap-3">
+                        <span class="text-2xl flex-shrink-0">✓</span>
+                        <div class="flex-1">
+                            <p class="font-bold">Success!</p>
+                            <p class="text-sm">Your feedback has been sent successfully</p>
+                        </div>
+                        <button type="button"
+                            onclick="document.getElementById('successMessage').classList.add('hidden')"
+                            class="flex-shrink-0 text-green-700 dark:text-green-200 hover:text-green-900 dark:hover:text-green-100">
+                            ✕
+                        </button>
+                    </div>
+
+                    <!-- Success/Info Messages (only info and warn, no errors) -->
+                    <h:messages id="messages" globalOnly="true"
+                        infoClass="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-200"
+                        warnClass="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg text-yellow-700 dark:text-yellow-200"
+                        showDetail="true" showSummary="true" closable="true" />
+
+                    <!-- Subject Field -->
+                    <div class="mb-6">
+                        <h:outputLabel for="subject" value="Subject *"
+                            styleClass="block font-bold text-gray-900 dark:text-white mb-2" />
+                        <h:inputText id="subject" value="#{feedbackMB.subject}" placeholder="Enter feedback subject"
+                            required="true" requiredMessage="Please enter a subject" onblur="validateField(this)"
+                            styleClass="subject-input w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all" />
+                        <h:message for="subject"
+                            styleClass="block text-red-600 dark:text-red-400 text-xs font-semibold mt-1" />
+                    </div>
+
+                    <!-- Type Field -->
+                    <div class="mb-6">
+                        <h:outputLabel for="type" value="Feedback Type"
+                            styleClass="block font-bold text-gray-900 dark:text-white mb-2" />
+                        <h:selectOneMenu id="type" value="#{feedbackMB.feedbackType}"
+                            styleClass="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <f:selectItem itemValue="GENERAL" itemLabel="General Feedback" />
+                            <f:selectItem itemValue="COMPLAINT" itemLabel="Complaint" />
+                            <f:selectItem itemValue="SUGGESTION" itemLabel="Suggestion" />
+                            <f:selectItem itemValue="BUG" itemLabel="Bug Report" />
+                            <f:selectItem itemValue="FEATURE_REQUEST" itemLabel="Feature Request" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <!-- Content Field -->
+                    <div class="mb-6">
+                        <h:outputLabel for="content" value="Message *"
+                            styleClass="block font-bold text-gray-900 dark:text-white mb-2" />
+                        <h:inputTextarea id="content" value="#{feedbackMB.content}"
+                            placeholder="Please describe your feedback in detail..." required="true"
+                            requiredMessage="Please enter your message" onblur="validateField(this)"
+                            styleClass="content-input w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent min-h-[150px] transition-all" />
+                        <h:message for="content"
+                            styleClass="block text-red-600 dark:text-red-400 text-xs font-semibold mt-1" />
+                    </div>
+
+                    <!-- Rating Field -->
+                    <div class="mb-8">
+                        <h:outputLabel value="Service Rating (Optional)"
+                            styleClass="block font-bold text-gray-900 dark:text-white mb-3" />
+                        <div class="space-y-2">
+                            <h:selectOneRadio id="rating" value="#{feedbackMB.rating}" layout="pageDirection">
+                                <f:selectItem itemValue="1" itemLabel="⭐ Very Poor" />
+                                <f:selectItem itemValue="2" itemLabel="⭐⭐ Poor" />
+                                <f:selectItem itemValue="3" itemLabel="⭐⭐⭐ Average" />
+                                <f:selectItem itemValue="4" itemLabel="⭐⭐⭐⭐ Good" />
+                                <f:selectItem itemValue="5" itemLabel="⭐⭐⭐⭐⭐ Excellent" />
+                            </h:selectOneRadio>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-4 justify-center pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <h:commandButton value="Submit Feedback" action="#{feedbackMB.submitFeedback}"
+                            styleClass="px-6 py-2 bg-primary hover:bg-green-600 text-white font-bold rounded-lg transition-colors cursor-pointer"
+                            update="messages subject content feedbackForm"
+                            oncomplete="handleFeedbackSubmit(xhr, status, args)" />
+                        <h:commandButton value="Clear" action="#{feedbackMB.clearForm}"
+                            styleClass="px-6 py-2 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-bold rounded-lg transition-colors cursor-pointer"
+                            immediate="true" update="feedbackForm" />
+                    </div>
+
+                    <!-- JavaScript for form handling -->
+                    <h:outputScript>
+                        <![CDATA[
+// Validate field and apply error styling
+function validateField(field) {
+    var errorMsg = field.parentElement.querySelector('.text-red-600, .text-red-400');
+    if (errorMsg && errorMsg.textContent.trim().length > 0) {
+        // Has error
+        field.style.borderColor = '#dc2626';
+        field.style.backgroundColor = '#fee2e2';
+        if (field.classList.contains('dark:bg-gray-800')) {
+            field.style.backgroundColor = '#7f1d1d';
+        }
+    } else {
+        // No error
+        field.style.borderColor = '';
+        field.style.backgroundColor = '';
+    }
+}
+
+// Show success message
+function showSuccessMessage() {
+    var successMsg = document.getElementById('successMessage');
+    if (successMsg) {
+        successMsg.classList.remove('hidden');
+        // Auto hide after 5 seconds
+        setTimeout(function() {
+            successMsg.classList.add('hidden');
+        }, 5000);
+    }
+}
+
+function handleFeedbackSubmit(xhr, status, args) {
+    // Check for field-level error messages and highlight invalid fields
+    var subjectField = document.getElementById('feedbackForm:subject');
+    var contentField = document.getElementById('feedbackForm:content');
+    var subjectError = subjectField.parentElement.querySelector('.text-red-600, .text-red-400');
+    var contentError = contentField.parentElement.querySelector('.text-red-600, .text-red-400');
+    
+    var hasErrors = false;
+    
+    // Check and style subject field
+    if (subjectError && subjectError.textContent.trim().length > 0) {
+        hasErrors = true;
+        subjectField.style.borderColor = '#dc2626';
+        subjectField.style.backgroundColor = '#fee2e2';
+        if (subjectField.classList.contains('dark:bg-gray-800')) {
+            subjectField.style.backgroundColor = '#7f1d1d';
+        }
+    } else {
+        subjectField.style.borderColor = '';
+        subjectField.style.backgroundColor = '';
+    }
+    
+    // Check and style content field
+    if (contentError && contentError.textContent.trim().length > 0) {
+        hasErrors = true;
+        contentField.style.borderColor = '#dc2626';
+        contentField.style.backgroundColor = '#fee2e2';
+        if (contentField.classList.contains('dark:bg-gray-800')) {
+            contentField.style.backgroundColor = '#7f1d1d';
+        }
+    } else {
+        contentField.style.borderColor = '';
+        contentField.style.backgroundColor = '';
+    }
+    
+    // Check JSF's internal validation failure flag
+    if (!hasErrors && args && !args.validationFailed) {
+        // Show success message
+        showSuccessMessage();
+        
+        // Success - wait 2 seconds then clear form fields
+        setTimeout(function() {
+            var subjectField = document.getElementById('feedbackForm:subject');
+            var typeField = document.getElementById('feedbackForm:type');
+            var contentField = document.getElementById('feedbackForm:content');
+            
+            if (subjectField) {
+                subjectField.value = '';
+                subjectField.style.borderColor = '';
+                subjectField.style.backgroundColor = '';
+            }
+            if (typeField) typeField.selectedIndex = 0;
+            if (contentField) {
+                contentField.value = '';
+                contentField.style.borderColor = '';
+                contentField.style.backgroundColor = '';
+            }
+            
+            var radios = document.querySelectorAll('input[name="feedbackForm:rating"]');
+            radios.forEach(function(radio) {
+                radio.checked = false;
+            });
+            
+            console.log('Feedback form cleared - ready for next submission');
+        }, 2000);
+    }
+}
+]]>
+                    </h:outputScript>
+
+                    <!-- Tailwind CSS Animations -->
+                    <style>
+                        @keyframes slideIn {
+                            from {
+                                transform: translateX(400px);
+                                opacity: 0;
+                            }
+
+                            to {
+                                transform: translateX(0);
+                                opacity: 1;
+                            }
+                        }
+
+                        .animate-slide-in {
+                            animation: slideIn 0.3s ease-out;
+                        }
+                    </style>
+                </h:form>
+            </div>
+
+            <!-- Feedback History Section -->
+            <h:panelGroup rendered="#{not empty feedbackMB.userFeedbacks}">
+                <div class="mb-12">
+                    <div
+                        class="rounded-2xl bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 p-8 md:p-12">
+                        <!-- History Header -->
+                        <div class="text-center mb-8 border-b border-gray-200 dark:border-gray-700 pb-6">
+                            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white mb-2">
+                                Your Feedback History
+                            </h2>
+                            <p class="text-gray-600 dark:text-gray-300">
+                                View your feedback submissions and admin responses
+                            </p>
+                        </div>
+
+                        <!-- Feedback List (oldest first, newest last) -->
+                        <div class="space-y-6">
+                            <ui:repeat value="#{feedbackMB.userFeedbacks}" var="feedback">
+                                <div
+                                    class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md dark:hover:shadow-lg transition-shadow">
+                                    <!-- Feedback Header Info -->
+                                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                                        <div class="flex-1">
+                                            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                                                #{feedback.subject}
+                                            </h3>
+                                            <div class="flex gap-3 flex-wrap">
+                                                <span
+                                                    class="px-3 py-1 rounded-full text-xs font-bold text-white #{feedback.feedbackType.equals('COMPLAINT') ? 'bg-red-500' : feedback.feedbackType.equals('SUGGESTION') ? 'bg-blue-500' : feedback.feedbackType.equals('BUG') ? 'bg-orange-500' : feedback.feedbackType.equals('FEATURE_REQUEST') ? 'bg-purple-500' : 'bg-slate-500'}">
+                                                    #{feedback.feedbackType}
+                                                </span>
+                                                <span
+                                                    class="px-3 py-1 rounded-full text-xs font-bold text-white #{feedback.status.equals('OPEN') ? 'bg-yellow-500' : 'bg-green-500'}">
+                                                    #{feedback.status}
+                                                </span>
+                                                <h:panelGroup rendered="#{feedback.rating != null}">
+                                                    <span
+                                                        class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white">
+                                                        #{feedback.rating}⭐
+                                                    </span>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                        <div class="text-right mt-3 md:mt-0">
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                                <h:outputText value="#{feedback.createdAt}"
+                                                    converterParam="yyyy-MM-dd HH:mm">
+                                                    <f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+                                                </h:outputText>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Your Feedback Message -->
+                                    <div class="mb-4">
+                                        <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-2">Your
+                                            Message:</p>
+                                        <div
+                                            class="p-4 bg-gray-50 dark:bg-gray-900/50 rounded border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                                            #{feedback.content}
+                                        </div>
+                                    </div>
+
+                                    <!-- Admin Response Section -->
+                                    <h:panelGroup
+                                        rendered="#{feedback.status.equals('CLOSED') and feedback.response != null}">
+                                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                                            <div
+                                                class="bg-green-50 dark:bg-green-900/20 p-4 rounded border border-green-200 dark:border-green-800">
+                                                <div class="flex items-start gap-3">
+                                                    <div class="flex-shrink-0">
+                                                        <p class="text-green-900 dark:text-green-100 text-xl font-bold">
+                                                            ✓</p>
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <p class="font-bold text-green-900 dark:text-green-100 mb-2">
+                                                            Admin Response
+                                                        </p>
+                                                        <p class="text-green-800 dark:text-green-200 mb-3">
+                                                            #{feedback.response}
+                                                        </p>
+                                                        <p class="text-xs text-green-700 dark:text-green-300">
+                                                            Replied on:
+                                                            <h:outputText value="#{feedback.respondedAt}"
+                                                                converterParam="yyyy-MM-dd HH:mm">
+                                                                <f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+                                                            </h:outputText>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <!-- No Response Yet -->
+                                    <h:panelGroup rendered="#{feedback.status.equals('OPEN')}">
+                                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                                            <div
+                                                class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded border border-blue-200 dark:border-blue-800">
+                                                <p class="text-sm text-blue-800 dark:text-blue-200">
+                                                    ℹ️ Your feedback is under review. Admin will respond soon.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </div>
+    </ui:define>
+</ui:composition>

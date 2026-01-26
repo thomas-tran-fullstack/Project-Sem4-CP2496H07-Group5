@@ -52,6 +52,18 @@ public class Reviews implements Serializable {
     @Column(name = "CreatedAt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @Size(max = 20)
+    @Column(name = "Status")
+    private String status;
+    @Column(name = "IsFlagged")
+    private Boolean isFlagged;
+    @Lob
+    @Size(max = 2147483647)
+    @Column(name = "Reply")
+    private String reply;
+    @Column(name = "ReplyAt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date replyAt;
     @JoinColumn(name = "CustomerID", referencedColumnName = "CustomerID")
     @ManyToOne
     private Customers customerID;
@@ -96,6 +108,38 @@ public class Reviews implements Serializable {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Boolean getIsFlagged() {
+        return isFlagged;
+    }
+
+    public void setIsFlagged(Boolean isFlagged) {
+        this.isFlagged = isFlagged;
+    }
+
+    public String getReply() {
+        return reply;
+    }
+
+    public void setReply(String reply) {
+        this.reply = reply;
+    }
+
+    public Date getReplyAt() {
+        return replyAt;
+    }
+
+    public void setReplyAt(Date replyAt) {
+        this.replyAt = replyAt;
     }
 
     public Customers getCustomerID() {

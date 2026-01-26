@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/staff/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <ui:define name="content">
+        <h:form id="orderForm">
+            <div class="p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Order Management</h1>
+                    <p class="text-gray-500 dark:text-gray-400 mt-1">View and manage all customer orders</p>
+                </div>
+
+                <!-- Messages -->
+                <h:messages id="globalMessages" showDetail="true" showSummary="false" errorClass="text-red-600"
+                    infoClass="text-green-600" layout="table" styleClass="mb-4" />
+
+                <!-- Filters -->
+                <div
+                    class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg mb-8">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                                Status Filter
+                            </label>
+                            <h:selectOneMenu value="#{adminOrderMB.selectedStatus}"
+                                class="form-select w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#112116] h-10 px-3 text-sm">
+                                <f:selectItem itemLabel="All Orders" itemValue="all" />
+                                <f:selectItem itemLabel="New" itemValue="NEW" />
+                                <f:selectItem itemLabel="Processing" itemValue="PROCESSING" />
+                                <f:selectItem itemLabel="Shipping" itemValue="SHIPPING" />
+                                <f:selectItem itemLabel="Delivered" itemValue="DELIVERED" />
+                                <f:selectItem itemLabel="Cancelled" itemValue="CANCELLED" />
+                                <f:selectItem itemLabel="Waiting Confirmation" itemValue="WAITING_CONFIRM" />
+                                <f:ajax event="change" execute="@this" render="ordersTable" />
+                            </h:selectOneMenu>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                                Search Order ID or Customer
+                            </label>
+                            <h:inputText value="#{adminOrderMB.searchTerm}"
+                                class="form-input w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#112116] h-10 px-3 text-sm"
+                                placeholder="Enter Order ID or customer name">
+                                <f:ajax event="keyup" execute="@this" render="ordersTable" />
+                            </h:inputText>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Table -->
+                <div
+                    class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 shadow-lg overflow-hidden">
+                    <h:dataTable id="ordersTable" value="#{adminOrderMB.filteredOrders}" var="order"
+                        styleClass="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                        headerClass="bg-gray-50 dark:bg-[#1a2e22] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                        columnClasses="px-6 py-4 whitespace-nowrap">
+
+                        <h:column>
+                            <f:facet name="header">Order ID</f:facet>
+                            <span class="font-mono text-sm font-medium text-primary">##{order.orderID}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Customer</f:facet>
+                            <div class="text-sm text-gray-900 dark:text-white">#{adminOrderMB.getCustomerName(order)}
+                            </div>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Date</f:facet>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <h:outputText value="#{order.orderDate}">
+                                    <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                                </h:outputText>
+                            </div>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Items</f:facet>
+                            <span
+                                class="text-sm text-gray-500 dark:text-gray-400">#{adminOrderMB.getOrderItems(order).size()}
+                                items</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Total</f:facet>
+                            <span class="text-sm font-bold text-gray-900 dark:text-white">$#{order.totalAmount}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Status</f:facet>
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{adminOrderMB.getStatusStyle(order.status)}">
+                                #{adminOrderMB.getStatusDisplay(order.status)}
+                            </span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Payment</f:facet>
+                            <span
+                                class="text-sm text-gray-500 dark:text-gray-400">#{adminOrderMB.getPaymentStatusDisplay(order.paymentStatus)}</span>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Actions</f:facet>
+                            <div class="flex items-center gap-2">
+                                <!-- View Button - Always visible -->
+                                <h:commandButton value="View Detail" action="#{adminOrderMB.selectOrderForView(order)}"
+                                    styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-blue-600 bg-blue-100 hover:bg-blue-200 transition-colors cursor-pointer">
+                                    <f:ajax execute="@this"
+                                        render=":orderForm:orderDetailContent :orderForm:orderDetailModalTitle"
+                                        onevent="function(data) { if(data.status === 'success') { document.getElementById('orderDetailModal').style.display = 'block'; } }" />
+                                </h:commandButton>
+                            </div>
+                        </h:column>
+                    </h:dataTable>
+
+                    <h:panelGroup rendered="#{empty adminOrderMB.filteredOrders}" class="p-12 text-center">
+                        <span class="material-symbols-outlined text-gray-400 text-5xl mb-4 block">receipt_long</span>
+                        <p class="text-gray-500 dark:text-gray-400 text-lg">No orders found</p>
+                    </h:panelGroup>
+                </div>
+            </div>
+
+            <!-- Order Detail Modal -->
+            <div id="orderDetailModal"
+                class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50"
+                style="display: none;">
+                <div
+                    class="relative top-10 mx-auto p-5 border w-full max-w-3xl shadow-lg rounded-md bg-white dark:bg-[#1a2e22]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="orderDetailModalTitle" class="text-lg font-medium text-gray-900 dark:text-white">Order
+                            Details</h3>
+                        <button onclick="document.getElementById('orderDetailModal').style.display='none';"
+                            class="text-gray-400 hover:text-gray-600">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                    <h:panelGroup id="orderDetailContent">
+                        <h:panelGroup rendered="#{not empty adminOrderMB.selectedOrder}">
+                            <!-- Order Information -->
+                            <div class="mb-4">
+                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Order Information
+                                </h4>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                    <div>
+                                        <span class="text-gray-500 dark:text-gray-400">Order ID:</span>
+                                        <span class="font-medium ml-2">##{adminOrderMB.selectedOrder.orderID}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-500 dark:text-gray-400">Date:</span>
+                                        <span class="font-medium ml-2">
+                                            <h:outputText value="#{adminOrderMB.selectedOrder.orderDate}">
+                                                <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                                            </h:outputText>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-500 dark:text-gray-400">Status:</span>
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2 #{adminOrderMB.getStatusStyle(adminOrderMB.selectedOrder.status)}">
+                                            #{adminOrderMB.getStatusDisplay(adminOrderMB.selectedOrder.status)}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-500 dark:text-gray-400">Total:</span>
+                                        <span class="font-bold ml-2">$#{adminOrderMB.selectedOrder.totalAmount}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Customer Information -->
+                            <div class="mb-4">
+                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer
+                                    Information</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span class="text-gray-500 dark:text-gray-400">Name:</span>
+                                        <span
+                                            class="font-medium ml-2">#{adminOrderMB.getCustomerName(adminOrderMB.selectedOrder)}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-500 dark:text-gray-400">Phone:</span>
+                                        <span
+                                            class="font-medium ml-2">#{adminOrderMB.getCustomerPhone(adminOrderMB.selectedOrder)}</span>
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <span class="text-gray-500 dark:text-gray-400">Address:</span>
+                                        <span
+                                            class="font-medium ml-2">#{adminOrderMB.getCustomerAddress(adminOrderMB.selectedOrder)}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Items -->
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Order Items</h4>
+                                <div class="border rounded-lg overflow-hidden">
+                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead class="bg-gray-50 dark:bg-[#1a2e22]">
+                                            <tr>
+                                                <th
+                                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                                    Item</th>
+                                                <th
+                                                    class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                                    Qty</th>
+                                                <th
+                                                    class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                                    Price</th>
+                                                <th
+                                                    class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                                    Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                            <ui:repeat value="#{adminOrderMB.getOrderItems(adminOrderMB.selectedOrder)}"
+                                                var="item">
+                                                <tr>
+                                                    <td class="px-4 py-2 text-sm">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="h-10 w-10 rounded bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
+                                                                <ui:param name="productImgPath" value="#{adminOrderMB.getProductImage(item)}" />
+                                                                <img alt="#{item.productName}"
+                                                                    class="h-full w-full object-cover"
+                                                                    src="#{request.contextPath}#{productImgPath}"
+                                                                    onerror="this.onerror=null; this.src='/images/work.png';" />
+                                                            </div>
+                                                            <span class="text-gray-900 dark:text-white">#{item.productName}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        class="px-4 py-2 text-sm text-gray-900 dark:text-white text-right">
+                                                        #{item.quantity}</td>
+                                                    <td
+                                                        class="px-4 py-2 text-sm text-gray-900 dark:text-white text-right">
+                                                        $#{item.unitPrice}</td>
+                                                    <td
+                                                        class="px-4 py-2 text-sm text-gray-900 dark:text-white text-right font-medium">
+                                                        $#{item.totalPrice}</td>
+                                                </tr>
+                                            </ui:repeat>
+                                        </tbody>
+                                        <tfoot class="bg-gray-50 dark:bg-[#1a2e22]">
+                                            <tr>
+                                                <td colspan="3"
+                                                    class="px-4 py-2 text-right text-sm font-medium text-gray-900 dark:text-white">
+                                                    Order Total:</td>
+                                                <td
+                                                    class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-white">
+                                                    $#{adminOrderMB.selectedOrder.totalAmount}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{empty adminOrderMB.selectedOrder}">
+                            <p class="text-center text-gray-500 dark:text-gray-400 py-8">Select an order to view details
+                            </p>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </div>
+            </div>
+
+        </h:form>
+
+       <h:outputScript target="body">
+    function closeIfClickedOutside(event) {
+        var orderDetailModal = document.getElementById('orderDetailModal');
+
+        if (event.target === orderDetailModal) orderDetailModal.style.display = 'none';
+    }
+
+    window.addEventListener('click', closeIfClickedOutside);
+</h:outputScript>
+    </ui:define>
+</ui:composition>

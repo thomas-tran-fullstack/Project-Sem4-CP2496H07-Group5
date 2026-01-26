@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import sessionbeans.BrandsFacadeLocal;
 import sessionbeans.CategoriesFacadeLocal;
 import sessionbeans.ProductImagesFacadeLocal;
@@ -36,6 +38,7 @@ import entityclass.ProductOffers;
 import entityclass.Carts;
 import entityclass.CartItems;
 import jakarta.inject.Inject;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 @Named("productMB")
 @ViewScoped
@@ -78,6 +81,7 @@ public class ProductMB implements Serializable {
     private Products newProduct;
     private String searchTerm;
     private Part uploadedFile;
+    private Part excelFile;
     private List<ProductImages> productImages;
     private Integer quantity = 1;
     private int selectedImageIndex = 0;
@@ -96,7 +100,7 @@ public class ProductMB implements Serializable {
 
     // Pagination properties
     private int currentPage = 1;
-    private int pageSize = 24; // Changed to 24 to match the UI
+    private int pageSize = 12; // Changed to 24 to match the UI
     private int totalRecords;
     private int totalPages;
     private List<Products> paginatedProducts;
@@ -703,7 +707,38 @@ public class ProductMB implements Serializable {
     }
    
     public void addToCart() {
+        // Check if user is logged in
+        if (!auth.isLoggedIn()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Please login to add items to cart"));
+            return;
+        }
+
+        // Refresh product data from database to get latest stock information
+        if (selectedProduct != null && selectedProduct.getProductID() != null) {
+            Products freshProduct = productsFacade.find(selectedProduct.getProductID());
+            if (freshProduct != null) {
+                selectedProduct = freshProduct;
+            }
+        }
+
+        // Check if product is out of stock
+        if (isOutOfStock(selectedProduct)) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Product is out of stock"));
+            return;
+        }
+
+        // Check if requested quantity exceeds available stock
+        if (quantity > selectedProduct.getStockQuantity()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Not enough stock available"));
+            return;
+        }
+
         cartMB.addToCart(selectedProduct, quantity);
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Product added to cart successfully"));
     }
 
     public void addProductToCart(Products product) {
@@ -969,5 +1004,246 @@ public class ProductMB implements Serializable {
     public void setSelectedSort(String selectedSort) {
         this.selectedSort = selectedSort;
         changeSortCombined(selectedSort);
+    }
+
+    // Statistics methods
+    public int getTotalProducts() {
+        return products != null ? products.size() : 0;
+    }
+
+    public int getActiveProductsCount() {
+        if (products == null) return 0;
+        return (int) products.stream()
+            .filter(p -> "Active".equals(p.getStatus()))
+            .count();
+    }
+
+    public int getInactiveProductsCount() {
+        if (products == null) return 0;
+        return (int) products.stream()
+            .filter(p -> "Inactive".equals(p.getStatus()))
+            .count();
+    }
+
+    public int getOutOfStockCount() {
+        if (products == null) return 0;
+        return (int) products.stream()
+            .filter(this::isOutOfStock)
+            .count();
+    }
+
+    public BigDecimal getTotalInventoryValue() {
+        if (products == null) return BigDecimal.ZERO;
+        return products.stream()
+            .filter(p -> p.getUnitPrice() != null && p.getStockQuantity() != null)
+            .map(p -> p.getUnitPrice().multiply(BigDecimal.valueOf(p.getStockQuantity())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getAveragePrice() {
+        if (products == null || products.isEmpty()) return BigDecimal.ZERO;
+        BigDecimal total = products.stream()
+            .filter(p -> p.getUnitPrice() != null)
+            .map(Products::getUnitPrice)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        long count = products.stream()
+            .filter(p -> p.getUnitPrice() != null)
+            .count();
+        return count > 0 ? total.divide(BigDecimal.valueOf(count), 2, BigDecimal.ROUND_HALF_UP) : BigDecimal.ZERO;
+    }
+
+    public int getTotalStockQuantity() {
+        if (products == null) return 0;
+        return products.stream()
+            .filter(p -> p.getStockQuantity() != null)
+            .mapToInt(Products::getStockQuantity)
+            .sum();
+    }
+
+    // Excel import methods
+    public void importProductsFromExcel() {
+        if (excelFile == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Please select an Excel file to import"));
+            return;
+        }
+
+        try (InputStream inputStream = excelFile.getInputStream()) {
+            Workbook workbook = new XSSFWorkbook(inputStream);
+            Sheet sheet = workbook.getSheetAt(0);
+
+            int importedCount = 0;
+            int errorCount = 0;
+
+            categories = categoriesFacade.findAll();
+            brands = brandsFacade.findAll();
+
+
+            // Skip header row (row 0)
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+
+                try {
+                    // Read data from columns: Product Name (0), Category Name (1), Brand Name (2), Unit Price (3), Stock Quantity (4), Description (5), Image URL (6)
+                    String productName = getCellValueAsString(row.getCell(0));
+                    String categoryName = getCellValueAsString(row.getCell(1));
+                    String brandName = getCellValueAsString(row.getCell(2));
+                    BigDecimal unitPrice = getCellValueAsBigDecimal(row.getCell(3));
+                    Integer stockQuantity = getCellValueAsInteger(row.getCell(4));
+                    String description = getCellValueAsString(row.getCell(5));
+                    String imageUrl = getCellValueAsString(row.getCell(6));
+
+                    // Skip if product name is empty
+                    if (productName == null || productName.trim().isEmpty()) {
+                        errorCount++;
+                        continue;
+                    }
+
+                    // Find category by name
+                    Categories category = categories.stream()
+                        .filter(c -> c.getCategoryName().equalsIgnoreCase(categoryName))
+                        .findFirst()
+                        .orElse(null);
+
+                    // Find brand by name
+                    Brands brand = brands.stream()
+                        .filter(b -> b.getBrandName().equalsIgnoreCase(brandName))
+                        .findFirst()
+                        .orElse(null);
+
+                    // Validate required fields
+                    if (category == null) {
+                        errorCount++;
+                        continue;
+                    }
+                    if (brand == null) {
+                        errorCount++;
+                        continue;
+                    }
+                    if (unitPrice == null || unitPrice.compareTo(BigDecimal.ZERO) <= 0) {
+                        errorCount++;
+                        continue;
+                    }
+                    if (stockQuantity == null || stockQuantity < 0) {
+                        errorCount++;
+                        continue;
+                    }
+
+                    // Check for duplicate product name
+                    List<Products> existingProducts = productsFacade.findByProductName(productName);
+                    if (!existingProducts.isEmpty()) {
+                        errorCount++;
+                        continue;
+                    }
+
+                    // Create new product
+                    Products newProduct = new Products();
+                    newProduct.setProductName(productName);
+                    newProduct.setCategoryID(category);
+                    newProduct.setBrandID(brand);
+                    newProduct.setUnitPrice(unitPrice);
+                    newProduct.setStockQuantity(stockQuantity);
+                    newProduct.setDescription(description != null ? description : "");
+                    newProduct.setCreatedAt(new java.util.Date());
+                    newProduct.setStatus("Active");
+
+                    productsFacade.create(newProduct);
+                    importedCount++;
+
+                    // Handle image URL if provided
+                    if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                        try {
+                            ProductImages productImage = new ProductImages();
+                            productImage.setProductID(newProduct);
+                            productImage.setImageURL(imageUrl.trim());
+                            productImagesFacade.create(productImage);
+                        } catch (Exception e) {
+                            // Log error but don't fail the entire import
+                            System.err.println("Failed to create product image for product: " + productName);
+                        }
+                    }
+
+                } catch (Exception e) {
+                    errorCount++;
+                }
+            }
+
+            workbook.close();
+
+            // Reload products and update pagination
+            loadProducts();
+            updatePagination();
+
+            // Show success message
+            String message = "Import completed: " + importedCount + " products imported successfully.";
+            if (errorCount > 0) {
+                message += " " + errorCount + " products failed to import.";
+            }
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", message));
+
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to import Excel file: " + e.getMessage()));
+        }
+
+        // Reset file
+        excelFile = null;
+    }
+
+    private String getCellValueAsString(org.apache.poi.ss.usermodel.Cell cell) {
+        if (cell == null) return null;
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue().trim();
+            case NUMERIC:
+                return String.valueOf((int) cell.getNumericCellValue());
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            default:
+                return null;
+        }
+    }
+
+    private BigDecimal getCellValueAsBigDecimal(org.apache.poi.ss.usermodel.Cell cell) {
+        if (cell == null) return null;
+        switch (cell.getCellType()) {
+            case NUMERIC:
+                return BigDecimal.valueOf(cell.getNumericCellValue());
+            case STRING:
+                try {
+                    return new BigDecimal(cell.getStringCellValue().trim());
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            default:
+                return null;
+        }
+    }
+
+    private Integer getCellValueAsInteger(org.apache.poi.ss.usermodel.Cell cell) {
+        if (cell == null) return null;
+        switch (cell.getCellType()) {
+            case NUMERIC:
+                return (int) cell.getNumericCellValue();
+            case STRING:
+                try {
+                    return Integer.valueOf(cell.getStringCellValue().trim());
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            default:
+                return null;
+        }
+    }
+
+    // Getter and setter for excelFile
+    public Part getExcelFile() {
+        return excelFile;
+    }
+
+    public void setExcelFile(Part excelFile) {
+        this.excelFile = excelFile;
     }
 }

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/staff/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="content">
+        <h:form id="chatForm">
+            <!-- Initialize chat data for staff when page loads -->
+            <f:event type="preRenderView" listener="#{chatController.initializeChatData}" />
+
+            <div class="flex h-screen overflow-hidden bg-white dark:bg-slate-900">
+                <!-- Conversations List & Pending Requests -->
+                <div class="w-72 bg-white dark:bg-[#1a2e22] border-r border-slate-200 dark:border-slate-700 flex flex-col">
+                    <!-- Header -->
+                    <div class="p-4 border-b border-slate-200 dark:border-slate-700">
+                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Chat with Customers</h2>
+                        <div class="relative mt-3">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+
+                            <!-- NOTE: giữ nguyên value để tránh lỗi bean (code gốc đang dùng newMessage) -->
+                            <h:inputText id="searchCustomer" value="#{chatController.newMessage}"
+                                styleClass="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-primary"
+                                placeholder="Search customers...">
+                                <f:ajax event="keyup" execute="@this"
+                                        render=":chatForm:pendingList :chatForm:conversationsList" />
+                            </h:inputText>
+                        </div>
+                    </div>
+
+                    <!-- Pending Chat Requests (for staff) -->
+                    <h:panelGroup rendered="#{chatController.currentUserRole == 'STAFF'}">
+                        <!-- FIX: biến div id=pendingList thành JSF component để render được -->
+                        <h:panelGroup id="pendingList" layout="block" styleClass="flex-1 overflow-y-auto">
+                            <!-- Pending Requests Section -->
+                            <div class="px-4 py-3 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-900">
+                                <h3 class="text-sm font-bold text-red-700 dark:text-red-300 mb-2">
+                                    <span class="material-symbols-outlined text-base align-middle">priority_high</span>
+                                    #{msg['chat.pendingRequests']}
+                                </h3>
+                            </div>
+
+                            <!-- Pending Customer Requests -->
+                            <ui:repeat value="#{chatController.pendingCustomers}" var="conv">
+                                <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-red-50/50 dark:bg-red-900/10">
+                                    <div class="flex items-start gap-3">
+                                        <!-- Avatar -->
+                                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-green-600 flex items-center justify-center flex-shrink-0 overflow-hidden text-white">
+                                            <span class="material-symbols-outlined">person</span>
+                                        </div>
+
+                                        <!-- Info -->
+                                        <div class="flex-1 min-w-0">
+                                            <p class="font-semibold text-slate-900 dark:text-white truncate text-sm">
+                                                #{conv.customerID.firstName} #{conv.customerID.lastName}
+                                            </p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400">
+                                                <h:outputText value="#{msg['chat.requestSentTitle']}" />
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Accept/Reject Buttons -->
+                                    <div class="flex gap-2 mt-3">
+                                        <h:commandButton value="#{msg['chat.accept']}"
+                                            action="#{chatController.acceptChatRequest(conv.conversationID)}"
+                                            styleClass="flex-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded transition">
+                                            <f:ajax execute="@form"
+                                                    render=":chatForm:pendingList :chatForm:conversationsList :chatForm:chatArea" />
+                                        </h:commandButton>
+
+                                        <h:commandButton value="#{msg['chat.reject']}"
+                                            action="#{chatController.rejectChatRequest(conv.conversationID)}"
+                                            styleClass="flex-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded transition">
+                                            <f:ajax execute="@form"
+                                                    render=":chatForm:pendingList :chatForm:conversationsList" />
+                                        </h:commandButton>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+
+                            <!-- No Pending Requests -->
+                            <ui:fragment rendered="#{empty chatController.pendingCustomers}">
+                                <div class="p-6 text-center text-slate-500 dark:text-slate-400">
+                                    <span class="material-symbols-outlined text-3xl block mb-2 opacity-50">hourglass_empty</span>
+                                    <p class="text-sm">No pending chat requests</p>
+                                </div>
+                            </ui:fragment>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                    <!-- Accepted Conversations List -->
+                    <h:panelGroup rendered="#{chatController.currentUserRole == 'STAFF'}">
+                        <div class="px-4 py-3 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+                            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                #{msg['chat.acceptedChats']}
+                            </h3>
+                        </div>
+                    </h:panelGroup>
+
+                    <!-- Conversations List -->
+                    <!-- FIX: biến div id=conversationsList thành JSF component để render được -->
+                    <h:panelGroup id="conversationsList" layout="block" styleClass="flex-1 overflow-y-auto">
+                        <ui:repeat value="#{chatController.conversations}" var="conv">
+                            <h:panelGroup rendered="#{conv.requestStatus == 'ACCEPTED' or conv.requestStatus == null}">
+                                <h:commandLink action="#{chatController.selectConversation(conv.conversationID)}"
+                                    styleClass="block p-4 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition #{chatController.selectedConversationId == conv.conversationID ? 'bg-primary/10' : ''}">
+                                    <!-- FIX: update=... là sai với h:commandLink (JSF). Dùng f:ajax render -->
+                                    <f:ajax execute="@this"
+                                            render=":chatForm:chatArea :chatForm:messagesContainer :chatForm:conversationsList" />
+
+                                    <div class="flex items-start gap-3">
+                                        <!-- Avatar -->
+                                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-green-600 flex items-center justify-center flex-shrink-0 overflow-hidden text-white">
+                                            <span class="material-symbols-outlined text-lg">person</span>
+                                        </div>
+
+                                        <!-- Info -->
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center justify-between gap-2">
+                                                <p class="font-semibold text-slate-900 dark:text-white truncate text-sm">
+                                                    #{conv.customerID.firstName} #{conv.customerID.lastName}
+                                                </p>
+                                                <span class="text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">
+                                                    <h:outputText value="#{conv.lastMessageAt}">
+                                                        <f:convertDateTime pattern="HH:mm" />
+                                                    </h:outputText>
+                                                </span>
+                                            </div>
+                                            <p class="text-xs text-slate-600 dark:text-slate-400 truncate">
+                                                Last message preview...
+                                            </p>
+
+                                            <!-- Unread badge -->
+                                            <ui:fragment rendered="#{chatController.countUnreadByConversation(conv.conversationID) > 0}">
+                                                <span class="inline-block mt-1 px-2 py-0.5 bg-primary text-white text-xs font-bold rounded-full">
+                                                    #{chatController.countUnreadByConversation(conv.conversationID)}
+                                                </span>
+                                            </ui:fragment>
+                                        </div>
+                                    </div>
+                                </h:commandLink>
+                            </h:panelGroup>
+                        </ui:repeat>
+
+                        <!-- Empty State -->
+                        <ui:fragment rendered="#{empty chatController.conversations}">
+                            <div class="p-8 text-center">
+                                <span class="material-symbols-outlined text-slate-400 text-5xl block mb-3">chat_bubble_outline</span>
+                                <p class="text-slate-500 dark:text-slate-400">#{msg['chat.noActiveChats']}</p>
+                            </div>
+                        </ui:fragment>
+                    </h:panelGroup>
+                </div>
+
+                <!-- Chat Area -->
+                <!-- FIX: biến div id=chatArea thành JSF component để render được -->
+                <h:panelGroup id="chatArea" layout="block" styleClass="flex-1 flex flex-col bg-slate-50 dark:bg-slate-800/50">
+                    <h:panelGroup rendered="#{not empty chatController.selectedConversationId}">
+                        <!-- Chat Header -->
+                        <div class="bg-white dark:bg-[#1a2e22] border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-green-600 flex items-center justify-center overflow-hidden text-white">
+                                    <span class="material-symbols-outlined">person</span>
+                                </div>
+                                <div>
+                                    <h2 class="font-bold text-slate-900 dark:text-white text-sm">
+                                        #{chatController.selectedConversation.customerID.firstName} #{chatController.selectedConversation.customerID.lastName}
+                                    </h2>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                                        #{chatController.selectedConversation.customerID.userID}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Messages Container -->
+                        <!-- FIX: biến div id=messagesContainer thành JSF component để render được -->
+                        <h:panelGroup id="messagesContainer" layout="block" styleClass="flex-1 overflow-y-auto p-6 space-y-4">
+                            <ui:repeat value="#{chatController.messages}" var="msg">
+                                <!-- STAFF Message (Right - sent by me) -->
+                                <ui:fragment rendered="#{msg.senderRole == 'STAFF'}">
+                                    <div class="flex justify-end gap-2">
+                                        <div class="max-w-xs px-4 py-2 rounded-lg bg-primary text-white">
+                                            <p class="text-sm">#{msg.content}</p>
+                                            <p class="text-xs opacity-70 mt-1">
+                                                <h:outputText value="#{msg.sentAt}">
+                                                    <f:convertDateTime pattern="HH:mm" />
+                                                </h:outputText>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+
+                                <!-- CUSTOMER Message (Left - from customer) -->
+                                <ui:fragment rendered="#{msg.senderRole == 'CUSTOMER'}">
+                                    <div class="flex gap-2">
+                                        <div class="max-w-xs px-4 py-2 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-600">
+                                            <p class="text-sm">#{msg.content}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                                <h:outputText value="#{msg.sentAt}">
+                                                    <f:convertDateTime pattern="HH:mm" />
+                                                </h:outputText>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+                            </ui:repeat>
+                        </h:panelGroup>
+
+                        <!-- Input Area -->
+                        <div class="bg-white dark:bg-[#1a2e22] border-t border-slate-200 dark:border-slate-700 p-4">
+                            <div class="flex gap-3">
+                                <h:inputTextarea id="messageInput" value="#{chatController.newMessage}"
+                                    styleClass="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                                    rows="2"
+                                    placeholder="#{msg['chat.typePlaceholder']}">
+                                </h:inputTextarea>
+
+                                <h:commandButton action="#{chatController.sendMessage()}" value="Send"
+                                    styleClass="px-4 py-2 bg-primary hover:bg-green-600 text-white font-bold rounded-lg transition-colors self-end">
+                                    <!-- FIX: render messagesContainer (JSF component) => tin nhắn hiện ngay -->
+                                    <!-- + scroll xuống cuối -->
+                                    <f:ajax execute=":chatForm:messageInput"
+                                            render=":chatForm:messagesContainer :chatForm:conversationsList :chatForm:messageInput"
+                                            onevent="scrollChatToBottom" />
+                                </h:commandButton>
+                            </div>
+                        </div>
+
+
+                        <!-- Script: scroll to bottom after ajax success -->
+                        <h:outputScript target="body">
+                            function scrollChatToBottom(data){
+                                if(data.status === 'success'){
+                                    var el = document.getElementById('chatForm:messagesContainer');
+                                    if(el){ el.scrollTop = el.scrollHeight; }
+                                }
+                            }
+                        </h:outputScript>
+                    </h:panelGroup>
+
+                    <!-- Empty Chat State -->
+                    <h:panelGroup rendered="#{empty chatController.selectedConversationId}">
+                        <div class="flex-1 flex items-center justify-center">
+                            <div class="text-center">
+                                <span class="material-symbols-outlined text-slate-400 text-6xl block mb-4">chat_bubble_outline</span>
+                                <p class="text-slate-600 dark:text-slate-400 text-lg">#{msg['chat.noPendingChats']}</p>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

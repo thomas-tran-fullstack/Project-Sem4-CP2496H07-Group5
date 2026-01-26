@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/admin/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core">
+
+    <ui:define name="content">
+        <h:form id="reviewForm">
+
+            <div class="p-6">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Review Management</h1>
+                    <p class="text-gray-500 dark:text-gray-400 mt-1">Manage customer reviews - flag toxic content and
+                        reply to customers</p>
+                </div>
+
+                <h:messages id="globalMessages" showDetail="true" showSummary="false" styleClass="mb-4 p-4 rounded"
+                    infoClass="bg-green-100 border border-green-400 text-green-700"
+                    errorClass="bg-red-100 border border-red-400 text-red-700" />
+
+                <!-- ================== SEARCH BAR ================== -->
+                <div class="mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Name</label>
+                            <h:inputText id="searchCustomer" value="#{reviewMB.searchCustomerName}"
+                                styleClass="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Search by customer...">
+                            </h:inputText>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Product Name</label>
+                            <h:inputText id="searchProduct" value="#{reviewMB.searchProductName}"
+                                styleClass="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Search by product...">
+                            </h:inputText>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Review Content</label>
+                            <h:inputText id="searchComment" value="#{reviewMB.searchCommentKeyword}"
+                                styleClass="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Search in review content...">
+                            </h:inputText>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rating</label>
+                            <h:selectOneMenu id="searchRating" value="#{reviewMB.searchRating}"
+                                styleClass="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <f:selectItem itemValue="" itemLabel="All Ratings" />
+                                <f:selectItem itemValue="5" itemLabel="5 Stars" />
+                                <f:selectItem itemValue="4" itemLabel="4 Stars" />
+                                <f:selectItem itemValue="3" itemLabel="3 Stars" />
+                                <f:selectItem itemValue="2" itemLabel="2 Stars" />
+                                <f:selectItem itemValue="1" itemLabel="1 Star" />
+                            </h:selectOneMenu>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <h:commandButton id="findBtn" value="Search Reviews"
+                            action="#{reviewMB.advancedSearch()}"
+                            styleClass="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                            <f:ajax execute="reviewForm:searchCustomer reviewForm:searchProduct reviewForm:searchComment reviewForm:searchRating" 
+                                render="reviewForm:reviewsContent reviewForm:statsCardsVisible" />
+                        </h:commandButton>
+                        <h:commandButton value="Clear All"
+                            action="#{reviewMB.clearSearch()}"
+                            styleClass="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                            <f:ajax execute="@this" render="reviewForm:searchCustomer reviewForm:searchProduct reviewForm:searchComment reviewForm:searchRating reviewForm:reviewsContent reviewForm:statsCardsVisible" />
+                        </h:commandButton>
+                    </div>
+                </div>
+                <!-- ================== END SEARCH BAR ================== -->
+
+                <!-- ================== STATS CARDS (VISIBLE) ================== -->
+                <h:panelGroup id="statsCardsVisible">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+                    <!-- All Published Reviews -->
+                    <div
+                        class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Published Reviews</p>
+                                <p class="text-3xl font-bold text-blue-600 mt-1">#{reviewMB.publishedReviews.size()}</p>
+                            </div>
+                            <div
+                                class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-blue-600">rate_review</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden/Rejected Reviews -->
+                    <div
+                        class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Hidden</p>
+                                <p class="text-3xl font-bold text-red-600 mt-1">#{reviewMB.rejectedReviews.size()}</p>
+                            </div>
+                            <div
+                                class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-red-600">visibility_off</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flagged Reviews -->
+                    <div
+                        class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Flagged</p>
+                                <p class="text-3xl font-bold text-orange-600 mt-1">#{reviewMB.flaggedReviews.size()}</p>
+                            </div>
+                            <div
+                                class="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-orange-600">warning</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                </h:panelGroup>
+                <!-- ================== END STATS CARDS ================== -->
+
+                <!-- ================== TABS + TABLES ================== -->
+                <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 shadow-lg mb-6">
+
+                    <div class="border-b border-gray-200 dark:border-gray-700" id="tabsNav">
+                        <nav class="flex gap-6 px-6 -mb-px overflow-x-auto">
+
+                            <h:commandLink action="#{reviewMB.setCurrentTab('published')}"
+                                styleClass="py-4 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-colors">
+                                <span class="material-symbols-outlined mr-2"
+                                    style="font-size: 18px; vertical-align: middle;">rate_review</span>
+                                All Published Reviews
+                                <f:ajax execute="@this" render="reviewForm:statsCardsVisible reviewForm:tabsNav reviewForm:reviewsContent" />
+                            </h:commandLink>
+
+                            <h:commandLink action="#{reviewMB.setCurrentTab('flagged')}"
+                                styleClass="py-4 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-colors">
+                                <span class="material-symbols-outlined mr-2"
+                                    style="font-size: 18px; vertical-align: middle;">warning</span>
+                                Flagged
+                                <f:ajax execute="@this" render="reviewForm:statsCardsVisible reviewForm:tabsNav reviewForm:reviewsContent" />
+                            </h:commandLink>
+
+                            <h:commandLink action="#{reviewMB.setCurrentTab('rejected')}"
+                                styleClass="py-4 px-1 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-colors">
+                                <span class="material-symbols-outlined mr-2"
+                                    style="font-size: 18px; vertical-align: middle;">visibility_off</span>
+                                Hidden
+                                <f:ajax execute="@this" render="reviewForm:statsCardsVisible reviewForm:tabsNav reviewForm:reviewsContent" />
+                            </h:commandLink>
+
+                        </nav>
+                    </div>
+
+                    <h:panelGroup id="reviewsContent">
+
+                        <!-- All Published Reviews -->
+                        <h:dataTable id="publishedTable" value="#{reviewMB.publishedReviews}" var="review"
+                            styleClass="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                            headerClass="bg-gray-50 dark:bg-[#1a2e22] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            rendered="#{reviewMB.currentTab == 'published'}"
+                            columnClasses="px-6 py-4 whitespace-nowrap">
+                            <h:column>
+                                <f:facet name="header">ID</f:facet>
+                                <span class="font-mono text-sm">##{review.reviewID}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Customer</f:facet>
+                                <span class="text-sm">#{reviewMB.getCustomerName(review)}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Product</f:facet>
+                                <span class="text-sm">#{review.productID.productName}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Rating</f:facet>
+                                <span class="text-yellow-400">#{reviewMB.getStarRating(review.rating)}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Comment</f:facet>
+                                <span class="text-sm text-gray-600 max-w-xs truncate block">#{review.comment}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Reply</f:facet>
+                                <h:panelGroup rendered="#{not empty review.reply}">
+                                    <span class="text-green-600 text-xs">✓ Replied</span>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{empty review.reply}">
+                                    <span class="text-gray-400 text-xs">No reply</span>
+                                </h:panelGroup>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Date</f:facet>
+                                <span class="text-sm text-gray-500">
+                                    <h:outputText value="#{review.createdAt}">
+                                        <f:convertDateTime pattern="MMM dd, yyyy" />
+                                    </h:outputText>
+                                </span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Actions</f:facet>
+                                <div class="flex gap-2 flex-wrap">
+                                    <h:commandButton value="Reply" action="#{reviewMB.setSelectedReview(review)}"
+                                        styleClass="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded hover:bg-purple-200"
+                                        onclick="openReplyModal(); return true;">
+                                    </h:commandButton>
+                                    <h:panelGroup rendered="#{reviewMB.isFlagged(review)}">
+                                        <h:commandButton value="Unflag" action="#{reviewMB.unflagReview(review)}"
+                                            styleClass="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded hover:bg-green-200">
+                                            <f:ajax execute="@this"
+                                                render="reviewForm:globalMessages reviewForm:statsCardsVisible reviewForm:tabsNav reviewForm:reviewsContent" />
+                                        </h:commandButton>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{not reviewMB.isFlagged(review)}">
+                                        <h:commandButton value="Flag" action="#{reviewMB.flagReview(review)}"
+                                            styleClass="px-3 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded hover:bg-orange-200">
+                                            <f:ajax execute="@this"
+                                                render="reviewForm:globalMessages reviewForm:statsCardsVisible reviewForm:tabsNav reviewForm:reviewsContent" />
+                                        </h:commandButton>
+                                    </h:panelGroup>
+                                    <h:commandButton value="Hide" action="#{reviewMB.rejectReview(review)}"
+                                        styleClass="px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded hover:bg-red-200">
+                                        <f:ajax execute="@this"
+                                            render="reviewForm:globalMessages reviewForm:statsCardsVisible reviewForm:tabsNav reviewForm:reviewsContent" />
+                                    </h:commandButton>
+                                </div>
+                            </h:column>
+                        </h:dataTable>
+
+                        <!-- Flagged Reviews -->
+                        <h:dataTable id="flaggedTable" value="#{reviewMB.flaggedReviews}" var="review"
+                            styleClass="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                            headerClass="bg-gray-50 dark:bg-[#1a2e22] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            rendered="#{reviewMB.currentTab == 'flagged'}" columnClasses="px-6 py-4 whitespace-nowrap">
+                            <h:column>
+                                <f:facet name="header">ID</f:facet>
+                                <span class="font-mono text-sm">##{review.reviewID}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Customer</f:facet>
+                                <span class="text-sm">#{reviewMB.getCustomerName(review)}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Product</f:facet>
+                                <span class="text-sm">#{review.productID.productName}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Rating</f:facet>
+                                <span class="text-yellow-400">#{reviewMB.getStarRating(review.rating)}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Comment</f:facet>
+                                <span class="text-sm text-gray-600 max-w-xs truncate block">#{review.comment}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Reply</f:facet>
+                                <h:panelGroup rendered="#{not empty review.reply}">
+                                    <span class="text-green-600 text-xs">✓ Replied</span>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{empty review.reply}">
+                                    <span class="text-gray-400 text-xs">No reply</span>
+                                </h:panelGroup>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Date</f:facet>
+                                <span class="text-sm text-gray-500">
+                                    <h:outputText value="#{review.createdAt}">
+                                        <f:convertDateTime pattern="MMM dd, yyyy" />
+                                    </h:outputText>
+                                </span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Actions</f:facet>
+                                <div class="flex gap-2 flex-wrap">
+                                    <h:commandButton value="Reply" action="#{reviewMB.setSelectedReview(review)}"
+                                        styleClass="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded hover:bg-purple-200"
+                                        onclick="openReplyModal(); return true;">
+                                    </h:commandButton>
+                                    <h:commandButton value="Unflag" action="#{reviewMB.unflagReview(review)}"
+                                        styleClass="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded hover:bg-green-200">
+                                        <f:ajax execute="@this"
+                                            render="reviewForm:globalMessages reviewForm:statsCardsVisible reviewForm:tabsNav reviewForm:reviewsContent" />
+                                    </h:commandButton>
+                                    <h:commandButton value="Hide" action="#{reviewMB.rejectReview(review)}"
+                                        styleClass="px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded hover:bg-red-200">
+                                        <f:ajax execute="@this"
+                                            render="reviewForm:globalMessages reviewForm:statsCardsVisible reviewForm:tabsNav reviewForm:reviewsContent" />
+                                    </h:commandButton>
+                                </div>
+                            </h:column>
+                        </h:dataTable>
+
+                        <!-- Hidden/Rejected Reviews -->
+                        <h:dataTable id="rejectedTable" value="#{reviewMB.rejectedReviews}" var="review"
+                            styleClass="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                            headerClass="bg-gray-50 dark:bg-[#1a2e22] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            rendered="#{reviewMB.currentTab == 'rejected'}" columnClasses="px-6 py-4 whitespace-nowrap">
+                            <h:column>
+                                <f:facet name="header">ID</f:facet>
+                                <span class="font-mono text-sm">##{review.reviewID}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Customer</f:facet>
+                                <span class="text-sm">#{reviewMB.getCustomerName(review)}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Product</f:facet>
+                                <span class="text-sm">#{review.productID.productName}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Rating</f:facet>
+                                <span class="text-yellow-400">#{reviewMB.getStarRating(review.rating)}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Comment</f:facet>
+                                <span class="text-sm text-gray-600 max-w-xs truncate block">#{review.comment}</span>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Actions</f:facet>
+                                <h:commandButton value="Restore" action="#{reviewMB.approveReview(review)}"
+                                    styleClass="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded hover:bg-green-200">
+                                    <f:ajax execute="@this"
+                                        render="reviewForm:globalMessages reviewForm:statsCardsVisible reviewForm:tabsNav reviewForm:reviewsContent" />
+                                </h:commandButton>
+                            </h:column>
+                        </h:dataTable>
+
+                        <h:panelGroup
+                            rendered="#{reviewMB.currentTab == 'published' and empty reviewMB.publishedReviews}"
+                            styleClass="p-12 text-center">
+                            <span class="material-symbols-outlined text-gray-400 text-5xl mb-4 block">rate_review</span>
+                            <p class="text-gray-500 dark:text-gray-400 text-lg">No reviews yet</p>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{reviewMB.currentTab == 'flagged' and empty reviewMB.flaggedReviews}"
+                            styleClass="p-12 text-center">
+                            <span
+                                class="material-symbols-outlined text-gray-400 text-5xl mb-4 block">check_circle</span>
+                            <p class="text-gray-500 dark:text-gray-400 text-lg">No flagged reviews</p>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{reviewMB.currentTab == 'rejected' and empty reviewMB.rejectedReviews}"
+                            styleClass="p-12 text-center">
+                            <span
+                                class="material-symbols-outlined text-gray-400 text-5xl mb-4 block">check_circle</span>
+                            <p class="text-gray-500 dark:text-gray-400 text-lg">No hidden reviews</p>
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+
+                </div>
+                <!-- ================== END TABS + TABLES ================== -->
+            </div>
+        </h:form>
+
+        <!-- ================== REPLY MODAL (Outside Form) ================== -->
+        <h:panelGroup id="replyModalContainer" layout="block">
+            <h:panelGroup rendered="#{not empty reviewMB.selectedReview}">
+                <div id="replyModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+                    style="display: block;">
+
+                    <div
+                        class="relative top-20 mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white dark:bg-[#1a2e22]">
+
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Reply to Customer</h3>
+                            <button type="button" onclick="closeReplyModal();"
+                                class="text-gray-400 hover:text-gray-600">
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        <div class="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded">
+                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                #{reviewMB.getCustomerName(reviewMB.selectedReview)}
+                                <span
+                                    class="text-yellow-400">#{reviewMB.getStarRating(reviewMB.selectedReview.rating)}</span>
+                            </p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                #{reviewMB.selectedReview.comment}
+                            </p>
+                            <p class="text-xs text-gray-500 mt-2">
+                                #{reviewMB.selectedReview.productID.productName}
+                            </p>
+                        </div>
+
+                        <h:form id="replyForm">
+                            <h:inputTextarea id="replyText" value="#{reviewMB.replyText}" rows="4"
+                                styleClass="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-4 py-2 text-sm"
+                                placeholder="Write your reply to the customer...">
+                            </h:inputTextarea>
+
+                            <div class="flex justify-end gap-3 mt-4">
+                                <button type="button" onclick="closeReplyModal();"
+                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                                    Cancel
+                                </button>
+
+                                <h:commandButton value="Send Reply"
+                                    action="#{reviewMB.replyToReview(reviewMB.selectedReview, reviewMB.replyText)}"
+                                    styleClass="px-4 py-2 bg-primary text-white rounded-lg hover:bg-green-600">
+                                    <f:ajax execute="@form" render="@form :reviewForm:reviewsContent"
+                                        onevent="function(data){ if(data.status === 'success'){ closeReplyModal(); } }" />
+                                </h:commandButton>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:panelGroup>
+        <!-- ================== END REPLY MODAL ================== -->
+
+        <!-- JS: Modal functions -->
+        <script type="text/javascript">
+            //<![CDATA[
+            
+            function openReplyModal() {
+                var modal = document.getElementById('replyModal');
+                if (modal) {
+                    modal.style.display = 'block';
+                }
+            }
+
+            function closeReplyModal() {
+                var modal = document.getElementById('replyModal');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            }
+
+            window.addEventListener('click', function (event) {
+                var replyModal = document.getElementById('replyModal');
+                if (!replyModal) return;
+
+                if (event.target === replyModal) {
+                    closeReplyModal();
+                }
+            });
+            //]]>
+        </script>
+
+    </ui:define>
+</ui:composition>

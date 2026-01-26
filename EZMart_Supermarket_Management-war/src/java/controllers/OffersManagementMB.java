@@ -43,45 +43,134 @@ public class OffersManagementMB implements Serializable {
     @EJB
     private ProductOffersFacadeLocal productOffersFacade;
 
+    @EJB
+    private sessionbeans.VouchersFacadeLocal vouchersFacade;
+
     private List<Offers> offersList;
     private Offers newOffer;
     private Offers selectedOffer;
     private Integer offerId;
     private String searchTerm;
+    private String selectedType;
+    private String selectedStatus;
     private Part bannerFile;
     private List<Products> availableProducts;
     private List<Products> selectedProducts;
     private List<ProductOffers> offerProductOffers;
 
-    @PostConstruct
-    public void init() {
-        loadOffers();
-        loadAvailableProducts();
-        newOffer = new Offers();
-        selectedProducts = new ArrayList<>();
-    }
+   @PostConstruct
+public void init() {
+    selectedType = "";
+    selectedStatus = "";
+    searchTerm = "";
+    loadOffers();
+    loadAvailableProducts();
+    newOffer = new Offers();
+    selectedProducts = new ArrayList<>();
+}
+
 
     public void loadOffers() {
         offersList = offersFacade.findAll();
     }
 
     public void searchOffers() {
+        System.out.println("DEBUG: searchOffers() called with searchTerm=" + searchTerm + ", selectedType=" + selectedType + ", selectedStatus=" + selectedStatus);
+
+        List<Offers> allOffers = offersFacade.findAll();
+        System.out.println("DEBUG: Total offers before filtering: " + allOffers.size());
+
+        // Apply search term filter
         if (searchTerm != null && !searchTerm.trim().isEmpty()) {
-            offersList = offersFacade.findByOfferName("%" + searchTerm + "%");
-        } else {
-            loadOffers();
+            allOffers = allOffers.stream()
+                    .filter(offer -> offer.getOfferName() != null &&
+                            offer.getOfferName().toLowerCase().contains(searchTerm.trim().toLowerCase()))
+                    .collect(java.util.stream.Collectors.toList());
+            System.out.println("DEBUG: After search term filter: " + allOffers.size());
         }
+
+        // Apply type filter
+        if (selectedType != null && !selectedType.trim().isEmpty()) {
+            allOffers = allOffers.stream()
+                    .filter(offer -> selectedType.equals(offer.getOfferType()))
+                    .collect(java.util.stream.Collectors.toList());
+            System.out.println("DEBUG: After type filter: " + allOffers.size());
+        }
+
+        // Apply status filter
+        if (selectedStatus != null && !selectedStatus.trim().isEmpty()) {
+            allOffers = allOffers.stream()
+                    .filter(offer -> selectedStatus.equals(offer.getStatus()))
+                    .collect(java.util.stream.Collectors.toList());
+            System.out.println("DEBUG: After status filter: " + allOffers.size());
+        }
+
+        offersList = allOffers;
+        System.out.println("DEBUG: Final offersList size: " + offersList.size());
     }
 
     public void addOffer() {
         try {
-            // Validate dates
-            if (newOffer.getStartDate() != null && newOffer.getEndDate() != null) {
-                if (newOffer.getStartDate().after(newOffer.getEndDate())) {
+            // Validate offer name
+            if (newOffer.getOfferName() == null || newOffer.getOfferName().trim().isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Offer name is required"));
+                return;
+            }
+            if (newOffer.getOfferName().length() < 3 || newOffer.getOfferName().length() > 100) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Offer name must be between 3 and 100 characters"));
+                return;
+            }
+
+            // Validate offer type
+            if (newOffer.getOfferType() == null || newOffer.getOfferType().trim().isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Offer type is required"));
+                return;
+            }
+
+            // Validate discount value for percentage offers
+            if ("Percentage".equals(newOffer.getOfferType())) {
+                if (newOffer.getDiscountValue() == null) {
                     FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Start date cannot be after end date"));
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Discount value is required for percentage offers"));
                     return;
                 }
+                if (newOffer.getDiscountValue() < 0.01 || newOffer.getDiscountValue() > 100.0) {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Discount percentage must be between 0.01 and 100"));
+                    return;
+                }
+
+                // Validate that at least one product is selected for percentage offers
+                if (selectedProducts == null || selectedProducts.isEmpty()) {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "At least one product must be selected for percentage offers"));
+                    return;
+                }
+            }
+
+            // Validate dates
+            if (newOffer.getStartDate() == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Start date is required"));
+                return;
+            }
+            if (newOffer.getEndDate() == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "End date is required"));
+                return;
+            }
+            if (newOffer.getStartDate().after(newOffer.getEndDate())) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Start date cannot be after end date"));
+                return;
+            }
+
+            // Validate status
+            if (newOffer.getStatus() == null || newOffer.getStatus().trim().isEmpty()) {
+                newOffer.setStatus("Active"); // Default to active
             }
 
             // Set default status if not set
@@ -89,13 +178,26 @@ public class OffersManagementMB implements Serializable {
                 newOffer.setStatus("Active");
             }
 
-            // Handle banner image upload
-            if (bannerFile != null && bannerFile.getSize() > 0) {
-                String fileName = saveBannerImage(bannerFile);
-                if (fileName != null) {
-                    newOffer.setBannerImage(fileName);
-                }
-            }
+         // Validate banner image (bắt buộc phải chọn)
+if (bannerFile == null || bannerFile.getSize() == 0) {
+    FacesContext.getCurrentInstance().addMessage(null,
+        new FacesMessage(
+            FacesMessage.SEVERITY_ERROR,
+            "Error",
+            "Please select a banner image"
+        ));
+    return;
+}
+
+// Handle banner image upload
+String fileName = saveBannerImage(bannerFile);
+if (fileName == null) {
+    // saveBannerImage đã add message rồi
+    return;
+}
+
+newOffer.setBannerImage(fileName);
+
 
             offersFacade.create(newOffer);
 
@@ -118,12 +220,40 @@ public class OffersManagementMB implements Serializable {
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Offer added successfully"));
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to add offer: " + e.getMessage()));
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to add offer. Please check your input and try again."));
         }
     }
 
     public void deleteOffer(Offers offer) {
         try {
+            // Check if offer has associated vouchers (only for Fixed Amount offers)
+            if ("Fixed Amount".equals(offer.getOfferType())) {
+                List<entityclass.Vouchers> associatedVouchers = vouchersFacade.findByOfferID(offer.getOfferID());
+                if (associatedVouchers != null && !associatedVouchers.isEmpty()) {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Cannot Delete Offer",
+                            "This offer has " + associatedVouchers.size() + " associated voucher(s). Please delete all vouchers for this offer first before deleting the offer."));
+                    return;
+                }
+            }
+
+            // Check if offer has associated products (only for Percentage offers)
+            if ("Percentage".equals(offer.getOfferType())) {
+                List<ProductOffers> associatedProducts = new ArrayList<>();
+                List<ProductOffers> allProductOffers = productOffersFacade.findAll();
+                for (ProductOffers po : allProductOffers) {
+                    if (po.getOfferID() != null && po.getOfferID().getOfferID().equals(offer.getOfferID())) {
+                        associatedProducts.add(po);
+                    }
+                }
+                if (!associatedProducts.isEmpty()) {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Cannot Delete Offer",
+                            "This offer has " + associatedProducts.size() + " associated product(s). Please remove all products from this offer first before deleting the offer."));
+                    return;
+                }
+            }
+
             offersFacade.remove(offer);
             loadOffers();
             FacesContext.getCurrentInstance().addMessage(null,
@@ -252,6 +382,18 @@ public class OffersManagementMB implements Serializable {
 
     public String updateOffer() {
         try {
+            // Validate offer name
+            if (selectedOffer.getOfferName() == null || selectedOffer.getOfferName().trim().isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Offer name is required"));
+                return null;
+            }
+            if (selectedOffer.getOfferName().length() < 3 || selectedOffer.getOfferName().length() > 100) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Offer name must be between 3 and 100 characters"));
+                return null;
+            }
+
             // Validate dates
             if (selectedOffer.getStartDate() != null && selectedOffer.getEndDate() != null) {
                 if (selectedOffer.getStartDate().after(selectedOffer.getEndDate())) {
@@ -302,7 +444,7 @@ public class OffersManagementMB implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
             FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to update offer: " + e.getMessage()));
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to update offer. Please check your input and try again."));
             return null;
         }
     }
@@ -378,6 +520,22 @@ public class OffersManagementMB implements Serializable {
 
     public void setOfferProductOffers(List<ProductOffers> offerProductOffers) {
         this.offerProductOffers = offerProductOffers;
+    }
+
+    public String getSelectedType() {
+        return selectedType;
+    }
+
+    public void setSelectedType(String selectedType) {
+        this.selectedType = selectedType;
+    }
+
+    public String getSelectedStatus() {
+        return selectedStatus;
+    }
+
+    public void setSelectedStatus(String selectedStatus) {
+        this.selectedStatus = selectedStatus;
     }
 
     public void onOfferTypeChange() {

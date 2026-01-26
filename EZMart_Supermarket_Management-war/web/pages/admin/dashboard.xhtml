@@ -2,6 +2,7 @@
 <ui:composition template="/templates/admin/layout.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
                 xmlns:ui="jakarta.faces.facelets">
 
     <ui:define name="content">
@@ -38,7 +39,7 @@
                             </span>
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Revenue</p>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">$54,200</h3>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">$#{dashboardMB.totalRevenueValue}</h3>
                     </div>
                     <!-- New Orders -->
                     <div class="p-5 bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
@@ -52,7 +53,7 @@
                             </span>
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">New Orders</p>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">1,240</h3>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{dashboardMB.newOrdersCount}</h3>
                     </div>
                     <!-- Pending Deliveries -->
                     <div class="p-5 bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
@@ -66,7 +67,7 @@
                             </span>
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Pending Deliveries</p>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">54</h3>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{dashboardMB.pendingDeliveriesCount}</h3>
                     </div>
                     <!-- Total Customers -->
                     <div class="p-5 bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
@@ -80,7 +81,7 @@
                             </span>
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Active Customers</p>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">3,400</h3>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{dashboardMB.activeCustomersCount}</h3>
                     </div>
                     <!-- Low Stock Alert -->
                     <div class="p-5 bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
@@ -94,7 +95,7 @@
                             </span>
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Low Stock Items</p>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{productMB.lowStockCount}</h3>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{dashboardMB.lowStockItemsCount}</h3>
                     </div>
                 </div>
                 <!-- Main Grid: Chart & Top Products -->
@@ -256,19 +257,30 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                <ui:repeat var="order" value="#{dashboardMB.recentOrdersList}">
                                 <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                                    <td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">#ORD-00921</td>
+                                    <td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">#{order.orderNumber}</td>
                                     <td class="py-4 px-6">
                                         <div class="flex items-center gap-3">
-                                            <div class="h-8 w-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">JD</div>
-                                            <span class="text-sm text-slate-700 dark:text-slate-300">John Doe</span>
+                                            <div class="h-8 w-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">
+                                                #{order.customerName.substring(0, 1).toUpperCase()}
+                                            </div>
+                                            <span class="text-sm text-slate-700 dark:text-slate-300">#{order.customerName}</span>
                                         </div>
                                     </td>
-                                    <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400">Oct 24, 2023</td>
-                                    <td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">$124.50</td>
+                                    <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400">
+                                        <h:outputText value="#{order.orderDate}">
+                                            <f:convertDateTime pattern="MMM dd, yyyy" />
+                                        </h:outputText>
+                                    </td>
+                                    <td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">$#{order.amount}</td>
                                     <td class="py-4 px-6">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
-                                            Pending
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium dark:opacity-75"
+                                            style="#{order.status == 'COMPLETED' ? 'background-color: #dcfce7; color: #166534;' : 
+                                                    order.status == 'SHIPPING' ? 'background-color: #fef3c7; color: #92400e;' : 
+                                                    order.status == 'CANCELLED' ? 'background-color: #fee2e2; color: #991b1b;' : 
+                                                    'background-color: #e0e7ff; color: #3730a3;'}">
+                                            #{order.status}
                                         </span>
                                     </td>
                                     <td class="py-4 px-6 text-right">
@@ -277,69 +289,7 @@
                                         </button>
                                     </td>
                                 </tr>
-                                <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                                    <td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">#ORD-00920</td>
-                                    <td class="py-4 px-6">
-                                        <div class="flex items-center gap-3">
-                                            <div class="h-8 w-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xs font-bold">SM</div>
-                                            <span class="text-sm text-slate-700 dark:text-slate-300">Sarah Miller</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400">Oct 24, 2023</td>
-                                    <td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">$45.00</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                            Delivered
-                                        </span>
-                                    </td>
-                                    <td class="py-4 px-6 text-right">
-                                        <button class="text-slate-400 hover:text-primary transition-colors">
-                                            <span class="material-symbols-outlined text-[20px]">more_vert</span>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                                    <td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">#ORD-00919</td>
-                                    <td class="py-4 px-6">
-                                        <div class="flex items-center gap-3">
-                                            <div class="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">RJ</div>
-                                            <span class="text-sm text-slate-700 dark:text-slate-300">Robert Johnson</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400">Oct 23, 2023</td>
-                                    <td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">$210.25</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                            Delivered
-                                        </span>
-                                    </td>
-                                    <td class="py-4 px-6 text-right">
-                                        <button class="text-slate-400 hover:text-primary transition-colors">
-                                            <span class="material-symbols-outlined text-[20px]">more_vert</span>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                                    <td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">#ORD-00918</td>
-                                    <td class="py-4 px-6">
-                                        <div class="flex items-center gap-3">
-                                            <div class="h-8 w-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">EW</div>
-                                            <span class="text-sm text-slate-700 dark:text-slate-300">Emma Wilson</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400">Oct 23, 2023</td>
-                                    <td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">$65.80</td>
-                                    <td class="py-4 px-6">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                            Cancelled
-                                        </span>
-                                    </td>
-                                    <td class="py-4 px-6 text-right">
-                                        <button class="text-slate-400 hover:text-primary transition-colors">
-                                            <span class="material-symbols-outlined text-[20px]">more_vert</span>
-                                        </button>
-                                    </td>
-                                </tr>
+                                </ui:repeat>
                             </tbody>
                         </table>
                     </div>

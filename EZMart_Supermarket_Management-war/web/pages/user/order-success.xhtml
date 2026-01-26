@@ -9,10 +9,10 @@
                     <span class="material-symbols-outlined text-green-600 text-3xl">check_circle</span>
                 </div>
                 <h1 class="text-3xl md:text-4xl font-black tracking-tight text-[#111813] dark:text-[#111813] mb-2">
-                    Order Placed Successfully!
+                    #{orderSuccessMB.successTitle}
                 </h1>
                 <p class="text-gray-500 dark:text-gray-400 text-lg">
-                    Thank you for your order. We'll start preparing your groceries right away.
+                    #{orderSuccessMB.successMessage}
                 </p>
             </div>
 
@@ -36,11 +36,11 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">Payment Method</p>
-                                    <p class="font-semibold text-[#111813] dark:text-[#111813]">Cash on Delivery</p>
+                                    <p class="font-semibold text-[#111813] dark:text-[#111813]">#{orderSuccessMB.order.paymentMethod}</p>
                                 </div>
                                 <div>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">Order Status</p>
-                                    <p class="font-semibold text-orange-600">Payment Pending</p>
+                                    <p class="font-semibold text-blue-600">#{orderSuccessMB.orderStatusText}</p>
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -62,14 +62,16 @@
                         <div class="space-y-4">
                             <ui:repeat value="#{orderSuccessMB.orderItems}" var="item">
                                 <div class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                                    <div class="h-16 w-16 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
-                                        <img alt="#{item.productID.productName}"
+                                    <div class="h-16 w-16 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0 flex items-center justify-center">
+                                        <ui:param name="productImgPath" value="#{orderSuccessMB.productImageUrl(item.productID)}" />
+                                        <img alt="#{orderSuccessMB.getProductName(item)}"
                                              class="h-full w-full object-cover"
-                                             src="#{orderSuccessMB.getProductImage(item)}" />
+                                             src="#{request.contextPath}#{productImgPath}"
+                                             onerror="this.onerror=null; this.src='/images/work.png';" />
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="font-semibold text-[#111813] dark:text-[#111813] truncate">
-                                            #{item.productID.productName}
+                                            #{orderSuccessMB.getProductName(item)}
                                         </p>
                                         <p class="text-sm text-gray-600 dark:text-gray-400">
                                             Quantity: #{item.quantity}
@@ -106,17 +108,32 @@
                     </div>
 
                     <!-- Payment Info -->
-                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                        <div class="flex items-start gap-3">
-                            <span class="material-symbols-outlined text-blue-600 text-lg">info</span>
-                            <div>
-                                <p class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">Payment on Delivery</p>
-                                <p class="text-sm text-blue-800 dark:text-blue-200">
-                                    Please have the exact amount ready when our delivery person arrives. We accept cash only.
-                                </p>
+                    <ui:fragment rendered="#{!orderSuccessMB.codPayment}">
+                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-blue-600 text-lg">info</span>
+                                <div>
+                                    <p class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">Payment Confirmation</p>
+                                    <p class="text-sm text-blue-800 dark:text-blue-200">
+                                        Your payment proof has been submitted and is pending verification. We'll confirm your order once the payment is verified.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{orderSuccessMB.codPayment}">
+                        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-green-600 text-lg">local_shipping</span>
+                                <div>
+                                    <p class="text-sm font-medium text-green-900 dark:text-green-100 mb-1">Order Confirmation</p>
+                                    <p class="text-sm text-green-800 dark:text-green-200">
+                                        Your order has been confirmed. We'll prepare your items and deliver them to your address. Payment will be collected upon delivery.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </ui:fragment>
 
                     <!-- Action Buttons -->
                     <div class="space-y-3">

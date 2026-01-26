@@ -24,6 +24,8 @@ import sessionbeans.CustomersFacadeLocal;
 import sessionbeans.OffersFacadeLocal;
 import sessionbeans.VouchersFacadeLocal;
 
+
+
 /**
  *
  * @author TRUONG LAM
@@ -53,6 +55,10 @@ public class VoucherManagementMB implements Serializable {
     private String voucherType; // "offer" or "customer"
     private List<Offers> eligibleOffers; // Filtered offers for voucher type
     private String selectedType; // For filtering: "offer", "customer", "general"
+    private Integer voucherToDeleteId;
+    private Vouchers voucherToDelete; // For delete confirmation
+    private Date startDateFilter;
+    private Date endDateFilter;
 
     @PostConstruct
     public void init() {
@@ -94,6 +100,8 @@ public class VoucherManagementMB implements Serializable {
                              ("general".equals(selectedType) && v.getOfferID() == null && v.getCustomerID() == null))
                     .filter(v -> selectedCustomerId == null || (v.getCustomerID() != null && v.getCustomerID().getCustomerID().equals(selectedCustomerId)))
                     .filter(v -> selectedStatus == null || v.getIsUsed().equals(selectedStatus))
+                    .filter(v -> startDateFilter == null || (v.getExpiryDate() != null && !v.getExpiryDate().before(startDateFilter)))
+                    .filter(v -> endDateFilter == null || (v.getExpiryDate() != null && !v.getExpiryDate().after(endDateFilter)))
                     .collect(Collectors.toList());
         }
     }
@@ -108,26 +116,113 @@ public class VoucherManagementMB implements Serializable {
         loadEligibleOffers();
     }
 
-    public void prepareEdit(Vouchers voucher) {
-        if (voucher == null) {
+    public void deleteVoucher(Vouchers voucher) {
+    try {
+        if (voucher == null || voucher.getVoucherID() == null) {
             return;
         }
-        selectedVoucher = voucher;
-        selectedCustomerId = voucher.getCustomerID() != null ? voucher.getCustomerID().getCustomerID() : null;
-        selectedOfferId = voucher.getOfferID() != null ? voucher.getOfferID().getOfferID() : null;
-        // Determine voucher type based on existing data
-        if (selectedOfferId != null) {
-            voucherType = "offer";
-        } else if (selectedCustomerId != null) {
-            voucherType = "customer";
-        } else {
-            voucherType = "offer"; // Default
+
+        Vouchers v = vouchersFacade.find(voucher.getVoucherID());
+        if (v != null) {
+            vouchersFacade.remove(v);
+            loadVouchers();
         }
-        loadEligibleOffers();
+
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Voucher deleted successfully"));
+
+    } catch (Exception e) {
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Delete failed: " + e.getMessage()));
     }
+}
+
+
+    public void confirmDeleteVoucher() {
+    try {
+        if (voucherToDelete == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "No voucher selected"));
+            return;
+        }
+
+        // Check if voucher is used - prevent deletion if not used
+        if (voucherToDelete.getIsUsed() == null || !voucherToDelete.getIsUsed()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Cannot delete unused voucher. Voucher must be used before deletion."));
+            return;
+        }
+
+        Vouchers managed = vouchersFacade.find(voucherToDelete.getVoucherID());
+        vouchersFacade.remove(managed);
+
+        loadVouchers();
+
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Voucher deleted successfully"));
+
+    } catch (Exception e) {
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
+    } finally {
+        voucherToDelete = null;
+    }
+}
+
 
     public void saveVoucher() {
         try {
+            // Validate voucher code
+            if (selectedVoucher.getVoucherCode() == null || selectedVoucher.getVoucherCode().trim().isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validation Error", "Voucher code is required"));
+                return;
+            }
+            if (selectedVoucher.getVoucherCode().length() < 3 || selectedVoucher.getVoucherCode().length() > 20) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validation Error", "Voucher code must be between 3 and 20 characters"));
+                return;
+            }
+
+            // Validate discount value
+            if (selectedVoucher.getDiscountValue() == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validation Error", "Discount value is required"));
+                return;
+            }
+            if (selectedVoucher.getDiscountValue().compareTo(new BigDecimal("0.01")) < 0) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validation Error", "Discount value must be at least 0.01"));
+                return;
+            }
+
+            // Validate expiry date
+            if (selectedVoucher.getExpiryDate() == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validation Error", "Expiry date is required"));
+                return;
+            }
+            if (selectedVoucher.getExpiryDate().before(new Date())) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validation Error", "Expiry date must be in the future"));
+                return;
+            }
+
+            // Validate voucher type and relationships
+            if ("customer".equals(voucherType)) {
+                if (selectedCustomerId == null) {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validation Error", "Customer selection is required for customer vouchers"));
+                    return;
+                }
+            } else if ("offer".equals(voucherType)) {
+                if (selectedOfferId == null) {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Validation Error", "Offer selection is required for offer vouchers"));
+                    return;
+                }
+            }
+
             // Set relationships
             if (selectedCustomerId != null) {
                 Customers customer = customersFacade.find(selectedCustomerId);
@@ -166,17 +261,7 @@ public class VoucherManagementMB implements Serializable {
         }
     }
 
-    public void deleteVoucher(Vouchers voucher) {
-        try {
-            vouchersFacade.remove(voucher);
-            loadVouchers();
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Voucher deleted successfully"));
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to delete voucher: " + e.getMessage()));
-        }
-    }
+    // Delete functionality removed as per requirements
 
     public void generateVouchersForOffer(Offers offer, List<Customers> targetCustomers) {
         try {
@@ -235,7 +320,21 @@ public class VoucherManagementMB implements Serializable {
                 // Convert Integer to BigDecimal for discount value
                 selectedVoucher.setDiscountValue(selectedOffer.getDiscountValue() != null ?
                     new BigDecimal(selectedOffer.getDiscountValue()) : null);
-                selectedVoucher.setExpiryDate(selectedOffer.getEndDate());
+
+                // Set expiry date to avoid timezone issues - use only the date part
+                Date expiryDate = selectedOffer.getEndDate();
+                if (expiryDate != null) {
+                    // Create a new date with only the date components to avoid timezone conversion issues
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    cal.setTime(expiryDate);
+                    cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+                    cal.set(java.util.Calendar.MINUTE, 0);
+                    cal.set(java.util.Calendar.SECOND, 0);
+                    cal.set(java.util.Calendar.MILLISECOND, 0);
+                    selectedVoucher.setExpiryDate(cal.getTime());
+                } else {
+                    selectedVoucher.setExpiryDate(null);
+                }
             }
         } else {
             selectedVoucher.setDiscountValue(null);
@@ -345,4 +444,113 @@ public class VoucherManagementMB implements Serializable {
     public void setSelectedType(String selectedType) {
         this.selectedType = selectedType;
     }
+
+    public Integer getVoucherToDeleteId() {
+        return voucherToDeleteId;
+    }
+
+    public void setVoucherToDeleteId(Integer voucherToDeleteId) {
+        this.voucherToDeleteId = voucherToDeleteId;
+    }
+
+    // Statistics methods for admin dashboard
+    public int getTotalVouchers() {
+        return vouchers != null ? vouchers.size() : 0;
+    }
+
+    public int getUsedVouchers() {
+        if (vouchers == null) return 0;
+        return (int) vouchers.stream()
+                .filter(v -> v.getIsUsed() != null && v.getIsUsed())
+                .count();
+    }
+
+    public int getUnusedVouchers() {
+        if (vouchers == null) return 0;
+        return (int) vouchers.stream()
+                .filter(v -> v.getIsUsed() == null || !v.getIsUsed())
+                .count();
+    }
+
+    public int getExpiredVouchers() {
+        if (vouchers == null) return 0;
+        Date now = new Date();
+        return (int) vouchers.stream()
+                .filter(v -> v.getExpiryDate() != null && v.getExpiryDate().before(now))
+                .count();
+    }
+
+    public int getActiveVouchers() {
+        if (vouchers == null) return 0;
+        Date now = new Date();
+        return (int) vouchers.stream()
+                .filter(v -> (v.getIsUsed() == null || !v.getIsUsed()) &&
+                            (v.getExpiryDate() == null || v.getExpiryDate().after(now)))
+                .count();
+    }
+
+    public BigDecimal getTotalDiscountValue() {
+        if (vouchers == null) return BigDecimal.ZERO;
+        return vouchers.stream()
+                .filter(v -> v.getDiscountValue() != null)
+                .map(Vouchers::getDiscountValue)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getUsedDiscountValue() {
+        if (vouchers == null) return BigDecimal.ZERO;
+        return vouchers.stream()
+                .filter(v -> v.getIsUsed() != null && v.getIsUsed() && v.getDiscountValue() != null)
+                .map(Vouchers::getDiscountValue)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public int getActiveVouchersCount() {
+        return getActiveVouchers();
+    }
+
+    public int getExpiredVouchersCount() {
+        return getExpiredVouchers();
+    }
+
+    public int getUsedVouchersPercentage() {
+        if (vouchers == null || vouchers.isEmpty()) return 0;
+        long usedCount = vouchers.stream()
+                .filter(v -> v.getIsUsed() != null && v.getIsUsed())
+                .count();
+        return (int) ((usedCount * 100) / vouchers.size());
+    }
+
+    public int getUnusedVouchersPercentage() {
+        if (vouchers == null || vouchers.isEmpty()) return 0;
+        long unusedCount = vouchers.stream()
+                .filter(v -> v.getIsUsed() == null || !v.getIsUsed())
+                .count();
+        return (int) ((unusedCount * 100) / vouchers.size());
+    }
+
+    public Vouchers getVoucherToDelete() {
+    return voucherToDelete;
+}
+
+public void setVoucherToDelete(Vouchers voucherToDelete) {
+    this.voucherToDelete = voucherToDelete;
+}
+
+public Date getStartDateFilter() {
+    return startDateFilter;
+}
+
+public void setStartDateFilter(Date startDateFilter) {
+    this.startDateFilter = startDateFilter;
+}
+
+public Date getEndDateFilter() {
+    return endDateFilter;
+}
+
+public void setEndDateFilter(Date endDateFilter) {
+    this.endDateFilter = endDateFilter;
+}
+
 }

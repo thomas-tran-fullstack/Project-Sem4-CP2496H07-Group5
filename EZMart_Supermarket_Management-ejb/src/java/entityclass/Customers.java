@@ -304,5 +304,16 @@ public class Customers implements Serializable {
     public String toString() {
         return "entityclass.Customers[ customerID=" + customerID + " ]";
     }
-    
+
+    /**
+     * Get the full name of the customer
+     */
+    public String getFullName() {
+        StringBuilder sb = new StringBuilder();
+        if (firstName != null) sb.append(firstName).append(" ");
+        if (middleName != null) sb.append(middleName).append(" ");
+        if (lastName != null) sb.append(lastName);
+        return sb.toString().trim();
+    }
+
 }

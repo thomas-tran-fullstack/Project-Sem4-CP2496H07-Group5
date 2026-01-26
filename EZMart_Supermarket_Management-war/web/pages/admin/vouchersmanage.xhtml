@@ -1,229 +1,387 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <h:head>
-        <title>Voucher Management - EZMart Admin</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    </h:head>
+<h:head>
+    <title>Voucher Management - EZMart Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</h:head>
 
-    <h:body>
-        <ui:composition template="/templates/admin/layout.xhtml">
-            <ui:define name="content">
-                <h:form id="voucherForm">
-                    <p:growl id="growl" showDetail="true" sticky="true" />
+<h:body>
+<ui:composition template="/templates/admin/layout.xhtml">
+    <ui:define name="content">
 
-                    <!-- Header -->
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2><i class="fas fa-ticket-alt me-2"></i>Voucher Management</h2>
-                        <p:commandButton value="Add New Voucher"
-                                       icon="fas fa-plus"
-                                       actionListener="#{voucherManagementMB.prepareCreate()}"
-                                       oncomplete="PF('voucherDialog').show()"
-                                       styleClass="btn btn-primary" />
+        <h:form id="voucherForm">
+
+            <!-- Notifications -->
+            <p:growl id="growl" showDetail="true" life="5000" />
+
+            <!-- Confirm Dialog (UI only, logic unchanged) -->
+            <p:confirmDialog message="Are you sure you want to delete this voucher?"
+                             header="Delete Voucher"
+                             severity="warn"
+                             widgetVar="deleteConfirm"
+                             closable="false"
+                             styleClass="shadow">
+                <div class="d-flex gap-2 justify-content-end">
+                    <p:commandButton value="Yes"
+                                     icon="pi pi-check"
+                                     action="#{voucherManagementMB.confirmDeleteVoucher}"
+                                     process="@this"
+                                     immediate="true"
+                                     update=":voucherForm:growl :voucherForm:voucherTable"
+                                     oncomplete="PF('deleteConfirm').hide()"
+                                     styleClass="btn btn-danger" />
+                    <p:commandButton value="No"
+                                     icon="pi pi-times"
+                                     type="button"
+                                     onclick="PF('deleteConfirm').hide()"
+                                     styleClass="btn btn-outline-secondary" />
+                </div>
+            </p:confirmDialog>
+
+            <!-- Page Header -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <div>
+                    <h2 class="mb-0">
+                        <i class="fas fa-ticket-alt me-2"></i>Voucher Management
+                    </h2>
+                    <small class="text-muted">Manage vouchers, filter by code/type/customer/status</small>
+                </div>
+
+                <p:commandButton value="Add New Voucher"
+                                 icon="pi pi-plus"
+                                 actionListener="#{voucherManagementMB.prepareCreate()}"
+                                 oncomplete="PF('voucherDialog').show()"
+                                 styleClass="btn btn-primary" />
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-12 col-md-3">
+                            <label class="form-label fw-semibold">Search by Code</label>
+                            <p:inputText value="#{voucherManagementMB.searchCode}"
+                                         placeholder="Enter voucher code"
+                                         styleClass="form-control">
+                                <p:ajax event="keyup" process="@this" update="voucherTable" listener="#{voucherManagementMB.searchVouchers()}" />
+                            </p:inputText>
+                        </div>
+
+                        <div class="col-12 col-md-2">
+                            <label class="form-label fw-semibold">Type</label>
+                            <p:selectOneMenu value="#{voucherManagementMB.selectedType}" styleClass="form-select w-100">
+                                <f:selectItem itemLabel="All Types" itemValue="#{null}" />
+                                <f:selectItem itemLabel="Offer" itemValue="offer" />
+                                <f:selectItem itemLabel="Customer" itemValue="customer" />
+                                <f:selectItem itemLabel="General" itemValue="general" />
+                                <p:ajax event="change" process="@this" update="voucherTable" listener="#{voucherManagementMB.searchVouchers()}" />
+                            </p:selectOneMenu>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <label class="form-label fw-semibold">Customer</label>
+                            <p:selectOneMenu value="#{voucherManagementMB.selectedCustomerId}" styleClass="form-select w-100">
+                                <f:selectItem itemLabel="All Customers" itemValue="#{null}" />
+                                <f:selectItems value="#{voucherManagementMB.customers}"
+                                               var="customer"
+                                               itemLabel="#{customer.firstName} #{customer.lastName}"
+                                               itemValue="#{customer.customerID}" />
+                                <p:ajax event="change" process="@this" update="voucherTable" listener="#{voucherManagementMB.searchVouchers()}" />
+                            </p:selectOneMenu>
+                        </div>
+
+                        <div class="col-12 col-md-2">
+                            <label class="form-label fw-semibold">Status</label>
+                            <p:selectOneMenu value="#{voucherManagementMB.selectedStatus}" styleClass="form-select w-100">
+                                <f:selectItem itemLabel="All Status" itemValue="#{null}" />
+                                <f:selectItem itemLabel="Unused" itemValue="false" />
+                                <f:selectItem itemLabel="Used" itemValue="true" />
+                                <p:ajax event="change" process="@this" update="voucherTable" listener="#{voucherManagementMB.searchVouchers()}" />
+                            </p:selectOneMenu>
+                        </div>
+
+                        <div class="col-12 col-md-2">
+                            <label class="form-label fw-semibold">Start Date</label>
+                            <p:calendar value="#{voucherManagementMB.startDateFilter}"
+                                       pattern="dd/MM/yyyy"
+                                       styleClass="form-control"
+                                       placeholder="From date" />
+                        </div>
+
+                        <div class="col-12 col-md-2">
+                            <label class="form-label fw-semibold">End Date</label>
+                            <p:calendar value="#{voucherManagementMB.endDateFilter}"
+                                       pattern="dd/MM/yyyy"
+                                       styleClass="form-control"
+                                       placeholder="To date" />
+                        </div>
+
+                        <div class="col-12 col-md-2">
+                            <p:commandButton value="Search"
+                                             icon="pi pi-search"
+                                             action="#{voucherManagementMB.searchVouchers()}"
+                                             styleClass="btn btn-outline-primary w-100" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="fw-semibold">Vouchers</div>
+                        <small class="text-muted">Showing results from current filters</small>
                     </div>
 
-                    <!-- Search and Filter -->
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-3">
-                                    <label class="form-label">Search by Code</label>
-                                    <p:inputText value="#{voucherManagementMB.searchCode}"
-                                               placeholder="Enter voucher code"
-                                               styleClass="form-control" />
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Type</label>
-                                    <p:selectOneMenu value="#{voucherManagementMB.selectedType}"
-                                                   styleClass="form-select">
-                                        <f:selectItem itemLabel="All Types" itemValue="#{null}" />
-                                        <f:selectItem itemLabel="Offer" itemValue="offer" />
-                                        <f:selectItem itemLabel="Customer" itemValue="customer" />
-                                        <f:selectItem itemLabel="General" itemValue="general" />
-                                    </p:selectOneMenu>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Customer</label>
-                                    <p:selectOneMenu value="#{voucherManagementMB.selectedCustomerId}"
-                                                   styleClass="form-select">
-                                        <f:selectItem itemLabel="All Customers" itemValue="#{null}" />
-                                        <f:selectItems value="#{voucherManagementMB.customers}"
-                                                     var="customer"
-                                                     itemLabel="#{customer.firstName} #{customer.lastName}"
-                                                     itemValue="#{customer.customerID}" />
-                                    </p:selectOneMenu>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Status</label>
-                                    <p:selectOneMenu value="#{voucherManagementMB.selectedStatus}"
-                                                   styleClass="form-select">
-                                        <f:selectItem itemLabel="All Status" itemValue="#{null}" />
-                                        <f:selectItem itemLabel="Unused" itemValue="false" />
-                                        <f:selectItem itemLabel="Used" itemValue="true" />
-                                    </p:selectOneMenu>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">&nbsp;</label>
-                                    <p:commandButton value="Search"
-                                                   icon="fas fa-search"
-                                                   action="#{voucherManagementMB.searchVouchers()}"
-                                                   styleClass="btn btn-outline-primary w-100" />
-                                </div>
+                    <p:dataTable id="voucherTable"
+                                 value="#{voucherManagementMB.vouchers}"
+                                 var="voucher"
+                                 paginator="true"
+                                 rows="10"
+                                 paginatorPosition="bottom"
+                                 rowsPerPageTemplate="5,10,15,25"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 emptyMessage="No vouchers found"
+                                 styleClass="table table-striped table-hover align-middle"
+                                 reflow="true">
+
+                        <p:column headerText="Code" sortBy="#{voucher.voucherCode}" style="min-width:140px;">
+                            <span class="fw-semibold">
+                                <h:outputText value="#{voucher.voucherCode}" />
+                            </span>
+                        </p:column>
+
+                        <p:column headerText="Type" style="min-width:120px;">
+                            <span class="badge bg-light text-dark border">
+                                <h:outputText value="#{voucher.offerID != null ? 'Offer' : (voucher.customerID != null ? 'Customer' : 'General')}" />
+                            </span>
+                        </p:column>
+
+                        <p:column headerText="Customer" style="min-width:170px;">
+                            <h:outputText
+                                value="#{voucher.customerID != null ? voucher.customerID.firstName : 'N/A'} #{voucher.customerID != null ? voucher.customerID.lastName : ''}" />
+                        </p:column>
+
+                        <p:column headerText="Offer" sortBy="#{voucher.offerID.offerName}" style="min-width:180px;">
+                            <h:outputText value="#{voucher.offerID != null ? voucher.offerID.offerName : 'N/A'}" />
+                        </p:column>
+
+                        <p:column headerText="Discount" style="min-width:140px;" styleClass="text-end">
+                            <h:outputText value="#{voucher.discountValue}">
+                                <f:convertNumber type="currency" currencySymbol="$" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Expiry" sortBy="#{voucher.expiryDate}" style="min-width:120px;">
+                            <h:outputText value="#{voucher.expiryDate}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" timeZone="Asia/Ho_Chi_Minh" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Status" style="min-width:110px;">
+                            <p:badge value="#{voucher.isUsed ? 'Used' : 'Unused'}"
+                                     styleClass="#{voucher.isUsed ? 'bg-danger' : 'bg-success'}" />
+                        </p:column>
+
+                        <p:column headerText="Created" sortBy="#{voucher.createdAt}" style="min-width:160px;">
+                            <h:outputText value="#{voucher.createdAt}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Actions" style="width:90px;" styleClass="text-center">
+                            <p:commandButton icon="pi pi-trash"
+                                             title="Delete"
+                                             process="@this"
+                                             immediate="true"
+                                             update=":voucherForm:growl"
+                                             oncomplete="PF('deleteConfirm').show()"
+                                             styleClass="btn btn-sm btn-outline-danger rounded-circle">
+                                <f:setPropertyActionListener target="#{voucherManagementMB.voucherToDelete}" value="#{voucher}" />
+                            </p:commandButton>
+                        </p:column>
+
+                    </p:dataTable>
+                </div>
+            </div>
+
+            <!-- Voucher Dialog -->
+            <p:dialog header="#{voucherManagementMB.selectedVoucher.voucherID != null ? 'Edit Voucher' : 'Add New Voucher'}"
+                      widgetVar="voucherDialog"
+                      modal="true"
+                      responsive="true"
+                      styleClass="shadow"
+                      width="650"
+                      closable="true">
+
+                <div class="px-1">
+                    <div class="row g-3">
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Voucher Code *</label>
+                            <p:inputText value="#{voucherManagementMB.selectedVoucher.voucherCode}"
+                                         required="true"
+                                         styleClass="form-control"
+                                         placeholder="Enter code (3-20 characters)">
+                                <f:validateLength minimum="3" maximum="20" />
+                            </p:inputText>
+                            <small class="text-muted">Required, 3-20 characters</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Voucher Type</label>
+                            <div class="border rounded p-2">
+                                <p:selectOneRadio value="#{voucherManagementMB.voucherType}"
+                                                  required="true"
+                                                  layout="grid"
+                                                  columns="2"
+                                                  styleClass="form-check">
+                                    <f:selectItem itemLabel="For Customer" itemValue="customer" />
+                                    <p:ajax event="change"
+                                            listener="#{voucherManagementMB.onVoucherTypeChange}"
+                                            update="voucherPanel" />
+                                </p:selectOneRadio>
                             </div>
                         </div>
+
+                        <!-- Keep the same ids/required/rendered logic, only layout changes -->
+                        <h:panelGroup id="voucherPanel" layout="block" styleClass="row g-3">
+                            <h:panelGroup rendered="#{voucherManagementMB.voucherType == 'customer'}" layout="block" styleClass="col-12">
+                                <label class="form-label fw-semibold">Customer</label>
+                                <p:selectOneMenu id="customerSelect"
+                                                 value="#{voucherManagementMB.selectedCustomerId}"
+                                                 required="#{voucherManagementMB.voucherType == 'customer'}"
+                                                 rendered="#{voucherManagementMB.voucherType == 'customer'}"
+                                                 styleClass="form-select w-100">
+                                    <f:selectItem itemLabel="Select Customer" itemValue="#{null}" />
+                                    <f:selectItems value="#{voucherManagementMB.customers}"
+                                                   var="customer"
+                                                   itemLabel="#{customer.firstName} #{customer.lastName}"
+                                                   itemValue="#{customer.customerID}" />
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{voucherManagementMB.voucherType == 'offer'}" layout="block" styleClass="col-12">
+                                <label class="form-label fw-semibold">Offer</label>
+                                <p:selectOneMenu id="offerSelect"
+                                                 value="#{voucherManagementMB.selectedOfferId}"
+                                                 required="#{voucherManagementMB.voucherType == 'offer'}"
+                                                 rendered="#{voucherManagementMB.voucherType == 'offer'}"
+                                                 styleClass="form-select w-100">
+                                    <f:selectItem itemLabel="Select Offer" itemValue="#{null}" />
+                                    <f:selectItems value="#{voucherManagementMB.eligibleOffers}"
+                                                   var="offer"
+                                                   itemLabel="#{offer.offerName}"
+                                                   itemValue="#{offer.offerID}" />
+                                    <p:ajax event="change"
+                                            listener="#{voucherManagementMB.onOfferChange}"
+                                            update="discountValue,expiryDate" />
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">Discount Value *</label>
+                                <p:inputNumber id="discountValue"
+                                               value="#{voucherManagementMB.selectedVoucher.discountValue}"
+                                               required="true"
+                                               minValue="0.01"
+                                               styleClass="form-control" />
+                                <small class="text-muted">Required, minimum 0.01</small>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">Expiry Date</label>
+                                <p:calendar id="expiryDate"
+                                            value="#{voucherManagementMB.selectedVoucher.expiryDate}"
+                                            required="true"
+                                            requiredMessage="Expiry date is required"
+                                            validatorMessage="Expiry date must be in the future"
+                                            pattern="dd/MM/yyyy"
+                                            styleClass="form-control"
+                                            showIcon="true"
+                                            mindate="#{now}" />
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check mt-1">
+                                    <p:selectBooleanCheckbox value="#{voucherManagementMB.selectedVoucher.isUsed}" />
+                                    <label class="form-check-label ms-2">Mark as used</label>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+
                     </div>
+                </div>
 
-                    <!-- Vouchers DataTable -->
-                    <div class="card">
-                        <div class="card-body">
-                            <p:dataTable value="#{voucherManagementMB.vouchers}"
-                                       var="voucher"
-                                       paginator="true"
-                                       rows="10"
-                                       paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                       rowsPerPageTemplate="5,10,15,25"
-                                       styleClass="table table-striped"
-                                       emptyMessage="No vouchers found">
+                <f:facet name="footer">
+                    <div class="d-flex justify-content-end gap-2">
+                        <p:commandButton value="Save"
+                                         icon="pi pi-save"
+                                         action="#{voucherManagementMB.saveVoucher}"
+                                         update="voucherTable growl"
+                                         oncomplete="if (!args.validationFailed) PF('voucherDialog').hide()"
+                                         styleClass="btn btn-primary" />
+                        <p:commandButton value="Cancel"
+                                         icon="pi pi-times"
+                                         type="button"
+                                         onclick="PF('voucherDialog').hide()"
+                                         styleClass="btn btn-outline-secondary" />
+                    </div>
+                </f:facet>
 
-                                <p:column headerText="Code" sortBy="#{voucher.voucherCode}">
-                                    <h:outputText value="#{voucher.voucherCode}" />
-                                </p:column>
+            </p:dialog>
 
-                                <p:column headerText="Type">
-                                    <h:outputText value="#{voucher.offerID != null ? 'Offer' : (voucher.customerID != null ? 'Customer' : 'General')}" />
-                                </p:column>
+        </h:form>
 
-                                <p:column headerText="Customer">
-                                    <h:outputText value="#{voucher.customerID != null ? voucher.customerID.firstName : 'N/A'} #{voucher.customerID != null ? voucher.customerID.lastName : ''}" />
-                                </p:column>
+        <h:panelGroup id="toastContainer" layout="block"
+            styleClass="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+            <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+                <ui:repeat value="#{facesContext.messageList}" var="msg">
+                    <div class="toast-item mb-2 px-6 py-4 rounded-xl shadow-lg text-white
+            #{msg.severity == 'INFO' ? 'bg-green-600' :
+              msg.severity == 'ERROR' ? 'bg-red-600' :
+              msg.severity == 'WARN' ? 'bg-yellow-500 text-black' :
+              'bg-blue-600'}">
 
-                                <p:column headerText="Offer" sortBy="#{voucher.offerID.offerName}">
-                                    <h:outputText value="#{voucher.offerID != null ? voucher.offerID.offerName : 'N/A'}" />
-                                </p:column>
-
-                                <p:column headerText="Discount Value">
-                                    <h:outputText value="#{voucher.discountValue}">
-                                        <f:convertNumber type="currency" currencySymbol="$" />
-                                    </h:outputText>
-                                </p:column>
-
-                                <p:column headerText="Expiry Date" sortBy="#{voucher.expiryDate}">
-                                    <h:outputText value="#{voucher.expiryDate}">
-                                        <f:convertDateTime pattern="dd/MM/yyyy" />
-                                    </h:outputText>
-                                </p:column>
-
-                                <p:column headerText="Status">
-                                    <p:badge value="#{voucher.isUsed ? 'Used' : 'Unused'}"
-                                           styleClass="#{voucher.isUsed ? 'bg-danger' : 'bg-success'}" />
-                                </p:column>
-
-                                <p:column headerText="Created" sortBy="#{voucher.createdAt}">
-                                    <h:outputText value="#{voucher.createdAt}">
-                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
-                                    </h:outputText>
-                                </p:column>
-
-                                <p:column headerText="Actions" style="width: 150px">
-                                    <div class="btn-group" role="group">
-                                        <p:commandButton icon="fas fa-edit"
-                                                       title="Edit"
-                                                       action="#{voucherManagementMB.prepareEdit(voucher)}"
-                                                       oncomplete="PF('voucherDialog').show()"
-                                                       styleClass="btn btn-sm btn-outline-primary" />
-
-                                        <p:commandButton icon="fas fa-trash"
-                                                       title="Delete"
-                                                       action="#{voucherManagementMB.deleteVoucher(voucher)}"
-                                                       onclick="return confirm('Are you sure you want to delete this voucher?')"
-                                                       styleClass="btn btn-sm btn-outline-danger" />
-                                    </div>
-                                </p:column>
-                            </p:dataTable>
+                        <div class="font-semibold mb-1">
+                            #{msg.summary}
+                        </div>
+                        <div class="text-sm opacity-90">
+                            #{msg.detail}
                         </div>
                     </div>
+                </ui:repeat>
+            </div>
+        </h:panelGroup>
 
-                    <!-- Voucher Dialog -->
-                    <p:dialog header="#{voucherManagementMB.selectedVoucher.voucherID != null ? 'Edit Voucher' : 'Add New Voucher'}"
-                             widgetVar="voucherDialog"
-                             modal="true"
-                             width="600">
+        <script>
+            document.querySelectorAll('.toast-item').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                    el.style.transition = 'all 0.3s ease';
+                }, 100 * index);
 
-                        <h:panelGrid id="voucherPanel" columns="2" styleClass="ui-grid-responsive" columnClasses="col-4,col-8">
-                            <h:outputLabel value="Voucher Code:" />
-                            <p:inputText value="#{voucherManagementMB.selectedVoucher.voucherCode}"
-                                       required="true"
-                                       styleClass="form-control" />
+                setTimeout(() => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(-20px)';
+                    setTimeout(() => el.remove(), 300);
+                }, 3000);
+            });
+        </script>
 
-                            <h:outputLabel value="Voucher Type:" />
-                            <p:selectOneRadio value="#{voucherManagementMB.voucherType}"
-                                            required="true"
-                                            styleClass="form-check">
-                                <f:selectItem itemLabel="For Customer" itemValue="customer" />
-                                <p:ajax event="change" listener="#{voucherManagementMB.onVoucherTypeChange}" update="voucherPanel" />
-                            </p:selectOneRadio>
+    </ui:define>
+</ui:composition>
+</h:body>
 
-                            <h:outputLabel value="Customer:" rendered="#{voucherManagementMB.voucherType == 'customer'}" />
-                            <p:selectOneMenu id="customerSelect" value="#{voucherManagementMB.selectedCustomerId}"
-                                           required="#{voucherManagementMB.voucherType == 'customer'}"
-                                           rendered="#{voucherManagementMB.voucherType == 'customer'}"
-                                           styleClass="form-select">
-                                <f:selectItem itemLabel="Select Customer" itemValue="#{null}" />
-                                <f:selectItems value="#{voucherManagementMB.customers}"
-                                             var="customer"
-                                             itemLabel="#{customer.firstName} #{customer.lastName}"
-                                             itemValue="#{customer.customerID}" />
-                            </p:selectOneMenu>
-
-                            <h:outputLabel value="Offer:" rendered="#{voucherManagementMB.voucherType == 'offer'}" />
-                            <p:selectOneMenu id="offerSelect" value="#{voucherManagementMB.selectedOfferId}"
-                                           required="#{voucherManagementMB.voucherType == 'offer'}"
-                                           rendered="#{voucherManagementMB.voucherType == 'offer'}"
-                                           styleClass="form-select">
-                                <f:selectItem itemLabel="Select Offer" itemValue="#{null}" />
-                                <f:selectItems value="#{voucherManagementMB.eligibleOffers}"
-                                             var="offer"
-                                             itemLabel="#{offer.offerName}"
-                                             itemValue="#{offer.offerID}" />
-                                <p:ajax event="change" listener="#{voucherManagementMB.onOfferChange}" update="discountValue,expiryDate" />
-                            </p:selectOneMenu>
-
-                            <h:outputLabel value="Discount Value:" />
-                            <p:inputNumber id="discountValue" value="#{voucherManagementMB.selectedVoucher.discountValue}"
-                                         required="true"
-                                         minValue="0"
-                                         styleClass="form-control" />
-
-                            <h:outputLabel value="Expiry Date:" />
-                            <p:calendar id="expiryDate" value="#{voucherManagementMB.selectedVoucher.expiryDate}"
-                                      required="true"
-                                      pattern="dd/MM/yyyy"
-                                      styleClass="form-control" />
-
-                            <h:outputLabel value="Is Used:" />
-                            <p:selectBooleanCheckbox value="#{voucherManagementMB.selectedVoucher.isUsed}" />
-                        </h:panelGrid>
-
-                        <f:facet name="footer">
-                            <p:commandButton value="Save"
-                                           icon="fas fa-save"
-                                           action="#{voucherManagementMB.saveVoucher}"
-                                           oncomplete="if (!args.validationFailed) PF('voucherDialog').hide()"
-                                           styleClass="btn btn-primary me-2" />
-
-                            <p:commandButton value="Cancel"
-                                           icon="fas fa-times"
-                                           onclick="PF('voucherDialog').hide()"
-                                           styleClass="btn btn-secondary" />
-                        </f:facet>
-                    </p:dialog>
-                </h:form>
-            </ui:define>
-        </ui:composition>
-    </h:body>
 </html>

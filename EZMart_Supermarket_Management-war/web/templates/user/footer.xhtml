@@ -1,6 +1,4 @@
-<ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ui="jakarta.faces.facelets">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html">
 
     <!-- GLOBAL FOOTER -->
     <footer class="bg-white dark:bg-[#0d1810] border-t border-[#e5e7eb] dark:border-[#1f3625] pt-16 pb-8 relative z-10">
@@ -26,51 +24,61 @@
                 </div>
 
                 <!-- Links -->
-                <div class="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-8">
+                <div class="lg:col-span-8 grid grid-cols-2 md:grid-cols-2 gap-8">
 
-                    <!-- Shop -->
+                    <!-- Discover -->
                     <div class="flex flex-col gap-4">
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-[#111813] dark:text-white">#{locale.getMessage('footer.shop')}</h3>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.fruitVegetables')}</a>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.meatSeafood')}</a>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.dairyEggs')}</a>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.bakery')}</a>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.pantryEssentials')}</a>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-[#111813] dark:text-white">Discover
+                        </h3>
+                        <h:link outcome="index"
+                            class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors">
+                            Home</h:link>
+                        <h:link outcome="products"
+                            class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors">
+                            Shop</h:link>
+                        <h:link outcome="deals"
+                            class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors">
+                            Deals</h:link>
+                        <h:link outcome="community"
+                            class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors">
+                            Community</h:link>
                     </div>
 
-                    <!-- Company -->
+                    <!-- Account & Support -->
                     <div class="flex flex-col gap-4">
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-[#111813] dark:text-white">#{locale.getMessage('footer.company')}</h3>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.aboutEZMart')}</a>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.careers')}</a>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.sustainability')}</a>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.pressMedia')}</a>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('header.storeLocator')}</a>
-                    </div>
-
-                    <!-- Support -->
-                    <div class="flex flex-col gap-4">
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-[#111813] dark:text-white">#{locale.getMessage('footer.support')}</h3>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.helpCenter')}</a>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.contactUs')}</a>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.deliveryAreas')}</a>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.returnPolicy')}</a>
-                        <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors" href="#">#{locale.getMessage('footer.orderTracking')}</a>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-[#111813] dark:text-white">Account
+                            &amp; Support</h3>
+                        <h:link outcome="profile"
+                            class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors">
+                            My Profile</h:link>
+                        <h:link outcome="orderhistory"
+                            class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors">
+                            Order History</h:link>
+                        <h:link outcome="wishlist"
+                            class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors">
+                            Wishlist</h:link>
+                        <h:link outcome="customersupport"
+                            class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors">
+                            Customer Support</h:link>
                     </div>
 
                 </div>
             </div>
 
             <!-- Bottom -->
-            <div class="border-t border-[#e5e7eb] dark:border-[#2a3e32] pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div
+                class="border-t border-[#e5e7eb] dark:border-[#2a3e32] pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
                 <p class="text-[#4b5563] dark:text-[#d1d5db] text-sm">
                     #{locale.getMessage('footer.copyright')}
                 </p>
 
                 <div class="flex gap-6">
-                    <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors text-sm" href="#">#{locale.getMessage('footer.privacyPolicy')}</a>
-                    <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors text-sm" href="#">#{locale.getMessage('footer.termsOfService')}</a>
-                    <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors text-sm" href="#">#{locale.getMessage('footer.cookieSettings')}</a>
+                    <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                        href="#">#{locale.getMessage('footer.privacyPolicy')}</a>
+                    <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                        href="#">#{locale.getMessage('footer.termsOfService')}</a>
+                    <a class="text-[#4b5563] dark:text-[#d1d5db] hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                        href="#">#{locale.getMessage('footer.cookieSettings')}</a>
                 </div>
             </div>
 

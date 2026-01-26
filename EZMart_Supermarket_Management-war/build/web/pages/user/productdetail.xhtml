@@ -1,77 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition template="/templates/user/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core">
+    xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core"
+    xmlns:pt="jakarta.faces.passthrough" xmlns:p="http://primefaces.org/ui">
+
     <f:metadata>
         <f:viewAction action="#{productMB.loadProductById}" />
+        <f:viewAction action="#{reviewMB.loadProductReviews(productMB.selectedProduct)}" />
     </f:metadata>
+
     <ui:define name="content">
-        <h:form>
+        <h:form id="productForm">
+
             <div class="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-8 py-6">
+
+                <!-- Breadcrumb -->
                 <nav aria-label="Breadcrumb" class="flex mb-8">
                     <ol class="inline-flex items-center space-x-1 md:space-x-2">
                         <li class="inline-flex items-center">
                             <a class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-primary dark:text-slate-400"
-                                href="#">
+                                href="#{request.contextPath}/pages/user/index.xhtml">
                                 Home
                             </a>
                         </li>
+
                         <li>
                             <div class="flex items-center">
                                 <span class="material-symbols-outlined text-slate-400 text-sm mx-1">chevron_right</span>
                                 <a class="ml-1 text-sm font-medium text-slate-500 hover:text-primary dark:text-slate-400"
-                                    href="#">Groceries</a>
+                                    href="#">#{productMB.selectedProduct.categoryID.categoryName}</a>
                             </div>
                         </li>
-                        <li>
-                            <div class="flex items-center">
-                                <span class="material-symbols-outlined text-slate-400 text-sm mx-1">chevron_right</span>
-                                <a class="ml-1 text-sm font-medium text-slate-500 hover:text-primary dark:text-slate-400"
-                                    href="#">Fresh Produce</a>
-                            </div>
-                        </li>
+
                         <li aria-current="page">
                             <div class="flex items-center">
                                 <span class="material-symbols-outlined text-slate-400 text-sm mx-1">chevron_right</span>
-                                <span
-                                    class="ml-1 text-sm font-medium text-slate-900 dark:text-white">#{productMB.selectedProduct.productName}</span>
+                                <span class="ml-1 text-sm font-medium text-slate-900 dark:text-white">
+                                    #{productMB.selectedProduct.productName}
+                                </span>
                             </div>
                         </li>
                     </ol>
                 </nav>
+
+                <!-- Top section -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16">
+
+                    <!-- Left: images -->
                     <div class="flex flex-col gap-4">
+
                         <div
                             class="aspect-square bg-white dark:bg-surface-dark rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative group">
+
                             <ui:param name="mainImgPath" value="#{productMB.selectedProductImageUrl}" />
-                            <img src="#{request.contextPath}#{mainImgPath}"
-                                rendered="#{not empty mainImgPath}"
-                                class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                                alt="#{productMB.selectedProduct.productName}" />
-                            <div class="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"
-                                rendered="#{empty mainImgPath}">
-                                <span class="material-symbols-outlined text-6xl">image</span>
-                            </div>
-                            <div class="absolute top-4 left-4 flex gap-2">
-                                <span
-                                    class="bg-green-100 text-green-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">Organic</span>
-                                <span
-                                    class="bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">Best
-                                    Seller</span>
-                            </div>
-                            <button
-                                class="absolute top-4 right-4 p-2 bg-white/90 dark:bg-black/60 rounded-full text-slate-400 hover:text-red-500 transition-colors shadow-sm">
-                                <span class="material-symbols-outlined">favorite</span>
-                            </button>
+
+                            <!-- FIX: rendered on HTML -> ui:fragment -->
+                            <ui:fragment rendered="#{not empty mainImgPath}">
+                                <img src="#{request.contextPath}#{mainImgPath}"
+                                    class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                                    alt="#{productMB.selectedProduct.productName}" />
+                            </ui:fragment>
+
+                            <ui:fragment rendered="#{empty mainImgPath}">
+                                <div
+                                    class="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                                    <span class="material-symbols-outlined text-6xl">image</span>
+                                </div>
+                            </ui:fragment>
+
+                            <h:panelGroup rendered="#{productMB.hasOffer(productMB.selectedProduct)}">
+                                <div class="absolute top-4 left-4 flex gap-2">
+                                    <span
+                                        class="bg-green-100 text-green-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+                                        #{productMB.getDiscountDisplay(productMB.selectedProduct)}
+                                    </span>
+                                </div>
+                            </h:panelGroup>
+
+                            <!-- Wishlist Button - Top Right Corner -->
+                            <h:panelGroup rendered="#{auth.loggedIn}">
+                                <div class="absolute top-4 right-4 z-10">
+                                    <h:commandButton 
+                                        rendered="#{!wishlistMB.isProductInWishlist(productMB.selectedProduct.productID)}"
+                                        action="#{wishlistMB.addToWishlist(productMB.selectedProduct.productID)}"
+                                        styleClass="w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-red-100 text-slate-400 hover:text-red-600 transition-colors shadow-md hover:shadow-lg"
+                                        title="Add to Wishlist"
+                                        value="🤍"
+                                        style="font-size: 20px; border: none; padding: 0; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                        <f:ajax execute="@this" render="productForm" immediate="true"/>
+                                    </h:commandButton>
+                                    <h:commandButton 
+                                        rendered="#{wishlistMB.isProductInWishlist(productMB.selectedProduct.productID)}"
+                                        action="#{wishlistMB.removeFromWishlist(productMB.selectedProduct.productID)}"
+                                        styleClass="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors shadow-md hover:shadow-lg"
+                                        title="Remove from Wishlist"
+                                        value="❤️"
+                                        style="font-size: 20px; border: none; padding: 0; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                        <f:ajax execute="@this" render="productForm" immediate="true"/>
+                                    </h:commandButton>
+                                </div>
+                            </h:panelGroup>
                         </div>
+
                         <div class="grid grid-cols-4 gap-4">
                             <ui:repeat value="#{productMB.productImages}" var="image" varStatus="status">
                                 <h:commandLink action="#{productMB.selectProductImage(image.imageURL)}"
                                     styleClass="aspect-square rounded-lg overflow-hidden p-0.5 bg-white dark:bg-surface-dark #{status.index == productMB.selectedImageIndex ? 'border-2 border-primary' : 'border border-slate-200 dark:border-slate-800 hover:border-primary/50'} transition-colors">
-                                    <ui:param name="thumbImgPath" value="#{image.imageURL.startsWith('/') ? image.imageURL : '/uploads/'.concat(image.imageURL)}" />
-                                    <img alt="Product image #{status.index + 1}" class="w-full h-full object-cover rounded-md"
+
+                                    <ui:param name="thumbImgPath"
+                                        value="#{image.imageURL.startsWith('/') ? image.imageURL : '/uploads/'.concat(image.imageURL)}" />
+
+                                    <img alt="Product image #{status.index + 1}"
+                                        class="w-full h-full object-cover rounded-md"
                                         src="#{request.contextPath}#{thumbImgPath}" />
                                 </h:commandLink>
                             </ui:repeat>
+
+                            <!-- FIX: thiếu đóng div ở block empty -->
                             <h:panelGroup rendered="#{empty productMB.productImages}">
                                 <div
                                     class="aspect-square rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-surface-dark">
@@ -82,65 +126,92 @@
                                 </div>
                             </h:panelGroup>
                         </div>
+
                     </div>
+
+                    <!-- Right: info -->
                     <div class="flex flex-col">
+
                         <div class="mb-2">
                             <h:link class="text-primary font-medium text-sm hover:underline" outcome="supplierinfo"
                                 value="#{productMB.selectedProduct.brandID.brandName}">
                                 <f:param name="supplierId" value="#{productMB.selectedProduct.brandID.brandID}" />
                             </h:link>
                         </div>
+
                         <h1 class="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
-                            #{productMB.selectedProduct.productName}</h1>
+                            #{productMB.selectedProduct.productName}
+                        </h1>
+
+                        <!-- Rating Section -->
                         <div class="flex items-center gap-4 mb-6">
                             <div class="flex items-center gap-1">
                                 <div class="flex text-yellow-400 text-sm">
-                                    <span class="material-symbols-outlined filled-icon text-[20px]">star</span>
-                                    <span class="material-symbols-outlined filled-icon text-[20px]">star</span>
-                                    <span class="material-symbols-outlined filled-icon text-[20px]">star</span>
-                                    <span class="material-symbols-outlined filled-icon text-[20px]">star</span>
-                                    <span
-                                        class="material-symbols-outlined filled-icon text-[20px] text-slate-300 dark:text-slate-600"
-                                        style="font-variation-settings: 'FILL' 0.5;">star</span>
+                                    <ui:repeat value="#{['1','2','3','4','5']}" var="star">
+                                        <span
+                                            class="material-symbols-outlined filled-icon text-[20px] #{star le reviewMB.getAverageRating(productMB.selectedProduct) ? '' : 'text-slate-300 dark:text-slate-600'}"
+                                            style="font-variation-settings: 'FILL' 1;">star</span>
+                                    </ui:repeat>
                                 </div>
-                                <span class="font-bold text-slate-900 dark:text-white ml-2">4.8</span>
+                                <span class="font-bold text-slate-900 dark:text-white ml-2">
+                                    #{reviewMB.getAverageRating(productMB.selectedProduct) gt 0 ?
+                                    reviewMB.getAverageRating(productMB.selectedProduct) : '0'}
+                                </span>
                             </div>
+
                             <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+
                             <a class="text-sm text-slate-500 hover:text-primary dark:text-slate-400 underline decoration-slate-300 underline-offset-4"
-                                href="#reviews">1,248 Reviews</a>
+                                href="#reviews">
+                                #{reviewMB.getReviewCount(productMB.selectedProduct)} Reviews
+                            </a>
+
                             <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+
                             <span
-                                class="text-sm text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400 px-2 py-0.5 rounded">#{productMB.selectedProduct.stockQuantity}
-                                In Stock</span>
+                                class="text-sm text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400 px-2 py-0.5 rounded">
+                                #{productMB.selectedProduct.stockQuantity} In Stock
+                            </span>
                         </div>
+
                         <div class="flex items-end gap-3 mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
                             <div class="flex flex-col">
                                 <div class="flex items-center gap-3">
                                     <span
-                                        class="text-4xl font-bold #{productMB.hasOffer(productMB.selectedProduct) ? 'text-red-600' : 'text-slate-900 dark:text-white'}">$#{productMB.getDiscountedPrice(productMB.selectedProduct)}</span>
-                                    <span class="text-xl text-slate-400 line-through" rendered="#{productMB.hasOffer(productMB.selectedProduct)}">$#{productMB.selectedProduct.unitPrice}</span>
+                                        class="text-4xl font-bold #{productMB.hasOffer(productMB.selectedProduct) ? 'text-red-600' : 'text-slate-900 dark:text-white'}">
+                                        $#{productMB.getDiscountedPrice(productMB.selectedProduct)}
+                                    </span>
+
+                                    <h:panelGroup rendered="#{productMB.hasOffer(productMB.selectedProduct)}">
+                                        <span class="text-xl text-slate-400 line-through">
+                                            $#{productMB.selectedProduct.unitPrice}
+                                        </span>
+                                    </h:panelGroup>
                                 </div>
-                                <span class="text-green-600 font-medium text-sm" rendered="#{productMB.hasOffer(productMB.selectedProduct)}">#{productMB.getDiscountDisplay(productMB.selectedProduct)}</span>
+
+                                <h:panelGroup rendered="#{productMB.hasOffer(productMB.selectedProduct)}">
+                                    <span class="text-green-600 font-medium text-sm">
+                                        #{productMB.getDiscountDisplay(productMB.selectedProduct)}
+                                    </span>
+                                </h:panelGroup>
                             </div>
+
                             <div class="mb-1.5 text-slate-500 dark:text-slate-400 font-medium">
-                                / bunch (approx. 7 pcs)
+                                / #{productMB.selectedProduct.categoryID.categoryName eq 'Food' ? 'bunch (approx. 7
+                                pcs)' : 'item'}
                             </div>
+
                             <div class="mb-1.5 ml-auto text-green-600 text-sm font-medium">
-                                Earn 5 points
+                                Earn #{Math.floor(productMB.getDiscountedPrice(productMB.selectedProduct) / 10)} points
                             </div>
                         </div>
+
                         <div class="prose prose-slate dark:prose-invert mb-8 text-slate-600 dark:text-slate-300">
                             <p>#{productMB.selectedProduct.description}</p>
                         </div>
 
-                        <div id="messagesContainer">
-                            <h:messages id="successMessages" globalOnly="false" showDetail="true" showSummary="false"
-                                rendered="#{facesContext.maximumSeverity == null or facesContext.maximumSeverity.ordinal le 1}"
-                                styleClass="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4" />
-                            <h:messages id="errorMessages" globalOnly="false" showDetail="true" showSummary="false"
-                                rendered="#{facesContext.maximumSeverity.ordinal ge 2}"
-                                styleClass="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" />
-                        </div>
+                        <h:messages id="productMessages" globalOnly="false" showDetail="true" showSummary="false"
+                            styleClass="mb-4" />
 
                         <div
                             class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 rounded-xl p-5 mb-8 shadow-sm">
@@ -159,25 +230,24 @@
                                             styleClass="w-10 h-full flex items-center justify-center text-slate-500 hover:text-primary"
                                             style="background:none;border:none">
                                             <span class="material-symbols-outlined text-[20px]">remove</span>
+                                            <f:ajax execute="@this"
+                                                render="productForm:quantityDisplay productForm:messagesContainer" />
                                         </h:commandLink>
 
-                                        <h:inputText value="#{productMB.quantity}"
-                                            styleClass="w-12 text-center text-slate-900 dark:text-white font-bold bg-transparent border-none">
-                                            <f:passThroughAttribute name="type" value="number" />
-                                            <f:passThroughAttribute name="min" value="1" />
-                                            <f:passThroughAttribute name="max"
-                                                value="#{productMB.selectedProduct.stockQuantity}" />
-                                        </h:inputText>
-
+                                        <h:outputText id="quantityDisplay" value="#{productMB.quantity}"
+                                            styleClass="w-12 text-center text-slate-900 dark:text-white font-bold bg-transparent border-none" />
 
                                         <h:commandLink action="#{productMB.increaseQuantity()}"
                                             styleClass="w-10 h-full flex items-center justify-center text-slate-500 hover:text-primary"
                                             style="background:none;border:none">
                                             <span class="material-symbols-outlined text-[20px]">add</span>
+                                            <f:ajax execute="@this"
+                                                render="productForm:quantityDisplay productForm:messagesContainer" />
                                         </h:commandLink>
                                     </div>
                                 </div>
 
+                                <!-- FIX: trước đó thiếu đóng div của Quantity và thiếu wrapper Add-to-cart -->
                                 <!-- Add to cart -->
                                 <div class="flex-1 flex flex-col gap-2">
                                     <label
@@ -185,270 +255,297 @@
                                         Action
                                     </label>
 
-                                    <h:commandLink action="#{productMB.addToCart()}"
-                                        styleClass="h-12 w-full bg-primary hover:bg-green-600 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-2 no-underline">
-                                         <f:ajax execute="@form" render="@all" />
-                                        <span class="material-symbols-outlined">shopping_cart</span>
-                                        <span>Add to Cart</span>
-                                    </h:commandLink>
-
+                                    <div class="flex gap-2">
+                                        <h:commandLink action="#{productMB.addToCart()}"
+                                            styleClass="flex-1 h-12 bg-primary hover:bg-green-600 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-2 no-underline">
+                                            <f:ajax execute="@form" render="@all" />
+                                            <span class="material-symbols-outlined">shopping_cart</span>
+                                            <span>Add to Cart</span>
+                                        </h:commandLink>
+                                    </div>
                                 </div>
 
                             </div>
                         </div>
-
-
 
                         <div class="flex gap-4 text-xs text-slate-500 dark:text-slate-400">
-                            <span class="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">SKU: BAN-ORG-001</span>
-                            <span class="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">Category: Fresh
-                                Produce</span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                                SKU: PROD-#{productMB.selectedProduct.productID}
+                            </span>
+                            <span class="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                                Category: #{productMB.selectedProduct.categoryID.categoryName}
+                            </span>
                         </div>
+
                     </div>
                 </div>
-                <section class="mb-16">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Frequently Bought Together</h2>
-                        <div class="flex gap-2">
-                            <button
-                                class="p-2 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 transition-colors">
-                                <span class="material-symbols-outlined">arrow_back</span>
-                            </button>
-                            <button
-                                class="p-2 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 transition-colors">
-                                <span class="material-symbols-outlined">arrow_forward</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div
-                            class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
-                            <div
-                                class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
-                                <img alt="Red Apples"
-                                    class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                                    data-alt="Variety of fresh red apples"
-                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVZ00Rl5RQILWwC7tQzVrjawidW_TgPBFsFDrnTP22fZsVB5vbML2DzHWbwfe3PlVO1ZWNa1UykIAfW4fKq9VvOpZ18zJYTX78a8tyAaz7AQVhOq9Efbvk3DqkLIXEt84s3fDj8wE8yRfllrNpAX0gjwhRFVzDmAZgIDDzDbJRFgIOFf8OXSEa3l0DyAWvJsTvGE74x_Rsfma_bgEPNattCU4GxJJo12YW56tP_PXRgomZuvJYDTDudsJr3BMDjMTO_z1kPlS54wk" />
-                                <button
-                                    class="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 dark:bg-black/50 text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
-                                    <span class="material-symbols-outlined text-[20px]">favorite</span>
-                                </button>
-                            </div>
-                            <div class="mb-2">
-                                <h3
-                                    class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">
-                                    Fuji Apples</h3>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">Sweet &amp; Crisp</p>
-                            </div>
-                            <div class="flex items-end justify-between mt-auto">
-                                <div>
-                                    <span class="block text-xl font-bold text-slate-900 dark:text-white">$0.89</span>
-                                    <span class="text-xs text-slate-400">each</span>
-                                </div>
-                                <button
-                                    class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
-                                    <span class="material-symbols-outlined text-[20px]">add</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div
-                            class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
-                            <div
-                                class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
-                                <img alt="Avocados"
-                                    class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                                    data-alt="Fresh avocado halves with pit"
-                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZ6BU2L33ovubNwqy3mGZ6Pu7i-bqIHHJSJl5zIFBWs3BwnUcgKg1Eh89TDy_XoUd_pgD-ZeBV-EM3Q0kxPhEdmen-_6wWJEPWWgOS0SCnzEiR6JnIOorZI-37hc509-sBx0uxAceMw74pVZveonKyDZ4s33j964UZXS1gzynprmy-W0uqAu-i02z6oCyWuXF5RBnOfNeKlQbDP3KHelY2ckV5IooQcgU1sStSi4b-m10SqRZM52fKTr3WWzSpBglaUzhsRvU0poY" />
-                                <div
-                                    class="absolute top-2 left-2 bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded">
-                                    Sale</div>
-                            </div>
-                            <div class="mb-2">
-                                <h3
-                                    class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">
-                                    Hass Avocados</h3>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">Ripe &amp; Ready</p>
-                            </div>
-                            <div class="flex items-end justify-between mt-auto">
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="block text-xl font-bold text-red-600">$0.99</span>
-                                        <span class="text-sm text-slate-400 line-through">$1.50</span>
-                                    </div>
-                                    <span class="text-xs text-slate-400">each</span>
-                                </div>
-                                <button
-                                    class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
-                                    <span class="material-symbols-outlined text-[20px]">add</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div
-                            class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
-                            <div
-                                class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
-                                <img alt="Strawberries"
-                                    class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                                    data-alt="Fresh strawberries in a basket"
-                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTyCXXvyYVrs3ABWLxEiHrpb51XUI1AyUMw-FWe0-B9P0uf_UPnM2pREfohXoroey6wgz2V1jVysPMuiYXLMUlMh742hJXUV7uTDBdks6xHpaqgKCnMIPEywQu4rllEU1sUMYc0edJbrceUIaAey_BuR2qXGdLlYneQDGMEK46Z-alGNqo6YIvvQUmV5C58CJjJYGLxnjx8jOXRv6sIl9wR-S084Fggt91Qb8b2VxxfxYTeJ6keyiZ6fdxU_EmJP62iGAiU-z00-Q" />
-                            </div>
-                            <div class="mb-2">
-                                <h3
-                                    class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">
-                                    Sweet Strawberries</h3>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">1lb Container</p>
-                            </div>
-                            <div class="flex items-end justify-between mt-auto">
-                                <div>
-                                    <span class="block text-xl font-bold text-slate-900 dark:text-white">$3.99</span>
-                                    <span class="text-xs text-slate-400">each</span>
-                                </div>
-                                <button
-                                    class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
-                                    <span class="material-symbols-outlined text-[20px]">add</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div
-                            class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
-                            <div
-                                class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
-                                <img alt="Oranges"
-                                    class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                                    data-alt="Bright orange oranges stacked"
-                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuANu6wue2NXRlkGt63uzFYUtlxnYwVjvL13r6KJNLQVc9XJaM0NDsdH4-_izhuWjbrCBl4ifM6mBKWKNdwQ2rwxEWcZJO-wd1Oy--JIj9X89EwE5CMmzPywfis1b9t2-feClLsiNyU59o5xj89uYO-A1OPpdI01jsvIzWBTLDTtY9tmKVVBQldTq-INmdGu5dIzykZCerZvCjcJMwtbXIeB0qzOcGkmgYW1kLPBaFtvZIISZl2XqairlUPNlEAOcLiJoDiV1hknclU" />
-                            </div>
-                            <div class="mb-2">
-                                <h3
-                                    class="font-bold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-primary transition-colors">
-                                    Navel Oranges</h3>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">Bag (3lb)</p>
-                            </div>
-                            <div class="flex items-end justify-between mt-auto">
-                                <div>
-                                    <span class="block text-xl font-bold text-slate-900 dark:text-white">$4.99</span>
-                                    <span class="text-xs text-slate-400">$1.66 / lb</span>
-                                </div>
-                                <button
-                                    class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-green-600 transition-colors shadow-sm hover:shadow-md">
-                                    <span class="material-symbols-outlined text-[20px]">add</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+
+                <!-- Product Detail Tabs + Sidebar -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                    <!-- Tabs -->
                     <div class="lg:col-span-2 space-y-8">
                         <div
                             class="bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-6">
                             <div class="border-b border-slate-200 dark:border-slate-800 mb-6">
                                 <nav aria-label="Tabs" class="flex gap-8 -mb-px overflow-x-auto">
-                                    <button
-                                        class="border-b-2 border-primary text-primary whitespace-nowrap py-4 px-1 text-sm font-medium">Description</button>
-                                    <button
-                                        class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 whitespace-nowrap py-4 px-1 text-sm font-medium">Nutritional
-                                        Facts</button>
-                                    <button
-                                        class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 whitespace-nowrap py-4 px-1 text-sm font-medium">Reviews
-                                        (1,248)</button>
-                                    <button
-                                        class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 whitespace-nowrap py-4 px-1 text-sm font-medium">Shipping
-                                        &amp; Returns</button>
+                                    <button type="button"
+                                        class="border-b-2 border-primary text-primary whitespace-nowrap py-4 px-1 text-sm font-medium"
+                                        onclick="switchTab(this, 'description')">Description</button>
+                                    <button type="button"
+                                        class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 whitespace-nowrap py-4 px-1 text-sm font-medium"
+                                        onclick="switchTab(this, 'reviews')">
+                                        Reviews (#{reviewMB.getReviewCount(productMB.selectedProduct)})
+                                    </button>
+                                    <button type="button"
+                                        class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 whitespace-nowrap py-4 px-1 text-sm font-medium"
+                                        onclick="switchTab(this, 'shipping')">Shipping &amp; Returns</button>
                                 </nav>
                             </div>
-                            <div
-                                class="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
-                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Product Description</h3>
-                                <p>Our Organic Bananas are grown in the lush, tropical climates of South America,
-                                    ensuring
-                                    they develop the perfect balance of sweetness and creamy texture. Harvested at the
-                                    optimal time, these bananas are allowed to ripen naturally, providing you with a
-                                    delicious and nutritious fruit that's free from harmful chemicals.</p>
-                                <p>Bananas are an incredibly versatile fruit. They come in their own natural, convenient
-                                    packaging, making them the ultimate snack on the go. Mash them into banana bread,
-                                    slice
-                                    them over oatmeal, or freeze them for a creamy smoothie base.</p>
-                                <h4 class="text-base font-bold text-slate-900 dark:text-white mt-6">Storage Tips</h4>
-                                <p>Store at room temperature away from direct sunlight. To speed up ripening, place them
-                                    in
-                                    a paper bag with an apple. Once ripe, you can store them in the refrigerator to
-                                    extend
-                                    their shelf life (the skin may brown, but the fruit inside will remain fresh).</p>
-                            </div>
-                        </div>
-                        <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-6"
-                            id="reviews">
-                            <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Customer Reviews</h3>
-                                <button class="text-primary font-medium text-sm hover:underline">Write a Review</button>
-                            </div>
-                            <div class="space-y-6">
+
+                            <!-- Description Tab -->
+                            <div id="description-tab" class="tab-content">
                                 <div
-                                    class="border-b border-slate-100 dark:border-slate-800 pb-6 last:border-0 last:pb-0">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <div class="flex items-center gap-2">
-                                            <div
-                                                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
-                                                JD</div>
-                                            <span class="font-medium text-slate-900 dark:text-white text-sm">John
-                                                Doe</span>
-                                            <span
-                                                class="text-xs text-green-600 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded ml-2">Verified
-                                                Purchase</span>
-                                        </div>
-                                        <span class="text-xs text-slate-400">2 days ago</span>
-                                    </div>
-                                    <div class="flex text-yellow-400 text-xs mb-2">
-                                        <span class="material-symbols-outlined filled-icon text-[16px]">star</span>
-                                        <span class="material-symbols-outlined filled-icon text-[16px]">star</span>
-                                        <span class="material-symbols-outlined filled-icon text-[16px]">star</span>
-                                        <span class="material-symbols-outlined filled-icon text-[16px]">star</span>
-                                        <span class="material-symbols-outlined filled-icon text-[16px]">star</span>
-                                    </div>
-                                    <p class="text-sm text-slate-600 dark:text-slate-300">These bananas were perfect!
-                                        Not
-                                        too green, not too ripe. They lasted all week without getting spotty too fast.
-                                        Highly recommend for the price.</p>
-                                </div>
-                                <div
-                                    class="border-b border-slate-100 dark:border-slate-800 pb-6 last:border-0 last:pb-0">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <div class="flex items-center gap-2">
-                                            <div
-                                                class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-xs">
-                                                AS</div>
-                                            <span class="font-medium text-slate-900 dark:text-white text-sm">Alice
-                                                Smith</span>
-                                            <span
-                                                class="text-xs text-green-600 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded ml-2">Verified
-                                                Purchase</span>
-                                        </div>
-                                        <span class="text-xs text-slate-400">1 week ago</span>
-                                    </div>
-                                    <div class="flex text-yellow-400 text-xs mb-2">
-                                        <span class="material-symbols-outlined filled-icon text-[16px]">star</span>
-                                        <span class="material-symbols-outlined filled-icon text-[16px]">star</span>
-                                        <span class="material-symbols-outlined filled-icon text-[16px]">star</span>
-                                        <span class="material-symbols-outlined filled-icon text-[16px]">star</span>
-                                        <span class="material-symbols-outlined text-[16px]">star</span>
-                                    </div>
-                                    <p class="text-sm text-slate-600 dark:text-slate-300">Good quality, but one or two
-                                        were
-                                        a bit bruised from transit. Customer service was great though and refunded me.
+                                    class="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
+                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Product Description
+                                    </h3>
+                                    <p>#{productMB.selectedProduct.description}</p>
+                                    <h4 class="text-base font-bold text-slate-900 dark:text-white mt-6">Storage Tips
+                                    </h4>
+                                    <p>
+                                        Store at room temperature away from direct sunlight. To speed up ripening, place
+                                        them
+                                        in a paper bag with an apple. Once ripe, you can store them in the refrigerator
+                                        to
+                                        extend their shelf life (the skin may brown, but the fruit inside will remain
+                                        fresh).
                                     </p>
                                 </div>
                             </div>
-                            <button
-                                class="w-full mt-6 py-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 rounded-lg transition-colors">Load
-                                More Reviews</button>
+
+                            <!-- Reviews Tab -->
+                            <div id="reviews-tab" class="tab-content hidden">
+                                <div id="reviews">
+
+                                    <!-- Review Form (Only for logged in users) -->
+                                    <h:panelGroup rendered="#{auth.loggedIn}">
+                                        <div
+                                            class="mb-8 bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+                                            <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Write a
+                                                Review</h4>
+
+                                            <h:panelGroup
+                                                rendered="#{!reviewMB.hasUserReviewedProduct(productMB.selectedProduct, auth.currentCustomer)}">
+                                                <div class="mb-4">
+                                                    <label
+                                                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                                        Your Rating
+                                                    </label>
+
+                                                    <div class="flex gap-2" id="star-rating">
+                                                        <ui:repeat value="#{[1,2,3,4,5]}" var="star">
+                                                            <button type="button"
+                                                                class="text-3xl cursor-pointer transition-colors hover:scale-110 #{star le reviewMB.rating ? 'text-yellow-400' : 'text-slate-300 dark:text-slate-600'}"
+                                                                data-rating="#{star}">
+                                                                <span class="material-symbols-outlined"
+                                                                    style="font-size: 32px;">star</span>
+                                                            </button>
+                                                        </ui:repeat>
+                                                    </div>
+
+                                                    <h:inputHidden id="ratingInput" value="#{reviewMB.rating}" />
+                                                    <span id="ratingValue" class="text-sm text-slate-500 ml-2">
+                                                        #{reviewMB.rating != null ? reviewMB.rating : '0'}/5
+                                                    </span>
+                                                </div>
+
+                                                <div class="mb-4">
+                                                    <label
+                                                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                                        Your Review
+                                                    </label>
+                                                    <h:inputTextarea id="reviewComment" value="#{reviewMB.comment}"
+                                                        rows="4"
+                                                        styleClass="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                                                        placeholder="Share your experience with this product...">
+                                                    </h:inputTextarea>
+                                                </div>
+
+                                                <h:commandButton action="#{reviewMB.submitReview()}"
+                                                    value="Submit Review"
+                                                    styleClass="px-6 py-2.5 bg-primary hover:bg-green-600 text-white font-bold rounded-lg shadow-lg transition-colors">
+                                                    <f:ajax execute="@form"
+                                                        render="productForm:productMessages productForm:successMessage reviews-tab" />
+                                                </h:commandButton>
+
+                                                <h:panelGroup id="successMessage">
+                                                    <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-3">
+                                                        <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">check_circle</span>
+                                                        <span class="text-green-800 dark:text-green-200 font-medium">
+                                                            Your review has been published successfully! Thank you for your feedback.
+                                                        </span>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </h:panelGroup>
+
+                                            <h:panelGroup
+                                                rendered="#{reviewMB.hasUserReviewedProduct(productMB.selectedProduct, auth.currentCustomer)}">
+                                                <div
+                                                    class="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                                                    <span
+                                                        class="material-symbols-outlined text-green-600 text-2xl">check_circle</span>
+                                                    <span class="text-green-800 dark:text-green-200 font-medium">
+                                                        You have already reviewed this product. Thank you!
+                                                    </span>
+                                                </div>
+                                            </h:panelGroup>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{!auth.loggedIn}">
+                                        <div
+                                            class="mb-8 bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 text-center">
+                                            <span
+                                                class="material-symbols-outlined text-slate-400 text-4xl mb-3 block">rate_review</span>
+                                            <p class="text-slate-600 dark:text-slate-300 mb-4">
+                                                Please login to write a review for this product
+                                            </p>
+                                            <h:link outcome="/pages/user/login.xhtml"
+                                                styleClass="inline-flex items-center px-6 py-2.5 bg-primary hover:bg-green-600 text-white font-bold rounded-lg shadow-lg transition-colors">
+                                                <span class="material-symbols-outlined mr-2">login</span>
+                                                Login to Review
+                                            </h:link>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <!-- Reviews List -->
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Customer Reviews
+                                        </h3>
+                                        <div class="text-sm text-slate-500">
+                                            #{reviewMB.getReviewCount(productMB.selectedProduct)} reviews
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-6">
+                                        <ui:repeat value="#{reviewMB.productReviews}" var="review" varStatus="status">
+                                            <h:panelGroup rendered="#{status.index lt 5}">
+                                                <div
+                                                    class="border-b border-slate-100 dark:border-slate-800 pb-6 last:border-0 last:pb-0">
+                                                    <div class="flex items-center justify-between mb-2">
+                                                        <div class="flex items-center gap-2">
+                                                            <div
+                                                                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                                                                #{reviewMB.getCustomerName(review).substring(0,
+                                                                2).toUpperCase()}
+                                                            </div>
+                                                            <span
+                                                                class="font-medium text-slate-900 dark:text-white text-sm">
+                                                                #{reviewMB.getCustomerName(review)}
+                                                            </span>
+                                                            <span
+                                                                class="text-xs text-green-600 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded ml-2">
+                                                                Verified
+                                                            </span>
+                                                        </div>
+                                                        <span class="text-xs text-slate-400">
+                                                            <h:outputText value="#{review.createdAt}">
+                                                                <f:convertDateTime pattern="MMM dd, yyyy" />
+                                                            </h:outputText>
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="flex text-yellow-400 text-xs mb-2">
+                                                        <ui:repeat value="#{['1','2','3','4','5']}" var="star">
+                                                            <span
+                                                                class="material-symbols-outlined filled-icon text-[16px] #{star le review.rating ? '' : 'text-slate-300 dark:text-slate-600'}"
+                                                                style="font-variation-settings: 'FILL' 1;">star</span>
+                                                        </ui:repeat>
+                                                    </div>
+
+                                                    <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                        #{review.comment}</p>
+
+                                                    <!-- Admin Reply -->
+                                                    <h:panelGroup rendered="#{not empty review.reply}">
+                                                        <div
+                                                            class="mt-4 pl-4 border-l-2 border-primary/30 bg-primary/5 dark:bg-primary/10 rounded-r-lg p-3">
+                                                            <div class="flex items-center gap-2 mb-1">
+                                                                <span
+                                                                    class="material-symbols-outlined text-primary text-sm">store</span>
+                                                                <span class="text-xs font-bold text-primary">Admin
+                                                                    Reply</span>
+                                                                <span class="text-xs text-slate-400">
+                                                                    <h:outputText value="#{review.replyAt}">
+                                                                        <f:convertDateTime pattern="MMM dd, yyyy" />
+                                                                    </h:outputText>
+                                                                </span>
+                                                            </div>
+                                                            <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                                #{review.reply}</p>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </h:panelGroup>
+                                        </ui:repeat>
+
+                                        <h:panelGroup rendered="#{empty reviewMB.productReviews}">
+                                            <div class="text-center py-8">
+                                                <span
+                                                    class="material-symbols-outlined text-slate-400 text-5xl mb-4 block">rate_review</span>
+                                                <p class="text-slate-500 dark:text-slate-400 text-lg">No reviews yet</p>
+                                                <p class="text-sm text-slate-400">Be the first to review this product!
+                                                </p>
+                                            </div>
+                                        </h:panelGroup>
+
+                                        <h:panelGroup rendered="#{reviewMB.productReviews.size() gt 5}">
+                                            <button type="button"
+                                                class="w-full mt-4 py-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 rounded-lg transition-colors"
+                                                onclick="showAllReviews()">
+                                                Load More Reviews
+                                            </button>
+                                        </h:panelGroup>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Shipping Tab -->
+                            <div id="shipping-tab" class="tab-content hidden">
+                                <div class="prose prose-slate dark:prose-invert max-w-none">
+                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Shipping Information
+                                    </h3>
+                                    <p>We deliver to all areas within 30km of our store locations. Orders placed before
+                                        10 AM are typically delivered the same day.</p>
+
+                                    <h4 class="text-base font-bold text-slate-900 dark:text-white mt-6">Delivery Options
+                                    </h4>
+                                    <ul class="list-disc pl-5 space-y-2">
+                                        <li>Standard Delivery: 2-4 hours (Free for orders over $50)</li>
+                                        <li>Express Delivery: 1 hour ($5 fee)</li>
+                                        <li>Scheduled Delivery: Choose your preferred time slot</li>
+                                    </ul>
+
+                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-6">Returns Policy
+                                    </h3>
+                                    <p>If you're not completely satisfied with your purchase, we offer a full refund
+                                        within 24 hours of delivery for fresh products.</p>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
+
+                    <!-- Right sidebar -->
                     <div class="space-y-6">
+
                         <div
                             class="bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-5">
                             <h3 class="font-bold text-slate-900 dark:text-white mb-4 text-sm uppercase tracking-wider">
-                                Why
-                                Shop With EZMart</h3>
+                                Why Shop With EZMart
+                            </h3>
                             <ul class="space-y-4">
                                 <li class="flex gap-3">
                                     <div
@@ -460,6 +557,7 @@
                                         <p class="text-xs text-slate-500 dark:text-slate-400">On all orders over $50</p>
                                     </div>
                                 </li>
+
                                 <li class="flex gap-3">
                                     <div
                                         class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
@@ -472,6 +570,7 @@
                                         </p>
                                     </div>
                                 </li>
+
                                 <li class="flex gap-3">
                                     <div
                                         class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
@@ -484,11 +583,19 @@
                                 </li>
                             </ul>
                         </div>
+
                         <div
                             class="bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-5">
-                            <h3 class="font-bold text-slate-900 dark:text-white mb-4 text-sm uppercase tracking-wider">
-                                More
-                                in Fruits</h3>
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
+                                    <h:graphicImage value="#{homeMB.getCategoryImageUrl(productMB.selectedProduct.categoryID)}" 
+                                        alt="#{productMB.selectedProduct.categoryID.categoryName}"
+                                        styleClass="w-full h-full object-cover" />
+                                </div>
+                                <h3 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                                    More in #{productMB.selectedProduct.categoryID.categoryName}
+                                </h3>
+                            </div>
                             <div class="flex flex-wrap gap-2">
                                 <a class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                                     href="#">Apples</a>
@@ -496,16 +603,93 @@
                                     href="#">Berries</a>
                                 <a class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                                     href="#">Citrus</a>
-                                <a class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-                                    href="#">Melons</a>
-                                <a class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-                                    href="#">Exotic Fruits</a>
                             </div>
                         </div>
+
                     </div>
                 </div>
-            </div>
-        </h:form>
-    </ui:define>
 
+            </div>
+
+        </h:form>
+
+        <style>
+            /* Message styling */
+            .error {
+                background-color: #fee2e2;
+                border: 1px solid #fca5a5;
+                color: #991b1b;
+                padding: 12px 16px;
+                border-radius: 8px;
+                margin-bottom: 16px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .error::before {
+                content: "✕";
+                font-weight: bold;
+                font-size: 18px;
+            }
+
+            .info {
+                background-color: #dbeafe;
+                border: 1px solid #93c5fd;
+                color: #1e40af;
+                padding: 12px 16px;
+                border-radius: 8px;
+                margin-bottom: 16px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .info::before {
+                content: "ℹ";
+                font-weight: bold;
+                font-size: 18px;
+            }
+
+            .warn {
+                background-color: #fef3c7;
+                border: 1px solid #fcd34d;
+                color: #92400e;
+                padding: 12px 16px;
+                border-radius: 8px;
+                margin-bottom: 16px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .warn::before {
+                content: "⚠";
+                font-weight: bold;
+                font-size: 18px;
+            }
+
+            /* Dark mode */
+            @media (prefers-color-scheme: dark) {
+                .error {
+                    background-color: #7f1d1d;
+                    border: 1px solid #b91c1c;
+                    color: #fecaca;
+                }
+
+                .info {
+                    background-color: #0c2340;
+                    border: 1px solid #0369a1;
+                    color: #bfdbfe;
+                }
+
+                .warn {
+                    background-color: #451a03;
+                    border: 1px solid #b45309;
+                    color: #fde68a;
+                }
+            }
+        </style>
+
+    </ui:define>
 </ui:composition>

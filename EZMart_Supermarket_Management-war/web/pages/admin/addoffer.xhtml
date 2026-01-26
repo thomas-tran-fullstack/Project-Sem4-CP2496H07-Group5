@@ -10,12 +10,14 @@
                 <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
                 <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="#">Admin</a>
                 <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
-                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline" href="offersmanage">Offers</a>
+                <a class="text-[#63886f] text-sm font-medium leading-normal hover:underline"
+                    href="offersmanage">Offers</a>
                 <span class="text-[#63886f] text-sm font-medium leading-normal">/</span>
                 <span class="text-[#111813] dark:text-white text-sm font-medium leading-normal">Add Offer</span>
             </div>
 
-            <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] overflow-hidden">
+            <div
+                class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] overflow-hidden">
                 <div class="p-6">
                     <h1 class="text-3xl font-bold tracking-tight text-[#0e1b12] dark:text-white mb-2">
                         Add New Offer
@@ -28,34 +30,51 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Offer Name -->
                             <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Offer Name</label>
-                                <h:inputText value="#{offersMB.newOffer.offerName}" required="true"
-                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                                <h:outputLabel for="name"
+                                    class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Offer Name *
+                                </h:outputLabel>
+                                <h:inputText id="name" value="#{offersMB.newOffer.offerName}"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
+                                </h:inputText>
+                                <p class="text-xs text-gray-500 mt-1">Required, 3-100 characters</p>
                             </div>
 
                             <!-- Offer Type -->
                             <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Offer Type</label>
-                                <h:selectOneMenu value="#{offersMB.newOffer.offerType}" required="true"
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Offer
+                                    Type</label>
+                                <h:selectOneMenu value="#{offersMB.newOffer.offerType}"
                                     class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
                                     <f:selectItem itemValue="" itemLabel="Select Type" />
                                     <f:selectItem itemValue="Percentage" itemLabel="Percentage Discount" />
                                     <f:selectItem itemValue="Fixed Amount" itemLabel="Fixed Amount Discount" />
-                                    <f:ajax event="change" execute="@this" listener="#{offersMB.onOfferTypeChange}" render="discountDiv voucherDiv @form" />
+                                    <f:ajax event="change" execute="@this" listener="#{offersMB.onOfferTypeChange}"
+                                        render="discountDiv voucherDiv @form" />
                                 </h:selectOneMenu>
                             </div>
 
                             <!-- Discount Value -->
-                            <div id="discountDiv" rendered="#{offersMB.newOffer.offerType != 'Fixed Amount'}">
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Discount Value</label>
-                                <h:inputText value="#{offersMB.newOffer.discountValue}" required="true" type="number" step="0.01"
-                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                            <div id="discountValue" rendered="#{offersMB.newOffer.offerType != 'Fixed Amount'}">
+                                <h:outputLabel for="discountValue"
+                                    class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Discount Value
+                                    *</h:outputLabel>
+                                <h:inputText id="discountValue" value="#{offersMB.newOffer.discountValue}" type="number"
+                                    step="0.01"
+                                    class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
+                                    <f:validateDoubleRange minimum="0.01"
+                                        maximum="#{offersMB.newOffer.offerType == 'Percentage' ? 100.0 : 999999.99}" />
+                                </h:inputText>
+                                <h:message for="discountValue" styleClass="text-sm text-red-600 mt-1 block" />
+                                <p class="text-xs text-gray-500 mt-1">#{offersMB.newOffer.offerType == 'Percentage' ?
+                                    'Required, enter percentage (0.01-100)' : 'Required, enter fixed amount (minimum
+                                    0.01)'}</p>
                             </div>
 
                             <!-- Status -->
                             <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Status</label>
-                                <h:selectOneMenu value="#{offersMB.newOffer.status}" required="true"
+                                <label
+                                    class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Status</label>
+                                <h:selectOneMenu value="#{offersMB.newOffer.status}"
                                     class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
                                     <f:selectItem itemValue="Active" itemLabel="Active" />
                                     <f:selectItem itemValue="Inactive" itemLabel="Inactive" />
@@ -64,40 +83,51 @@
 
                             <!-- Voucher Enabled -->
                             <div id="voucherDiv" rendered="#{offersMB.newOffer.offerType == 'Fixed Amount'}">
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Voucher Enabled</label>
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Voucher
+                                    Enabled</label>
                                 <h:selectBooleanCheckbox value="#{offersMB.newOffer.voucherEnabled}" disabled="true" />
                             </div>
 
                             <!-- Start Date -->
                             <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Start Date</label>
-                                <h:inputText value="#{offersMB.newOffer.startDate}" required="true" type="date"
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Start
+                                    Date</label>
+                                <h:inputText value="#{offersMB.newOffer.startDate}" type="date"
                                     class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
                                     <f:convertDateTime pattern="yyyy-MM-dd" />
                                 </h:inputText>
+                                <p class="text-xs text-gray-500 mt-1">Select the start date for the offer</p>
                             </div>
 
                             <!-- End Date -->
                             <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">End Date</label>
-                                <h:inputText value="#{offersMB.newOffer.endDate}" required="true" type="date"
+                                <h:outputLabel for="endDate"
+                                    class="block text-sm font-medium text-[#111813] dark:text-white mb-2">End Date
+                                </h:outputLabel>
+                                <h:inputText id="endDate" value="#{offersMB.newOffer.endDate}" type="date"
                                     class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white">
                                     <f:convertDateTime pattern="yyyy-MM-dd" />
                                 </h:inputText>
+                                <h:message for="endDate" styleClass="text-sm text-red-600 mt-1 block" />
+                                <p class="text-xs text-gray-500 mt-1">End date must be after start date</p>
                             </div>
 
                             <!-- Banner Image -->
                             <div>
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Banner Image</label>
-                                <h:inputFile value="#{offersMB.bannerFile}"
+                                <h:outputLabel for="bannerFile"
+                                    class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Banner Image *
+                                </h:outputLabel>
+                                <h:inputFile id="bannerFile" value="#{offersMB.bannerFile}"
                                     class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white" />
+                                <h:message for="bannerFile" styleClass="text-sm text-red-600 mt-1 block" />
                                 <p class="text-xs text-gray-500 mt-1">Select a banner image file to upload</p>
                             </div>
                         </div>
 
                         <!-- Description -->
                         <div>
-                            <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Description</label>
+                            <label
+                                class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Description</label>
                             <h:inputTextarea value="#{offersMB.newOffer.description}" rows="4"
                                 class="w-full px-4 py-3 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white resize-none" />
                         </div>
@@ -105,21 +135,25 @@
                         <!-- Product Selection -->
                         <h:panelGroup rendered="#{offersMB.newOffer.offerType != 'Fixed Amount'}">
                             <div id="productSelection">
-                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Select Products for this Offer</label>
-                                <div class="max-h-60 overflow-y-auto border border-[#e5e7eb] dark:border-[#2a3e32] rounded-lg p-4 bg-[#f0f4f2] dark:bg-[#25382c]">
+                                <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">Select
+                                    Products for this Offer *</label>
+                                <div
+                                    class="max-h-60 overflow-y-auto border border-[#e5e7eb] dark:border-[#2a3e32] rounded-lg p-4 bg-[#f0f4f2] dark:bg-[#25382c]">
                                     <h:selectManyCheckbox value="#{offersMB.selectedProducts}" layout="pageDirection"
                                         class="space-y-2">
                                         <f:selectItems value="#{offersMB.availableProducts}" var="product"
                                             itemValue="#{product}" itemLabel="#{product.productName}" />
                                     </h:selectManyCheckbox>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-1">Select the products that will be included in this offer</p>
+                                <p class="text-xs text-gray-500 mt-1">Select at least one product for percentage offers
+                                </p>
                             </div>
                         </h:panelGroup>
 
                         <!-- Buttons -->
                         <div class="flex justify-end gap-3 pt-6">
-                            <h:link outcome="offersmanage" class="px-6 py-3 border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-[#25382c] font-medium">
+                            <h:link outcome="offersmanage"
+                                class="px-6 py-3 border border-[#e5e7eb] dark:border-[#2a3e32] text-[#111813] dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-[#25382c] font-medium">
                                 Cancel
                             </h:link>
                             <h:commandButton action="#{offersMB.addOffer()}" value="Add Offer"
@@ -130,6 +164,44 @@
             </div>
         </div>
 
-        <h:messages class="fixed bottom-4 right-4 z-50" />
+        <h:panelGroup id="toastContainer" layout="block"
+            styleClass="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+            <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+                <ui:repeat value="#{facesContext.messageList}" var="msg">
+                    <div class="toast-item mb-2 px-6 py-4 rounded-xl shadow-lg text-white
+            #{msg.severity == 'INFO' ? 'bg-green-600' :
+              msg.severity == 'ERROR' ? 'bg-red-600' :
+              msg.severity == 'WARN' ? 'bg-yellow-500 text-black' :
+              'bg-blue-600'}">
+
+                        <div class="font-semibold mb-1">
+                            #{msg.summary}
+                        </div>
+                        <div class="text-sm opacity-90">
+                            #{msg.detail}
+                        </div>
+                    </div>
+                </ui:repeat>
+            </div>
+            
+        </h:panelGroup>
+
+        <script>
+            document.querySelectorAll('.toast-item').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                    el.style.transition = 'all 0.3s ease';
+                }, 100 * index);
+
+                setTimeout(() => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(-20px)';
+                    setTimeout(() => el.remove(), 300);
+                }, 3000);
+            });
+        </script>
     </ui:define>
 </ui:composition>

@@ -13,6 +13,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -100,6 +101,11 @@ public class CheckoutMB implements Serializable {
         discountAmount = null;
         // Ensure addresses are loaded for the converter
         ensureAddressesLoaded();
+
+        // Validate cart stock when entering checkout to show updated quantities
+        if (cartMB != null && !cartMB.isCartEmpty()) {
+            cartMB.validateCartStock();
+        }
     }
 
     public void loadCustomerInfo() {
@@ -188,6 +194,17 @@ public class CheckoutMB implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Your cart is empty"));
                 return null;
             }
+
+            // Validate cart items against current stock levels
+            cartMB.validateCartStock();
+
+            // Check if cart is still valid after stock validation
+            if (cartMB.isCartEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Your cart is empty after stock validation"));
+                return null;
+            }
+
 
             // Validate required fields
             if (firstName == null || firstName.trim().isEmpty() ||
@@ -295,11 +312,21 @@ if (selectedAddress != null && selectedAddress.getAddressID() != null) {
             discountAmount = null;
 
             // Redirect based on payment method
-            if ("cod".equals(paymentMethodType)) {
-                return "/pages/user/order-success.xhtml?faces-redirect=true&orderId=" + order.getOrderID();
-            } else {
-                return "/pages/user/order-payment.xhtml?faces-redirect=true&orderId=" + order.getOrderID();
+            try {
+                FacesContext facesContext = FacesContext.getCurrentInstance();
+                String redirectUrl;
+                if ("cod".equals(paymentMethodType)) {
+                    redirectUrl = facesContext.getExternalContext().getRequestContextPath() + "/pages/user/order-success.xhtml?orderId=" + order.getOrderID();
+                } else {
+                    redirectUrl = facesContext.getExternalContext().getRequestContextPath() + "/pages/user/order-payment.xhtml?orderId=" + order.getOrderID();
+                }
+                facesContext.getExternalContext().redirect(redirectUrl);
+            } catch (IOException ioe) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to redirect: " + ioe.getMessage()));
+                ioe.printStackTrace();
             }
+            return null;
 
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
@@ -533,3 +560,4 @@ if (selectedAddress != null && selectedAddress.getAddressID() != null) {
     public BigDecimal getDiscountAmount() { return discountAmount; }
     public void setDiscountAmount(BigDecimal discountAmount) { this.discountAmount = discountAmount; }
 }
+

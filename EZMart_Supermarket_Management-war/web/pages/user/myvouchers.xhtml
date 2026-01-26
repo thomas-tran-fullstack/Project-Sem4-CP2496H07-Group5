@@ -179,7 +179,7 @@
                                                     <span class="text-sm text-[#111813] dark:text-white">
                                                         <h:outputText value="#{voucher.expiryDate}"
                                                             rendered="#{voucher.expiryDate != null}">
-                                                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                                                            <f:convertDateTime pattern="dd/MM/yyyy" timeZone="Asia/Ho_Chi_Minh" />
                                                         </h:outputText>
                                                         <span class="text-gray-500"
                                                             rendered="#{voucher.expiryDate == null}">No expiry</span>

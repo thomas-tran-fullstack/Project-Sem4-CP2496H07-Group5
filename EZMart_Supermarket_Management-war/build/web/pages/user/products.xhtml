@@ -81,25 +81,6 @@
                                     styleClass="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors mt-3" />
                             </h:form>
                         </div>
-                        <!-- Rating -->
-                        <div>
-                            <h3 class="font-bold text-slate-900 dark:text-white mb-4">Customer Rating</h3>
-                            <div class="space-y-2">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input
-                                        class="border-slate-300 text-primary focus:ring-primary bg-white dark:bg-slate-800 dark:border-slate-600"
-                                        name="rating" type="radio" />
-                                    <div class="flex text-yellow-400 text-sm">
-                                        <span class="material-symbols-outlined filled-icon text-[18px]">star</span>
-                                        <span class="material-symbols-outlined filled-icon text-[18px]">star</span>
-                                        <span class="material-symbols-outlined filled-icon text-[18px]">star</span>
-                                        <span class="material-symbols-outlined filled-icon text-[18px]">star</span>
-                                        <span class="material-symbols-outlined text-[18px]">star</span>
-                                    </div>
-                                    <span class="text-xs text-slate-500">&amp; Up</span>
-                                </label>
-                            </div>
-                        </div>
                     </aside>
                     <!-- Product Grid Area -->
                     <main class="flex-1 min-w-0">
@@ -155,6 +136,30 @@
                                                     rendered="#{empty productImgPath}">
                                                     <span class="material-symbols-outlined text-6xl">image</span>
                                                 </div>
+                                                
+                                                <!-- Wishlist Button - Top Right Corner -->
+                                                <h:panelGroup rendered="#{auth.loggedIn}">
+                                                    <div class="absolute top-2 right-2 z-10">
+                                                        <h:commandButton 
+                                                            rendered="#{!wishlistMB.isProductInWishlist(product.productID)}"
+                                                            action="#{wishlistMB.addToWishlist(product.productID)}"
+                                                            styleClass="w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-red-100 text-slate-400 hover:text-red-600 transition-colors shadow-md hover:shadow-lg"
+                                                            title="Add to Wishlist"
+                                                            value="🤍"
+                                                            style="font-size: 20px; border: none; padding: 0; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                            <f:ajax execute="@this" render="@form" immediate="true"/>
+                                                        </h:commandButton>
+                                                        <h:commandButton 
+                                                            rendered="#{wishlistMB.isProductInWishlist(product.productID)}"
+                                                            action="#{wishlistMB.removeFromWishlist(product.productID)}"
+                                                            styleClass="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors shadow-md hover:shadow-lg"
+                                                            title="Remove from Wishlist"
+                                                            value="❤️"
+                                                            style="font-size: 20px; border: none; padding: 0; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                            <f:ajax execute="@this" render="@form" immediate="true"/>
+                                                        </h:commandButton>
+                                                    </div>
+                                                </h:panelGroup>
                                             </div>
 
                                             <div class="mb-2">
@@ -182,12 +187,14 @@
                                             </div>
 
                                             <!-- ADD TO CART -->
-                                            <h:commandLink action="#{productMB.addProductToCart(product)}"
-                                                styleClass="w-10 h-10 flex items-center justify-center rounded-full #{productMB.isOutOfStock(product) ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary text-white hover:bg-green-600'} transition-colors shadow-sm hover:shadow-md"
-                                                disabled="#{productMB.isOutOfStock(product)}">
-                                                <f:ajax execute="@this" render="@all" />
-                                                <span class="material-symbols-outlined text-[20px]">#{productMB.isOutOfStock(product) ? 'block' : 'add'}</span>
-                                            </h:commandLink>
+                                            <div class="flex gap-2">
+                                                <h:commandLink action="#{productMB.addProductToCart(product)}"
+                                                    styleClass="w-10 h-10 flex items-center justify-center rounded-full #{productMB.isOutOfStock(product) ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary text-white hover:bg-green-600'} transition-colors shadow-sm hover:shadow-md"
+                                                    disabled="#{productMB.isOutOfStock(product)}">
+                                                    <f:ajax execute="@this" render="@form" />
+                                                    <span class="material-symbols-outlined text-[20px]">#{productMB.isOutOfStock(product) ? 'block' : 'add'}</span>
+                                                </h:commandLink>
+                                            </div>
 
                                         </div>
                                     </div>

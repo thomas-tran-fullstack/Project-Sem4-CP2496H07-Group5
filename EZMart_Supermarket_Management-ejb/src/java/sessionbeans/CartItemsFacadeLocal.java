@@ -1,17 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
 package sessionbeans;
 
 import entityclass.CartItems;
-import jakarta.ejb.Local;
 import java.util.List;
+import jakarta.ejb.Local;
 
-/**
- *
- * @author TRUONG LAM
- */
+
 @Local
 public interface CartItemsFacadeLocal {
 
@@ -28,5 +21,10 @@ public interface CartItemsFacadeLocal {
     List<CartItems> findRange(int[] range);
 
     int count();
-    
+
+    List<CartItems> findByCartId(Integer cartId);
+
+    CartItems findByCartAndProduct(Integer cartId, Integer productId);
+
+    int deleteByCartId(Integer cartId);
 }

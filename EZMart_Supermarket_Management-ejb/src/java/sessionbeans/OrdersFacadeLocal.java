@@ -33,4 +33,8 @@ public interface OrdersFacadeLocal {
 
     List<Orders> findByCustomerID(entityclass.Customers customer);
 
+    Orders findOrderWithDetails(Integer orderId);
+
+    void confirmOrderAndDeductStock(Integer orderId);
+
 }

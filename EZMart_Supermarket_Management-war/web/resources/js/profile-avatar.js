@@ -152,7 +152,7 @@
                     console.log('avatar-upload response', data);
                     showNotification('Avatar Update Successful', 'success');
                     
-                    var rawUrl = data.avatarUrlAbsolute || data.avatarUrl || ((data.userId || data.customerId) ? (base + '/avatar?' + (data.userId ? ('userId=' + data.userId) : ('customerId=' + data.customerId))) : (base + '/images/user.png'));
+                    var rawUrl = data.avatarUrlAbsolute || data.avatarUrl || (base + '/avatar?userId=' + data.userId);
                     // force cache-bust
                     var avatarUrl = rawUrl + (rawUrl.indexOf('?') === -1 ? '?t=' : '&t=') + (data.timestamp || new Date().getTime());
 
@@ -171,20 +171,10 @@
 
                             var modalImg = document.querySelector('#avatarViewModal img');
                             if (modalImg) modalImg.src = avatarUrl;
-                            
-                            // Reload page after 2 seconds to ensure server state fully updated
-                            // This prevents avatar from disappearing on page refresh
-                            setTimeout(function(){
-                                location.reload(true);
-                            }, 2000);
                         } catch(e){ console.error('Error updating avatar elements', e); }
                     };
                     img.onerror = function(){
                         console.error('Failed to load avatar URL', avatarUrl);
-                        // Still reload page on error after delay
-                        setTimeout(function(){
-                            location.reload(true);
-                        }, 2000);
                     };
                     img.src = avatarUrl;
                 } else {

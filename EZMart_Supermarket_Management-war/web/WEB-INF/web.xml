@@ -30,20 +30,12 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>ImageServlet</servlet-name>
-        <url-pattern>/uploads/products/*</url-pattern>
+        <url-pattern>/uploads/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ImageServlet</servlet-name>
-        <url-pattern>/uploads/banners/*</url-pattern>
+        <url-pattern>/images/*</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ImageServlet</servlet-name>
-        <url-pattern>/uploads/categories/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-    <servlet-name>ImageServlet</servlet-name>
-    <url-pattern>/images/*</url-pattern>
-</servlet-mapping>
 
     <!-- Admin Access Filter -->
     <filter>
@@ -53,6 +45,16 @@
     <filter-mapping>
         <filter-name>AdminAccessFilter</filter-name>
         <url-pattern>/pages/admin/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Staff Access Filter -->
+    <filter>
+        <filter-name>StaffAccessFilter</filter-name>
+        <filter-class>controllers.StaffAccessFilter</filter-class>
+    </filter>
+    <filter-mapping>    
+        <filter-name>StaffAccessFilter</filter-name>
+        <url-pattern>/pages/staff/*</url-pattern>       
     </filter-mapping>
 
     <!-- Customer Access Filter -->
@@ -66,6 +68,12 @@
     </filter-mapping>
 
     <!-- ================= CONTEXT PARAM ================= -->
+
+ <!-- Faces Config Location -->
+    <context-param>
+        <param-name>jakarta.faces.CONFIG_FILES</param-name>
+        <param-value>/WEB-INF/faces-config.xml</param-value>
+    </context-param>
 
     <!-- Project Stage -->
     <context-param>
@@ -89,4 +97,35 @@
     <welcome-file-list>
         <welcome-file>pages/user/index.xhtml</welcome-file>
     </welcome-file-list>
+
+    <!-- MIME Type Mappings for PrimeIcons -->
+    <mime-mapping>
+        <extension>eot</extension>
+        <mime-type>application/vnd.ms-fontobject</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>woff2</extension>
+        <mime-type>font/woff2</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>woff</extension>
+        <mime-type>font/woff</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>ttf</extension>
+        <mime-type>font/ttf</mime-type>
+    </mime-mapping>
+
+    <!-- ================= CHAT SERVLETS ================= -->
+
+    <!-- Chat API Servlet -->
+    <servlet>
+        <servlet-name>ChatApiServlet</servlet-name>
+        <servlet-class>servlets.ChatApiServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ChatApiServlet</servlet-name>
+        <url-pattern>/api/chat/*</url-pattern>
+    </servlet-mapping>
+
 </web-app>

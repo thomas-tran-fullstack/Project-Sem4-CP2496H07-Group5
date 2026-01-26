@@ -50,6 +50,11 @@
                                     <span class="text-sm font-bold">Personal Info</span>
                                 </a>
                                 <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all"
+                                    href="#" data-scroll-to="section-security-setting">
+                                    <span class="material-symbols-outlined">lock</span>
+                                    <span class="text-sm font-medium">Security Setting</span>
+                                </a>
+                                <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all"
                                     href="#" data-scroll-to="section-addresses">
                                     <span class="material-symbols-outlined">location_on</span>
                                     <span class="text-sm font-medium">My Addresses</span>
@@ -58,11 +63,6 @@
                                     href="#" data-scroll-to="section-payment">
                                     <span class="material-symbols-outlined">credit_card</span>
                                     <span class="text-sm font-medium">Payment Methods</span>
-                                </a>
-                                <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#111813] dark:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#25382c] transition-all"
-                                    href="orderhistory.xhtml">
-                                    <span class="material-symbols-outlined">package_2</span>
-                                    <span class="text-sm font-medium">Order History</span>
                                 </a>
                                 <div class="h-px bg-[#f0f4f2] dark:bg-[#2a3e32] my-1 mx-2"></div>
                                 <h:form>
@@ -437,6 +437,58 @@
                                     <f:ajax execute="@this" render="profileForm profileHeadingSection profileSidebar" />
                                 </h:commandButton>
 
+                            </div>
+                        </h:form>
+                    </div>
+
+                    <!-- Security Setting -->
+                    <div id="section-security-setting"
+                        class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 lg:p-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-[#111813] dark:text-white">Security Setting</h3>
+                                <p class="text-[#4b5563] dark:text-[#d1d5db] text-sm mt-1">Change your current password.</p>
+                            </div>
+                        </div>
+
+                        <h:form id="securityForm" styleClass="flex flex-col gap-6">
+                            <h:panelGroup id="securityMessages">
+                                <h:panelGroup rendered="#{not empty requestScope.passwordChangeStatus}">
+                                    <div
+                                        class="p-3 rounded-md mb-4 #{requestScope.passwordChangeStatus == 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800'}">
+                                        #{requestScope.passwordChangeMessage}
+                                    </div>
+                                </h:panelGroup>
+                                <h:messages id="pwdMsgs" />
+                            </h:panelGroup>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="flex flex-col gap-2 md:col-span-2">
+                                    <label class="text-[#111813] dark:text-white text-sm font-medium">Current Password</label>
+                                    <h:inputSecret id="currentPasswordInput" value="#{auth.currentPassword}"
+                                        styleClass="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                        pt:placeholder="Enter current password" />
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[#111813] dark:text-white text-sm font-medium">New Password</label>
+                                    <h:inputSecret id="newPasswordInput" value="#{auth.newPassword}"
+                                        styleClass="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                        pt:placeholder="At least 6 characters" />
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[#111813] dark:text-white text-sm font-medium">Confirm Password</label>
+                                    <h:inputSecret id="confirmPasswordInput" value="#{auth.confirmPassword}"
+                                        styleClass="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white text-base transition-colors"
+                                        pt:placeholder="Re-enter new password" />
+                                </div>
+                            </div>
+
+                            <div class="h-px bg-[#f0f4f2] dark:bg-[#2a3e32] my-2"></div>
+                            <div class="flex justify-end gap-3">
+                                <h:commandButton value="Change Password" action="#{auth.changePassword()}"
+                                    styleClass="px-6 h-11 rounded-lg bg-primary hover:bg-[#14b84b] text-[#111813] font-bold text-sm transition-colors shadow-sm flex items-center gap-2">
+                                    <f:ajax execute="@form" render="@form" />
+                                </h:commandButton>
                             </div>
                         </h:form>
                     </div>
@@ -862,5 +914,19 @@
             });
             //]]>
         </script>
+
+        <!-- Logout Section -->
+        <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 pb-6">
+            <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3e32] p-6 lg:p-8">
+                <h:form styleClass="flex flex-col gap-6">
+                    <div class="h-px bg-[#f0f4f2] dark:bg-[#2a3e32] my-2"></div>
+                    <div class="flex justify-end gap-3">
+                        <h:commandButton action="#{auth.logout()}" 
+                            value="Logout" 
+                            styleClass="px-6 h-11 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-sm transition-colors shadow-sm" />
+                    </div>
+                </h:form>
+            </div>
+        </div>
     </ui:define>
 </ui:composition>

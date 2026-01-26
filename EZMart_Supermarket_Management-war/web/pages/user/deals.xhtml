@@ -11,110 +11,198 @@
 
 <h:body>
     <ui:composition template="/templates/user/layout.xhtml">
-        <ui:define name="content">
-            <h:form>
-                 <p:messages id="messages" showDetail="true" showSummary="false" closable="true" />
-                <div class="container mx-auto px-4 py-8">
-                    <div class="mb-8">
-                        <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Deals &amp; Offers</h1>
-                        <p class="text-gray-600 dark:text-gray-300">Claim exclusive vouchers and discounts available for
-                            you
-                        </p>
-                    </div>
+      <ui:define name="content">
+    <h:form id="dealForm">
+        <p:messages id="messages" showDetail="true" showSummary="false" closable="true" />
 
-                    <!-- Available Deals -->
-                    <div class="space-y-8" rendered="#{not empty dealsMB.availableDeals}">
-                        <ui:repeat var="deal" value="#{dealsMB.availableDeals}">
-                            <!-- Deal Banner -->
-                            <div class="relative rounded-lg overflow-hidden shadow-lg">
+        <div class="container mx-auto px-4 py-10">
+            <!-- Header -->
+            <div class="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                        Deals &amp; Offers
+                    </h1>
+                    <p class="mt-2 text-gray-600 dark:text-gray-300">
+                        Claim exclusive vouchers and discounts available for you
+                    </p>
+                </div>
+
+                <!-- Optional: small hint -->
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Tip: Fixed vouchers can be claimed directly.
+                </div>
+            </div>
+
+            <!-- Available Deals -->
+            <ui:fragment rendered="#{not empty dealsMB.availableDeals}">
+                <div class="grid grid-cols-1 gap-8">
+                    <ui:repeat var="deal" value="#{dealsMB.availableDeals}">
+                        <!-- Deal Card -->
+                        <div class="rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900">
+                            <!-- Banner -->
+                            <div class="relative">
                                 <h:panelGroup rendered="#{not empty deal.bannerImage}">
                                     <img src="#{request.contextPath}/images/banners/#{deal.bannerImage}"
-                                        alt="#{deal.offerName} Banner" class="w-full h-48 object-cover"
-                                        onerror="this.style.display='none'" />
-
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                                         alt="#{deal.offerName} Banner"
+                                         class="w-full h-52 md:h-60 object-cover"
+                                         onerror="this.style.display='none'" />
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
                                 </h:panelGroup>
-                                <div
-                                    class="absolute bottom-0 left-0 right-0 p-6 #{empty deal.bannerImage ? 'bg-gradient-to-r from-primary to-primary-dark' : ''}">
-                                    <h3 class="text-2xl font-bold text-white mb-2">#{deal.offerName}</h3>
-                                    <p class="text-white/90 text-lg mb-4">#{deal.offerType} Discount -
-                                        #{deal.discountValue}#{deal.offerType != null and deal.offerType.toLowerCase()
-                                        == 'percentage' ? '%' : ' $'}</p>
-                                    <div class="flex justify-between items-center">
-                                        <div class="text-white/80">
-                                            <span class="font-medium">Valid until: #{deal.endDate}</span>
+
+                                <!-- Fallback background when no banner -->
+                                <h:panelGroup rendered="#{empty deal.bannerImage}">
+                                    <div class="h-52 md:h-60 bg-gradient-to-r from-primary to-primary-dark"></div>
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                </h:panelGroup>
+
+                                <!-- Text overlay -->
+                                <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                                    <div class="flex flex-wrap items-center gap-2 mb-3">
+                                        <!-- Badge: type -->
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white ring-1 ring-white/20">
+                                            #{deal.offerType}
+                                        </span>
+
+                                        <!-- Badge: value -->
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white text-gray-900">
+                                            #{deal.discountValue}#{deal.offerType != null and deal.offerType.toLowerCase() == 'percentage' ? '%' : ' $'}
+                                        </span>
+                                    </div>
+
+                                    <h3 class="text-2xl md:text-3xl font-extrabold text-white leading-tight">
+                                        #{deal.offerName}
+                                    </h3>
+
+                                    <div class="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                        <div class="text-white/90 text-sm md:text-base">
+                                            <span class="font-medium">Valid until:</span>
+                                            <span class="ml-1">#{deal.endDate}</span>
                                         </div>
-                                        <p:commandButton value="Claim Voucher" action="#{dealsMB.claimVoucher(deal)}"
-                                            styleClass="bg-white text-primary hover:bg-gray-100 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
-                                            rendered="#{deal.offerType != null and deal.offerType.toLowerCase().contains('fixed')}"
-                                            ajax="true" update="@form" confirm="confirmDialog">
-                                        </p:commandButton>
+
+                                        <!-- Claim for FIXED -->
+                                        <h:panelGroup rendered="#{deal.offerType != null and deal.offerType.toLowerCase().contains('fixed')}">
+                                            <p:commandButton value="Claim Voucher"
+                                                             action="#{dealsMB.prepareClaimVoucher(deal)}"
+                                                             oncomplete="PF('claimConfirm').show()"
+                                                             ajax="true"
+                                                             update="@form:messages"
+                                                             styleClass="!bg-white !text-primary hover:!bg-gray-100 !font-semibold !py-2.5 !px-5 !rounded-xl !shadow-md !transition" />
+                                        </h:panelGroup>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Associated Products -->
-                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6"
-                                rendered="#{deal.offerType != null and deal.offerType.toLowerCase() == 'percentage'}">
-                                <h4 class="text-xl font-bold text-gray-800 dark:text-white mb-6">Products in this Deal
-                                </h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    <ui:repeat var="product" value="#{dealsMB.getAssociatedProducts(deal)}">
-                                        <div
-                                            class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-                                            <h5 class="font-semibold text-gray-900 dark:text-white text-sm mb-2">
-                                                #{product.productName}</h5>
-                                            <div class="flex items-center gap-2 mb-3">
-                                                <span class="text-xs text-gray-500 dark:text-gray-400 line-through">
-                                                    #{product.unitPrice} VND
-                                                </span>
-                                                <span class="text-sm font-bold text-green-600">
-                                                    #{dealsMB.getDiscountedPrice(product, deal)} VND
-                                                </span>
-                                                <span
-                                                    class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                                                    #{dealsMB.getDiscountDisplay(product, deal)}
-                                                </span>
-                                            </div>
-                                            <p:commandButton value="Add to Cart"
-                                                styleClass="w-full bg-primary hover:bg-primary-dark text-white text-xs py-2 px-3 rounded transition-colors duration-200"
-                                                action="#{cartMB.addToCart(product, 1)}"
-                                                ajax="true" update="@form">
-                                            </p:commandButton>
-                                        </div>
-                                    </ui:repeat>
-                                </div>
-                                <div class="text-center py-8"
-                                    jsf:rendered="#{empty dealsMB.getAssociatedProducts(deal)}">
-                                    <span class="text-gray-500 dark:text-gray-400 italic">
-                                        All products are eligible for this offer
-                                    </span>
-                                </div>
-                            </div>
-                        </ui:repeat>
-                    </div>
+                            <!-- Associated Products (for PERCENTAGE) -->
+                            <h:panelGroup rendered="#{deal.offerType != null and deal.offerType.toLowerCase() == 'percentage'}">
+                                <div class="p-6 md:p-8 border-t border-gray-100 dark:border-gray-800">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h4 class="text-xl font-bold text-gray-900 dark:text-white">
+                                            Products in this Deal
+                                        </h4>
+                                        <span class="text-sm text-gray-500 dark:text-gray-400">
+                                            Discount applied at checkout
+                                        </span>
+                                    </div>
 
-                    <!-- No Deals Available -->
-                    <div class="text-center py-12" jsf:rendered="#{empty dealsMB.availableDeals}">
-                        <div class="max-w-md mx-auto">
-                            <svg class="mx-auto h-24 w-24 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                            </svg>
-                            <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No deals available</h3>
-                            <p class="mt-2 text-gray-500 dark:text-gray-400">
-                                There are no active deals available for you at the moment. Check back later for new
-                                offers!
-                            </p>
+                                    <ui:fragment rendered="#{not empty dealsMB.getAssociatedProducts(deal)}">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                            <ui:repeat var="product" value="#{dealsMB.getAssociatedProducts(deal)}">
+                                                <div class="rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-5 hover:shadow-lg transition">
+                                                    <!-- Product Image -->
+                                                    <div class="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden mb-3">
+                                                        <ui:param name="productImgPath" value="#{dealsMB.productImageUrl(product)}" />
+                                                        <img alt="#{product.productName}"
+                                                            class="h-full w-full object-cover"
+                                                            src="#{request.contextPath}#{productImgPath}"
+                                                            onerror="this.onerror=null; this.src='/images/work.png';" />
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <h5 class="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2">
+                                                            #{product.productName}
+                                                        </h5>
+                                                    </div>
+
+                                                    <div class="flex flex-wrap items-center gap-2 mb-4">
+                                                        <span class="text-xs text-gray-500 dark:text-gray-400 line-through">
+                                                            #{product.unitPrice} VND
+                                                        </span>
+                                                        <span class="text-base font-extrabold text-green-600">
+                                                            #{dealsMB.getDiscountedPrice(product, deal)} VND
+                                                        </span>
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                                            #{dealsMB.getDiscountDisplay(product, deal)}
+                                                        </span>
+                                                    </div>
+
+                                                    <p:commandButton value="Add to Cart"
+                                                                     action="#{cartMB.addToCart(product, 1)}"
+                                                                     ajax="true"
+                                                                   update="@form :dealForm:messages"
+                                                                     styleClass="w-full !bg-primary hover:!bg-primary-dark !text-white !text-sm !font-semibold !py-2.5 !rounded-xl !transition">
+                                                    </p:commandButton>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </ui:fragment>
+
+                                    <!-- Empty associated products -->
+                                    <ui:fragment rendered="#{empty dealsMB.getAssociatedProducts(deal)}">
+                                        <div class="text-center py-10">
+                                            <span class="text-gray-500 dark:text-gray-400 italic">
+                                                All products are eligible for this offer
+                                            </span>
+                                        </div>
+                                    </ui:fragment>
+                                </div>
+                            </h:panelGroup>
                         </div>
-                    </div>
-                    <!-- Confirm Dialog -->
-                    <p:confirmDialog global="true" header="Confirm Claim"
-                        message="Are you sure you want to claim this voucher?" icon="pi pi-exclamation-triangle" />
+                    </ui:repeat>
                 </div>
-            </h:form>
-        </ui:define>
+            </ui:fragment>
+
+            <!-- No Deals -->
+            <ui:fragment rendered="#{empty dealsMB.availableDeals}">
+                <div class="text-center py-16">
+                    <div class="max-w-md mx-auto rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-8 shadow-sm">
+                        <svg class="mx-auto h-20 w-20 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                        <h3 class="mt-5 text-lg font-bold text-gray-900 dark:text-white">No deals available</h3>
+                        <p class="mt-2 text-gray-500 dark:text-gray-400">
+                            There are no active deals for you at the moment. Check back later for new offers!
+                        </p>
+                    </div>
+                </div>
+            </ui:fragment>
+
+            <!-- Custom confirm dialog with Yes/No buttons -->
+            <p:dialog widgetVar="claimConfirm"
+                     header="Confirm Claim"
+                     modal="true"
+                     width="400"
+                     resizable="false">
+                <p:outputPanel>
+                    <div class="flex items-center gap-3">
+                        <i class="pi pi-exclamation-triangle text-yellow-500 text-2xl"></i>
+                        <h:outputText value="Are you sure you want to claim this voucher?" />
+                    </div>
+                </p:outputPanel>
+                <f:facet name="footer">
+                    <p:commandButton value="Yes"
+                                     action="#{dealsMB.confirmClaimVoucher()}"
+                                     oncomplete="PF('claimConfirm').hide()"
+                                     update="@form:messages"
+                                     styleClass="btn btn-primary me-2" />
+                    <p:commandButton value="No"
+                                     onclick="PF('claimConfirm').hide(); return false;"
+                                     styleClass="btn btn-secondary" />
+                </f:facet>
+            </p:dialog>
+        </div>
+    </h:form>
+</ui:define>
+
     </ui:composition>
 </h:body>
 </html>

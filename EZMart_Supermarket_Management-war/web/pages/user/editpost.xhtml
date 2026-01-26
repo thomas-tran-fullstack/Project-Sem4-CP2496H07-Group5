@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/user/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui">
+    <f:metadata>
+        <f:viewAction action="#{communityMB.checkLogin}" />
+    </f:metadata>
+    <ui:define name="content">
+        <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto">
+                <!-- Header -->
+                <div class="mb-8">
+                    <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Chỉnh Sửa Bài Viết</h1>
+                    <p class="text-lg text-gray-600 dark:text-gray-400">Cập nhật nội dung bài viết của bạn</p>
+                </div>
+
+                <!-- Back Link -->
+                <div class="mb-6 flex gap-4">
+                    <h:link outcome="/pages/user/myposts" styleClass="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                        ← Quay lại My Posts
+                    </h:link>
+                </div>
+
+                <h:form id="editPostForm" styleClass="bg-white dark:bg-[#1a2e22] rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
+                    
+                    <!-- Messages -->
+                    <h:messages id="messages" globalOnly="true" 
+                               infoClass="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-200"
+                               errorClass="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-200"
+                               warnClass="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg text-yellow-700 dark:text-yellow-200"
+                               showDetail="true" closable="true" />
+
+                    <!-- Title Field -->
+                    <div class="mb-6">
+                        <h:outputLabel for="title" value="Tiêu Đề Bài Viết *" styleClass="block text-lg font-semibold text-gray-900 dark:text-white mb-3"/>
+                        <h:inputText id="title" 
+                                   value="#{communityMB.selectedPost.title}"
+                                   placeholder="Nhập tiêu đề bài viết..."
+                                   styleClass="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                   required="true"
+                                   requiredMessage="Vui lòng nhập tiêu đề"/>
+                        <h:message for="title" styleClass="text-red-600 dark:text-red-400 text-sm mt-2 block"/>
+                    </div>
+
+                    <!-- Content Field -->
+                    <div class="mb-6">
+                        <h:outputLabel for="content" value="Nội Dung Bài Viết *" styleClass="block text-lg font-semibold text-gray-900 dark:text-white mb-3"/>
+                        <h:inputTextarea id="content" 
+                                       value="#{communityMB.selectedPost.content}"
+                                       placeholder="Viết nội dung bài viết của bạn ở đây..."
+                                       styleClass="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-vertical"
+                                       rows="10"
+                                       cols="50"
+                                       required="true"
+                                       requiredMessage="Vui lòng nhập nội dung bài viết"/>
+                        <h:message for="content" styleClass="text-red-600 dark:text-red-400 text-sm mt-2 block"/>
+                    </div>
+
+                    <!-- Cover Image URL -->
+                    <div class="mb-6">
+                        <h:outputLabel for="coverImage" value="URL Hình Ảnh Bìa (Tùy Chọn)" styleClass="block text-lg font-semibold text-gray-900 dark:text-white mb-3"/>
+                        <h:inputText id="coverImage" 
+                                   value="#{communityMB.selectedPost.coverImageUrl}"
+                                   placeholder="https://example.com/image.jpg"
+                                   styleClass="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"/>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Nếu có: hình ảnh sẽ hiển thị ở phía trên bài viết</p>
+                    </div>
+
+                    <!-- Status Info (Read-only) -->
+                    <div class="mb-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <p class="text-blue-900 dark:text-blue-200 font-semibold">
+                            📌 Trạng Thái: <span class="#{communityMB.selectedPost.status.equals('APPROVED') ? 'text-green-600' : communityMB.selectedPost.status.equals('REJECTED') ? 'text-red-600' : 'text-yellow-600'}">#{communityMB.selectedPost.status}</span>
+                        </p>
+                        <h:panelGroup rendered="#{communityMB.selectedPost.status.equals('REJECTED')}">
+                            <p class="text-red-700 dark:text-red-200 text-sm mt-2">❌ Lý do từ chối: #{communityMB.selectedPost.rejectReason}</p>
+                            <p class="text-blue-700 dark:text-blue-200 text-sm mt-2">💡 Bạn có thể chỉnh sửa và tải lại bài viết</p>
+                        </h:panelGroup>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <h:commandButton value="💾 Lưu Thay Đổi"
+                                       action="#{communityMB.submitPost()}"
+                                       update="@form"
+                                       styleClass="px-8 py-3 bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white font-bold rounded-lg transition-colors shadow-md"/>
+                        
+                        <h:link outcome="/pages/user/myposts" 
+                               styleClass="px-8 py-3 bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white font-bold rounded-lg transition-colors text-center">
+                            ← Quay Lại
+                        </h:link>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

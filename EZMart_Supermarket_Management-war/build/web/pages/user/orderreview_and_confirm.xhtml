@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition template="/templates/user/layout.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="jakarta.faces.facelets">
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core">
     <ui:define name="content">
 
         <main class="flex-grow container mx-auto px-4 lg:px-8 py-8 max-w-7xl">
@@ -185,10 +187,11 @@
                                     <button class="px-4 py-2 bg-background-light dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-text-main dark:text-white rounded-lg text-sm font-bold transition-colors">Apply</button>
                                 </div>
                             </div>
-                            <button class="w-full bg-primary hover:bg-green-600 text-white font-bold py-4 px-6 rounded-lg shadow-md transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 text-lg">
-                                Place Order
-                                <span class="material-symbols-outlined">arrow_forward</span>
-                            </button>
+                            <h:commandButton value="Place Order" action="#{checkoutMB.placeOrder}" 
+                                styleClass="w-full bg-primary hover:bg-green-600 text-white font-bold py-4 px-6 rounded-lg shadow-md transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 text-lg"
+                                type="submit"
+                                onclick="this.disabled=true; this.style.opacity='0.6'; return true;">
+                            </h:commandButton>
                             <div class="mt-4 flex items-center justify-center gap-2 text-text-muted text-xs">
                                 <span class="material-symbols-outlined text-sm">lock</span>
                                 Secure SSL Encrypted Transaction

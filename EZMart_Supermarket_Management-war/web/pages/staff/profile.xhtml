@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/staff/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+    <ui:define name="content">
+        <f:event type="preRenderView" listener="#{auth.ensureHttpSessionSync}" />
+        <f:event type="preRenderView" listener="#{staffProfileMB.loadStaffProfile}" />
+
+        <div class="flex-grow layout-container flex flex-col w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-6"
+            data-user-id="#{auth.userId}"
+            data-is-logged-in="#{auth.currentUser != null ? 'true' : 'false'}"
+            data-context-path="#{facesContext.externalContext.requestContextPath}">
+
+            <!-- Main Content Area -->
+            <div class="flex flex-col gap-6">
+
+
+                <!-- Main Content Area -->
+                <main class="flex flex-col gap-6">
+                    <!-- Header -->
+                    <div class="bg-white rounded-xl shadow-sm border border-[#e5e7eb] p-6 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-primary/20 to-green-100"></div>
+                        <div class="relative flex flex-col md:flex-row gap-6 items-end md:items-center mt-8">
+                            <div class="relative group">
+                                <div class="bg-center bg-no-repeat bg-cover rounded-full size-28 border-4 border-white shadow-md"
+                                    data-alt="User profile picture large"
+                                    style='background-image: url("#{auth.userProfileImageUrl}");'>
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center rounded-full transition-colors duration-200 pointer-events-none">
+                                    <button type="button"
+                                        onclick="handleAvatarClick();"
+                                        class="opacity-0 group-hover:opacity-100 pointer-events-auto bg-black/40 hover:bg-black/50 rounded-full w-full h-full flex items-center justify-center transition-all">
+                                        <img src="#{request.contextPath}/resources/images/view.png" alt="view" class="w-12 h-12"
+                                            style="filter: brightness(0) invert(1)" />
+                                    </button>
+                                </div>
+                                <div class="absolute bottom-0 right-0">
+                                    <input type="file" name="avatarFile" id="avatarFileInput" class="hidden" accept="image/*"
+                                        data-context-path="#{request.contextPath}" />
+                                    <label for="avatarFileInput"
+                                        class="inline-block bg-white rounded-full p-2 border border-gray-200 shadow-sm hover:bg-gray-50 text-[#111813] transition-colors cursor-pointer">
+                                        <span class="material-symbols-outlined text-[18px] leading-none">photo_camera</span>
+                                    </label>
+                                </div>
+                                <script src="#{request.contextPath}/resources/js/profile-avatar.js"></script>
+                            </div>
+
+                            <!-- Avatar View Modal -->
+                            <div id="avatarViewModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/80"
+                                style="z-index:100001;">
+                                <div class="relative z-[100002]" style="z-index:100002;">
+                                    <button onclick="document.getElementById('avatarViewModal').classList.add('hidden');"
+                                        class="absolute top-2 right-2 text-white bg-black/50 rounded-full p-2 z-[100003]"
+                                        style="z-index:100003;">✕</button>
+                                    <img src="#{auth.userProfileImageUrl}" alt="avatar large"
+                                        class="max-h-[80vh] max-w-[90vw] object-contain rounded-lg z-[100004]"
+                                        style="z-index:100004;" />
+                                </div>
+                            </div>
+
+                            <div class="flex-1 pb-2">
+                                <h2 class="text-2xl md:text-3xl font-black text-[#111813] tracking-tight">#{staffProfileMB.fullName}</h2>
+                                <div class="flex flex-wrap gap-3 mt-1 items-center text-[#4b5563]">
+                                    <span class="flex items-center gap-1 text-sm"><span
+                                            class="material-symbols-outlined text-[18px]">mail</span>
+                                        #{auth.userEmail}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Information -->
+                    <div id="section-personal-info" class="bg-white rounded-xl shadow-sm border border-[#e5e7eb] p-6 lg:p-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-[#111813]">Personal Information</h3>
+                                <p class="text-[#4b5563] text-sm mt-1">Manage your staff personal details.</p>
+                            </div>
+                        </div>
+
+                        <h:form id="staffProfileForm" styleClass="flex flex-col gap-6">
+                            <h:panelGroup id="staffProfileMessages">
+                                <h:panelGroup rendered="#{not empty requestScope.staffProfileSaveStatus}">
+                                    <div
+                                        class="p-3 rounded-md mb-4 #{requestScope.staffProfileSaveStatus == 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800'}">
+                                        #{requestScope.staffProfileSaveMessage}
+                                    </div>
+                                </h:panelGroup>
+                                <h:messages id="msgs" />
+                            </h:panelGroup>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[#111813] text-sm font-medium">First Name</label>
+                                    <h:inputText id="firstNameInput" value="#{staffProfileMB.staff.firstName}"
+                                        styleClass="w-full h-11 px-4 rounded-lg border-transparent focus:border-primary focus:ring-0 text-[#111813] text-base transition-colors #{staffProfileMB.editing ? 'bg-white border border-primary' : 'bg-[#f0f4f2]'}"
+                                        disabled="#{not staffProfileMB.editing}" />
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[#111813] text-sm font-medium">Last Name</label>
+                                    <h:inputText id="lastNameInput" value="#{staffProfileMB.staff.lastName}"
+                                        styleClass="w-full h-11 px-4 rounded-lg border-transparent focus:border-primary focus:ring-0 text-[#111813] text-base transition-colors #{staffProfileMB.editing ? 'bg-white border border-primary' : 'bg-[#f0f4f2]'}"
+                                        disabled="#{not staffProfileMB.editing}" />
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[#111813] text-sm font-medium">Middle Name</label>
+                                    <h:inputText id="middleNameInput" value="#{staffProfileMB.staff.middleName}"
+                                        styleClass="w-full h-11 px-4 rounded-lg border-transparent focus:border-primary focus:ring-0 text-[#111813] text-base transition-colors #{staffProfileMB.editing ? 'bg-white border border-primary' : 'bg-[#f0f4f2]'}"
+                                        disabled="#{not staffProfileMB.editing}" />
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[#111813] text-sm font-medium">Email Address</label>
+                                    <div class="relative">
+                                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-[#4b5563]">mail</span>
+                                        <h:inputText id="emailInput" value="#{staffProfileMB.email}"
+                                            styleClass="w-full h-11 pl-10 pr-4 rounded-lg border-transparent focus:border-primary focus:ring-0 text-[#111813] text-base transition-colors #{staffProfileMB.editing ? 'bg-white border border-primary' : 'bg-[#f0f4f2]'}"
+                                            disabled="#{not staffProfileMB.editing}" />
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-2 md:col-span-2">
+                                    <label class="text-[#111813] text-sm font-medium">Phone Number</label>
+                                    <div class="relative">
+                                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-[#4b5563]">call</span>
+                                        <h:inputText id="mobileInput" value="#{staffProfileMB.staff.mobilePhone}"
+                                            styleClass="w-full h-11 pl-10 pr-4 rounded-lg border-transparent focus:border-primary focus:ring-0 text-[#111813] text-base transition-colors #{staffProfileMB.editing ? 'bg-white border border-primary' : 'bg-[#f0f4f2]'}"
+                                            disabled="#{not staffProfileMB.editing}" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="h-px bg-[#f0f4f2] my-2"></div>
+                            <div class="flex justify-end gap-3" id="profileActions">
+                                <h:commandButton id="cancelBtn" value="Cancel" action="#{staffProfileMB.cancelEdit()}"
+                                    styleClass="px-6 h-11 rounded-lg border border-[#dce5df] text-[#111813] font-bold hover:bg-gray-50 transition-colors" rendered="#{staffProfileMB.editing}">
+                                    <f:ajax execute="@this" render="staffProfileForm" />
+                                </h:commandButton>
+
+                                <h:commandButton id="saveBtn" value="Save Changes" action="#{staffProfileMB.saveProfile()}"
+                                    styleClass="px-6 h-11 rounded-lg bg-primary hover:bg-[#14b84b] text-[#111813] font-bold text-sm transition-colors shadow-sm flex items-center gap-2"
+                                    rendered="#{staffProfileMB.editing}">
+                                    <f:ajax execute="staffProfileForm" render="staffProfileForm" />
+                                </h:commandButton>
+
+                                <h:commandButton id="editBtn" value="Edit" action="#{staffProfileMB.startEdit()}"
+                                    styleClass="px-6 h-11 rounded-lg bg-primary hover:bg-[#14b84b] text-[#111813] font-bold text-sm transition-colors shadow-sm" rendered="false">
+                                    <f:ajax execute="@this" render="staffProfileForm" />
+                                </h:commandButton>
+                            </div>
+                        </h:form>
+                    </div>
+
+                    <!-- Security Setting -->
+                    <div id="section-security-setting" class="bg-white rounded-xl shadow-sm border border-[#e5e7eb] p-6 lg:p-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-[#111813]">Security Setting</h3>
+                                <p class="text-[#4b5563] text-sm mt-1">Change your current password.</p>
+                            </div>
+                        </div>
+
+                        <h:form id="securityForm" styleClass="flex flex-col gap-6">
+                            <h:panelGroup id="securityMessages">
+                                <h:panelGroup rendered="#{not empty requestScope.passwordChangeStatus}">
+                                    <div
+                                        class="p-3 rounded-md mb-4 #{requestScope.passwordChangeStatus == 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800'}">
+                                        #{requestScope.passwordChangeMessage}
+                                    </div>
+                                </h:panelGroup>
+                                <h:messages id="pwdMsgs" />
+                            </h:panelGroup>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="flex flex-col gap-2 md:col-span-2">
+                                    <label class="text-[#111813] text-sm font-medium">Current Password</label>
+                                    <h:inputSecret id="currentPasswordInput" value="#{auth.currentPassword}"
+                                        styleClass="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] border-transparent focus:border-primary focus:bg-white focus:ring-0 text-[#111813] text-base transition-colors"
+                                        pt:placeholder="Enter current password" />
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[#111813] text-sm font-medium">New Password</label>
+                                    <h:inputSecret id="newPasswordInput" value="#{auth.newPassword}"
+                                        styleClass="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] border-transparent focus:border-primary focus:bg-white focus:ring-0 text-[#111813] text-base transition-colors"
+                                        pt:placeholder="At least 6 characters" />
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-[#111813] text-sm font-medium">Confirm Password</label>
+                                    <h:inputSecret id="confirmPasswordInput" value="#{auth.confirmPassword}"
+                                        styleClass="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] border-transparent focus:border-primary focus:bg-white focus:ring-0 text-[#111813] text-base transition-colors"
+                                        pt:placeholder="Re-enter new password" />
+                                </div>
+                            </div>
+
+                            <div class="h-px bg-[#f0f4f2] my-2"></div>
+                            <div class="flex justify-end gap-3">
+                                <h:commandButton value="Change Password" action="#{auth.changePassword()}"
+                                    styleClass="px-6 h-11 rounded-lg bg-primary hover:bg-[#14b84b] text-[#111813] font-bold text-sm transition-colors shadow-sm flex items-center gap-2">
+                                    <f:ajax execute="@form" render="@form" />
+                                </h:commandButton>
+                            </div>
+                        </h:form>
+                    </div>
+
+                    <!-- Logout Section -->
+                    <div class="bg-white rounded-xl shadow-sm border border-[#e5e7eb] p-6 lg:p-8">
+                        <h:form styleClass="flex flex-col gap-6">
+                            <div class="h-px bg-[#f0f4f2] my-2"></div>
+                            <div class="flex justify-end gap-3">
+                                <h:commandButton action="#{auth.logout()}" 
+                                    value="Logout" 
+                                    styleClass="px-6 h-11 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-sm transition-colors shadow-sm" />
+                            </div>
+                        </h:form>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <script>
+            //<![CDATA[
+            function handleAvatarClick() {
+                var container = document.querySelector('[data-is-logged-in]');
+                var isLoggedIn = container ? container.getAttribute('data-is-logged-in') : 'false';
+                var contextPath = container ? container.getAttribute('data-context-path') : '';
+                
+                if (isLoggedIn !== 'true') {
+                    window.location.href = contextPath + '/pages/user/login.xhtml';
+                    return;
+                }
+                
+                document.getElementById('avatarViewModal').classList.remove('hidden');
+            }
+            //]]>
+        </script>
+    </ui:define>
+</ui:composition>

@@ -31,10 +31,12 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Offer
-                                    Name</label>
+                                    Name *</label>
                                 <h:inputText value="#{offersMB.selectedOffer.offerName}"
                                     class="w-full h-11 px-4 rounded-lg bg-[#f0f4f2] dark:bg-[#25382c] border-transparent focus:border-primary focus:bg-white dark:focus:bg-[#1a2e22] focus:ring-0 text-[#111813] dark:text-white"
-                                    required="true" />
+                                    >
+                                </h:inputText>
+                                <p class="text-xs text-gray-500 mt-1">Required, 3-100 characters</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-[#111813] dark:text-white mb-1">Offer
@@ -155,6 +157,44 @@
                 </div>
             </div>
         </div>
-        <h:messages class="fixed bottom-4 right-4 z-50" />
+
+        <h:panelGroup id="toastContainer" layout="block"
+            styleClass="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+            <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4">
+                <ui:repeat value="#{facesContext.messageList}" var="msg">
+                    <div class="toast-item mb-2 px-6 py-4 rounded-xl shadow-lg text-white
+            #{msg.severity == 'INFO' ? 'bg-green-600' :
+              msg.severity == 'ERROR' ? 'bg-red-600' :
+              msg.severity == 'WARN' ? 'bg-yellow-500 text-black' :
+              'bg-blue-600'}">
+
+                        <div class="font-semibold mb-1">
+                            #{msg.summary}
+                        </div>
+                        <div class="text-sm opacity-90">
+                            #{msg.detail}
+                        </div>
+                    </div>
+                </ui:repeat>
+            </div>
+        </h:panelGroup>
+
+        <script>
+            document.querySelectorAll('.toast-item').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                    el.style.transition = 'all 0.3s ease';
+                }, 100 * index);
+
+                setTimeout(() => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(-20px)';
+                    setTimeout(() => el.remove(), 300);
+                }, 3000);
+            });
+        </script>
     </ui:define>
 </ui:composition>

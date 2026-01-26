@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/admin/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui">
+    <f:metadata>
+        <f:viewAction action="#{communityMB.checkAdminLogin}" />
+    </f:metadata>
+    <ui:define name="content">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Community Statistics</h1>
+                <p class="text-lg text-gray-600 dark:text-gray-300">Overview of community activities</p>
+            </div>
+
+            <!-- Back Link -->
+            <div class="mb-6">
+                <h:link outcome="/pages/admin/community-admin" styleClass="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                    ← Back to Community Management
+                </h:link>
+            </div>
+
+            <h:form id="statsForm">
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <!-- Total Posts -->
+                    <div class="bg-white dark:bg-[#1a2e22] rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-md">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-semibold">Total Posts</p>
+                                <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">#{communityMB.allPosts.size()}</p>
+                            </div>
+                            <span class="text-4xl">📝</span>
+                        </div>
+                    </div>
+
+                    <!-- Pending Posts -->
+                    <div class="bg-white dark:bg-[#1a2e22] rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-md">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-semibold">Pending Approval</p>
+                                <p class="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mt-2">#{communityMB.pendingPosts.size()}</p>
+                            </div>
+                            <span class="text-4xl">⏳</span>
+                        </div>
+                    </div>
+
+                    <!-- Approved Posts -->
+                    <div class="bg-white dark:bg-[#1a2e22] rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-md">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-semibold">Approved</p>
+                                <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">#{communityMB.approvedPosts.size()}</p>
+                            </div>
+                            <span class="text-4xl">✅</span>
+                        </div>
+                    </div>
+
+                    <!-- Total Users -->
+                    <div class="bg-white dark:bg-[#1a2e22] rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-md">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm font-semibold">Users</p>
+                                <p class="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2">#{communityMB.userPosts.size()}</p>
+                            </div>
+                            <span class="text-4xl">👥</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="bg-white dark:bg-[#1a2e22] rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">📊 Recent Posts</h2>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="border-b border-gray-200 dark:border-gray-700">
+                                    <th class="px-4 py-3 text-gray-900 dark:text-white font-semibold">Title</th>
+                                    <th class="px-4 py-3 text-gray-900 dark:text-white font-semibold">Author</th>
+                                    <th class="px-4 py-3 text-gray-900 dark:text-white font-semibold">Status</th>
+                                    <th class="px-4 py-3 text-gray-900 dark:text-white font-semibold">Created Date</th>
+                                    <th class="px-4 py-3 text-gray-900 dark:text-white font-semibold">Interactions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <h:panelGroup rendered="#{communityMB.allPosts.size() > 0}">
+                                    <ui:repeat value="#{communityMB.allPosts.subList(0, communityMB.allPosts.size() > 5 ? 5 : communityMB.allPosts.size())}" var="post">
+                                        <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                                            <td class="px-4 py-3 text-gray-900 dark:text-white max-w-xs truncate">#{post.title}</td>
+                                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400">#{post.authorUser.username}</td>
+                                            <td class="px-4 py-3">
+                                                <span class="px-3 py-1 text-xs font-bold text-white rounded-full #{post.status.equals('APPROVED') ? 'bg-green-500' : post.status.equals('PENDING') ? 'bg-yellow-500' : 'bg-red-500'}">
+                                                    #{post.status}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400 text-sm">
+                                                <h:outputText value="#{post.submittedAt}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                                </h:outputText>
+                                            </td>
+                                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400 text-sm">
+                                                ❤️ #{post.likeCount} 💬 #{post.commentCount}
+                                            </td>
+                                        </tr>
+                                    </ui:repeat>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{communityMB.allPosts.size() == 0}">
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
+                                            No posts yet
+                                        </td>
+                                    </tr>
+                                </h:panelGroup>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

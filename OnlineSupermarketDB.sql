@@ -1,6 +1,5 @@
 CREATE DATABASE OnlineSupermarketDB;
 GO
-
 USE OnlineSupermarketDB;
 GO
 
@@ -14,59 +13,16 @@ CREATE TABLE Users (
     Email VARCHAR(100),
     Role VARCHAR(20) CHECK (Role IN ('STAFF','CUSTOMER','ADMIN')),
     Status VARCHAR(20) DEFAULT 'ACTIVE',
-    BanUntil DATETIME NULL,
     LastOnlineAt DATETIME NULL,
     CreatedAt DATETIME DEFAULT GETDATE(),
-    -- Store per-user avatar URL (e.g., /app/avatar?userId=1&t=...)
-    -- Keep NULL by default so UI can reliably fall back to /images/user.png
-    AvatarUrl NVARCHAR(500) NULL
+    BanUntil DATETIME NULL,
+    AvatarUrl NVARCHAR(500) NULL DEFAULT 'user.png'
 );
+
 
 CREATE TABLE Roles (
     RoleID INT IDENTITY PRIMARY KEY,
     RoleName VARCHAR(50) UNIQUE
-);
-
-CREATE TABLE Permissions (
-    PermissionID INT IDENTITY PRIMARY KEY,
-    PermissionKey VARCHAR(100),
-    Description NVARCHAR(255)
-);
-
-CREATE TABLE RolePermissions (
-    RoleID INT,
-    PermissionID INT,
-    PRIMARY KEY (RoleID, PermissionID),
-    FOREIGN KEY (RoleID) REFERENCES Roles(RoleID),
-    FOREIGN KEY (PermissionID) REFERENCES Permissions(PermissionID)
-);
-
-CREATE TABLE Customers (
-    CustomerID INT IDENTITY PRIMARY KEY,
-    UserID INT UNIQUE,
-    -- Use NVARCHAR for name fields to preserve Unicode/diacritics
-    FirstName NVARCHAR(50),
-    MiddleName NVARCHAR(50),
-    LastName NVARCHAR(50),
-    Street NVARCHAR(100),
-    City NVARCHAR(50),
-    State NVARCHAR(50),
-    Country NVARCHAR(50),
-    HomePhone NVARCHAR(20),
-    Latitude DECIMAL(9,6) NULL,
-    Longitude DECIMAL(9,6) NULL,
-    MobilePhone NVARCHAR(20),
-    AvatarUrl NVARCHAR(500) NULL,
-    CreatedAt DATETIME DEFAULT GETDATE(),
-    -- AvatarUrl removed, now in Users
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
-);
-
-CREATE TABLE Admins (
-    AdminID INT IDENTITY PRIMARY KEY,
-    UserID INT UNIQUE,
-    AdminLevel VARCHAR(30),
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
 /* =========================
@@ -86,6 +42,26 @@ CREATE TABLE Staffs (
 );
 GO
 
+CREATE TABLE Customers (
+    CustomerID INT IDENTITY PRIMARY KEY,
+    UserID INT UNIQUE,
+    -- Use NVARCHAR for name fields to preserve Unicode/diacritics
+    FirstName NVARCHAR(50),
+    MiddleName NVARCHAR(50),
+    LastName NVARCHAR(50),
+    Street NVARCHAR(100),
+    City NVARCHAR(50),
+    State NVARCHAR(50),
+    Country NVARCHAR(50),
+    HomePhone NVARCHAR(20),
+    Latitude DECIMAL(9,6) NULL,
+    Longitude DECIMAL(9,6) NULL,
+    MobilePhone NVARCHAR(20),
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    AvatarUrl NVARCHAR(500) NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
 /* =========================
    1:1 CHAT (Staff <-> Customer)
 ========================= */
@@ -96,11 +72,40 @@ CREATE TABLE ChatConversations (
     CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
     Status NVARCHAR(20) DEFAULT 'ACTIVE',
     LastMessageAt DATETIME2 NULL,
+    RequestStatus NVARCHAR(20) DEFAULT 'ACCEPTED',
+    AcceptedStaffID INT NULL,
+    ChatStartTime DATETIME2 NULL,
+    AutoRejectTime DATETIME2 NULL,
+    RejectedStaffIDs NVARCHAR(MAX) NULL,
     CONSTRAINT FK_ChatConversations_Customers FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
     CONSTRAINT FK_ChatConversations_Staffs FOREIGN KEY (StaffID) REFERENCES Staffs(StaffID),
     CONSTRAINT UQ_ChatConversations UNIQUE(CustomerID, StaffID)
 );
 GO
+
+-- Optional: Add index for finding pending requests
+CREATE INDEX IX_ChatConversations_RequestStatus 
+ON ChatConversations(RequestStatus, CreatedAt)
+WHERE RequestStatus = 'PENDING';
+GO
+
+-- Create new table to track pending chat requests (for customer widget to show status)
+IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ChatRequests')
+BEGIN
+    CREATE TABLE ChatRequests (
+        RequestID INT IDENTITY PRIMARY KEY,
+        CustomerID INT NOT NULL,
+        CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+        Status NVARCHAR(20) DEFAULT 'PENDING', -- PENDING, ACCEPTED, REJECTED, EXPIRED
+        AssignedStaffID INT NULL,
+        RejectionTime DATETIME2 NULL,
+        CONSTRAINT FK_ChatRequests_Customer FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+    );
+    
+    CREATE INDEX IX_ChatRequests_Customer ON ChatRequests(CustomerID, Status);
+END
+GO
+
 
 CREATE TABLE ChatMessages (
     MessageID BIGINT IDENTITY PRIMARY KEY,
@@ -120,6 +125,29 @@ GO
 CREATE INDEX IX_ChatMessages_Conversation_SentAt
 ON ChatMessages(ConversationID, SentAt);
 GO
+
+
+CREATE TABLE Permissions (
+    PermissionID INT IDENTITY PRIMARY KEY,
+    PermissionKey VARCHAR(100),
+    Description NVARCHAR(255)
+);
+
+CREATE TABLE RolePermissions (
+    RoleID INT,
+    PermissionID INT,
+    PRIMARY KEY (RoleID, PermissionID),
+    FOREIGN KEY (RoleID) REFERENCES Roles(RoleID),
+    FOREIGN KEY (PermissionID) REFERENCES Permissions(PermissionID)
+);
+
+
+CREATE TABLE Admins (
+    AdminID INT IDENTITY PRIMARY KEY,
+    UserID INT UNIQUE,
+    AdminLevel VARCHAR(30),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
 
 CREATE TABLE Addresses (
     AddressID INT IDENTITY(1,1) PRIMARY KEY,
@@ -186,7 +214,7 @@ CREATE TABLE Products (
     CategoryID INT,
     BrandID INT,
     ProductName NVARCHAR(100),
-    Description TEXT,
+    Description NVARCHAR(MAX),
     UnitPrice DECIMAL(10,2),
     StockQuantity INT,
     Status NVARCHAR(20),
@@ -242,6 +270,8 @@ CREATE TABLE Orders (
     PaymentMethod NVARCHAR(50),
     PaymentStatus NVARCHAR(50),
     ShippingMethod NVARCHAR(50),
+    StockDeducted BIT DEFAULT 0,
+    CancelReason NVARCHAR(500) NULL,
     CreatedAt DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
 );
@@ -352,10 +382,19 @@ CREATE TABLE Reviews (
 
 CREATE TABLE Feedbacks (
     FeedbackID INT IDENTITY PRIMARY KEY,
-    CustomerID INT,
-    Content NVARCHAR(500),
-    CreatedAt DATETIME DEFAULT GETDATE()
+    CustomerID INT NOT NULL,
+    Subject NVARCHAR(200) NOT NULL,
+    Content NVARCHAR(MAX) NOT NULL,
+    FeedbackType NVARCHAR(50) DEFAULT 'GENERAL',
+    Rating INT NULL CHECK (Rating BETWEEN 1 AND 5),
+    Status NVARCHAR(20) DEFAULT 'OPEN',
+    Response NVARCHAR(MAX) NULL,
+    RespondedAt DATETIME NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_Feedbacks_Customers FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
 );
+GO
 
 CREATE TABLE Offers (
     OfferID INT IDENTITY PRIMARY KEY,
@@ -502,30 +541,260 @@ CREATE TABLE Chats (
 );
 
 
-/*=========================
-   ADDITIONAL FEATURES
-
-========================= */
+/* =====================================================
+   WISHLIST (SINGLE VERSION - NO DUPLICATES)
+===================================================== */
 CREATE TABLE Wishlists (
-        WishlistID INT IDENTITY PRIMARY KEY,
-        CustomerID INT NULL,
-        Name NVARCHAR(200) DEFAULT 'My Wishlist',
-        IsDefault BIT DEFAULT 0,
-        CreatedAt DATETIME DEFAULT GETDATE(),
-        UpdatedAt DATETIME DEFAULT GETDATE(),
-        FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
-    );
+    WishlistID INT IDENTITY(1,1) PRIMARY KEY,
+    CustomerID INT NOT NULL,
+    Name NVARCHAR(200) DEFAULT N'My Wishlist',
+    IsDefault BIT DEFAULT 0,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_Wishlists_Customers FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID) ON DELETE CASCADE
+);
+GO
 
- CREATE TABLE WishlistItems (
-        WishlistItemID INT IDENTITY PRIMARY KEY,
-        WishlistID INT NOT NULL,
-        ProductID INT NULL,
-        Quantity INT DEFAULT 1,
-        Note NVARCHAR(500) NULL,
-        AddedAt DATETIME DEFAULT GETDATE(),
-        FOREIGN KEY (WishlistID) REFERENCES Wishlists(WishlistID),
-        FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+CREATE TABLE WishlistItems (
+    WishlistItemID INT IDENTITY(1,1) PRIMARY KEY,
+    WishlistID INT NOT NULL,
+    ProductID INT NOT NULL,
+    Quantity INT DEFAULT 1,
+    Note NVARCHAR(500) NULL,
+    AddedAt DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_WishlistItems_Wishlists FOREIGN KEY (WishlistID) REFERENCES Wishlists(WishlistID) ON DELETE CASCADE,
+    CONSTRAINT FK_WishlistItems_Products FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE,
+    CONSTRAINT UX_WishlistItems_Unique UNIQUE (WishlistID, ProductID)
+);
+GO
+
+CREATE INDEX IX_Wishlists_CustomerID ON Wishlists(CustomerID);
+GO
+
+CREATE INDEX IX_WishlistItems_WishlistID ON WishlistItems(WishlistID);
+GO
+
+CREATE INDEX IX_WishlistItems_ProductID ON WishlistItems(ProductID);
+GO
+
+CREATE INDEX IX_WishlistItems_AddedAt ON WishlistItems(AddedAt DESC);
+GO
+
+CREATE VIEW vw_WishlistDetails AS
+SELECT 
+    wi.WishlistItemID,
+    wi.WishlistID,
+    w.CustomerID,
+    c.FirstName,
+    c.LastName,
+    p.ProductID,
+    p.ProductName,
+    p.UnitPrice,
+    p.StockQuantity,
+    wi.Quantity,
+    (p.UnitPrice * wi.Quantity) AS TotalPrice,
+    wi.Note,
+    wi.AddedAt,
+    w.CreatedAt AS WishlistCreatedAt,
+    w.UpdatedAt AS WishlistUpdatedAt
+FROM WishlistItems wi
+INNER JOIN Wishlists w ON wi.WishlistID = w.WishlistID
+INNER JOIN Customers c ON w.CustomerID = c.CustomerID
+INNER JOIN Products p ON wi.ProductID = p.ProductID;
+GO
+
+/* =====================================================
+   WISHLIST STORED PROCEDURES
+===================================================== */
+CREATE PROCEDURE sp_GetWishlistItemCount
+    @CustomerID INT
+AS
+BEGIN
+    SELECT COUNT(*) AS ItemCount
+    FROM WishlistItems wi
+    INNER JOIN Wishlists w ON wi.WishlistID = w.WishlistID
+    WHERE w.CustomerID = @CustomerID;
+END;
+GO
+
+CREATE PROCEDURE sp_AddToWishlist
+    @CustomerID INT,
+    @ProductID INT,
+    @Quantity INT = 1,
+    @Note NVARCHAR(500) = NULL
+AS
+BEGIN
+    DECLARE @WishlistID INT;
+    
+    IF @Quantity IS NULL OR @Quantity < 1 SET @Quantity = 1;
+    
+    SELECT TOP 1 @WishlistID = WishlistID
+    FROM Wishlists
+    WHERE CustomerID = @CustomerID AND IsDefault = 1;
+    
+    IF @WishlistID IS NULL
+    BEGIN
+        INSERT INTO Wishlists(CustomerID, Name, IsDefault, CreatedAt, UpdatedAt)
+        VALUES (@CustomerID, N'My Wishlist', 1, GETDATE(), GETDATE());
+        SET @WishlistID = SCOPE_IDENTITY();
+    END
+    
+    IF EXISTS (SELECT 1 FROM WishlistItems WHERE WishlistID = @WishlistID AND ProductID = @ProductID)
+    BEGIN
+        UPDATE WishlistItems
+        SET Quantity = Quantity + @Quantity,
+            Note = COALESCE(@Note, Note),
+            AddedAt = GETDATE()
+        WHERE WishlistID = @WishlistID AND ProductID = @ProductID;
+    END
+    ELSE
+    BEGIN
+        INSERT INTO WishlistItems(WishlistID, ProductID, Quantity, Note, AddedAt)
+        VALUES (@WishlistID, @ProductID, @Quantity, @Note, GETDATE());
+    END
+END;
+GO
+
+CREATE PROCEDURE sp_RemoveFromWishlist
+    @CustomerID INT,
+    @ProductID INT
+AS
+BEGIN
+    DELETE FROM WishlistItems
+    WHERE WishlistID IN (
+        SELECT WishlistID FROM Wishlists WHERE CustomerID = @CustomerID AND IsDefault = 1
+    )
+    AND ProductID = @ProductID;
+END;
+GO
+
+CREATE PROCEDURE sp_IsProductInWishlist
+    @CustomerID INT,
+    @ProductID INT
+AS
+BEGIN
+    SELECT CASE 
+        WHEN EXISTS (
+            SELECT 1 FROM WishlistItems wi
+            INNER JOIN Wishlists w ON wi.WishlistID = w.WishlistID
+            WHERE w.CustomerID = @CustomerID AND wi.ProductID = @ProductID
+        ) THEN 1 
+        ELSE 0 
+    END AS IsInWishlist;
+END;
+GO
+
+CREATE PROCEDURE sp_GetCustomerWishlists
+    @CustomerID INT
+AS
+BEGIN
+    SELECT 
+        w.WishlistID,
+        w.CustomerID,
+        w.Name,
+        w.IsDefault,
+        w.CreatedAt,
+        w.UpdatedAt,
+        COUNT(wi.WishlistItemID) AS ItemCount,
+        COALESCE(SUM(p.UnitPrice * wi.Quantity), 0) AS TotalValue
+    FROM Wishlists w
+    LEFT JOIN WishlistItems wi ON w.WishlistID = wi.WishlistID
+    LEFT JOIN Products p ON wi.ProductID = p.ProductID
+    WHERE w.CustomerID = @CustomerID
+    GROUP BY w.WishlistID, w.CustomerID, w.Name, w.IsDefault, w.CreatedAt, w.UpdatedAt
+    ORDER BY w.IsDefault DESC, w.CreatedAt DESC;
+END;
+GO
+
+CREATE PROCEDURE sp_GetWishlistItems
+    @WishlistID INT
+AS
+BEGIN
+    SELECT 
+        wi.WishlistItemID,
+        wi.ProductID,
+        p.ProductName,
+        p.UnitPrice,
+        p.StockQuantity,
+        wi.Quantity,
+        (p.UnitPrice * wi.Quantity) AS TotalPrice,
+        wi.Note,
+        wi.AddedAt,
+        CASE WHEN p.StockQuantity > 0 THEN 1 ELSE 0 END AS IsAvailable
+    FROM WishlistItems wi
+    INNER JOIN Products p ON wi.ProductID = p.ProductID
+    WHERE wi.WishlistID = @WishlistID
+    ORDER BY wi.AddedAt DESC;
+END;
+GO
+
+CREATE PROCEDURE sp_GetWishlistSummary
+    @WishlistID INT
+AS
+BEGIN
+    SELECT 
+        w.WishlistID,
+        w.CustomerID,
+        w.Name,
+        w.IsDefault,
+        w.CreatedAt,
+        w.UpdatedAt,
+        COUNT(wi.WishlistItemID) AS ItemCount,
+        COALESCE(SUM(p.UnitPrice * wi.Quantity), 0) AS TotalValue,
+        COALESCE(SUM(CASE WHEN p.StockQuantity > 0 THEN 1 ELSE 0 END), 0) AS AvailableItems
+    FROM Wishlists w
+    LEFT JOIN WishlistItems wi ON w.WishlistID = wi.WishlistID
+    LEFT JOIN Products p ON wi.ProductID = p.ProductID
+    WHERE w.WishlistID = @WishlistID
+    GROUP BY w.WishlistID, w.CustomerID, w.Name, w.IsDefault, w.CreatedAt, w.UpdatedAt;
+END;
+GO
+
+CREATE PROCEDURE sp_ClearWishlist
+    @WishlistID INT
+AS
+BEGIN
+    DELETE FROM WishlistItems WHERE WishlistID = @WishlistID;
+    UPDATE Wishlists SET UpdatedAt = GETDATE() WHERE WishlistID = @WishlistID;
+END;
+GO
+
+CREATE PROCEDURE sp_DeleteWishlist
+    @WishlistID INT
+AS
+BEGIN
+    DELETE FROM WishlistItems WHERE WishlistID = @WishlistID;
+    DELETE FROM Wishlists WHERE WishlistID = @WishlistID;
+END;
+GO
+
+CREATE PROCEDURE sp_CreateWishlist
+    @CustomerID INT,
+    @Name NVARCHAR(200) = N'My Wishlist',
+    @IsDefault BIT = 0
+AS
+BEGIN
+    INSERT INTO Wishlists(CustomerID, Name, IsDefault, CreatedAt, UpdatedAt)
+    VALUES (@CustomerID, @Name, @IsDefault, GETDATE(), GETDATE());
+    SELECT SCOPE_IDENTITY() AS WishlistID;
+END;
+GO
+
+CREATE TRIGGER tr_UpdateWishlistTimestamp
+ON WishlistItems
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    UPDATE Wishlists
+    SET UpdatedAt = GETDATE()
+    WHERE WishlistID IN (
+        SELECT DISTINCT WishlistID FROM INSERTED
+        UNION
+        SELECT DISTINCT WishlistID FROM DELETED
     );
+END;
+GO
+
 
 
 /* =========================
@@ -587,158 +856,477 @@ CREATE TABLE FrequentPurchases (
         FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
     );
 
-/* =========================
-   LIVESTREAM & BROADCAST
-========================= */
-CREATE TABLE LiveSession (
-    SessionID INT IDENTITY PRIMARY KEY,
-    StaffID INT NOT NULL,
-    Title NVARCHAR(200) NOT NULL,
-    Description NVARCHAR(MAX),
-    Status NVARCHAR(20) CHECK (Status IN ('PENDING','ACTIVE','PAUSED','ENDED')) DEFAULT 'PENDING',
-    ScheduledStartTime DATETIME NULL,
-    ScheduledEndTime DATETIME NULL,
-    ActualStartTime DATETIME NULL,
-    ActualEndTime DATETIME NULL,
-    ThumbnailURL NVARCHAR(500),
-    StreamKey NVARCHAR(100) UNIQUE,
-    HLSPlaylistURL NVARCHAR(500),
-    RtmpURL NVARCHAR(500),
-    CurrentViewers INT DEFAULT 0,
-    PeakViewers INT DEFAULT 0,
-    TotalViewers INT DEFAULT 0,
-    ChatMessageCount INT DEFAULT 0,
-    RecordingPath NVARCHAR(500) NULL,
-    IsRecording BIT DEFAULT 1,
-    CreatedAt DATETIME DEFAULT GETDATE(),
-    UpdatedAt DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (StaffID) REFERENCES Users(UserID)
-);
 
-CREATE TABLE LiveProduct (
-    LiveProductID INT IDENTITY PRIMARY KEY,
-    SessionID INT NOT NULL,
-    ProductID INT NOT NULL,
-    OriginalPrice DECIMAL(10,2),
-    DiscountedPrice DECIMAL(10,2),
-    DiscountPercentage DECIMAL(5,2) NULL,
-    IsActive BIT DEFAULT 1,
-    AddedAt DATETIME DEFAULT GETDATE(),
-    RemovedAt DATETIME NULL,
-    SalesCount INT DEFAULT 0,
-    FOREIGN KEY (SessionID) REFERENCES LiveSession(SessionID) ON DELETE CASCADE,
-    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
-);
 
-CREATE TABLE LiveProductDiscount (
-    DiscountHistoryID INT IDENTITY PRIMARY KEY,
-    LiveProductID INT NOT NULL,
-    OldPrice DECIMAL(10,2),
-    NewPrice DECIMAL(10,2),
-    ChangedBy INT,
-    ChangedAt DATETIME DEFAULT GETDATE(),
-    ChangeReason NVARCHAR(200),
-    FOREIGN KEY (LiveProductID) REFERENCES LiveProduct(LiveProductID) ON DELETE CASCADE,
-    FOREIGN KEY (ChangedBy) REFERENCES Users(UserID)
-);
 
-CREATE TABLE LiveChat (
-    ChatMessageID INT IDENTITY PRIMARY KEY,
-    SessionID INT NOT NULL,
-    UserID INT NOT NULL,
-    MessageText NVARCHAR(500) NOT NULL,
-    MessageType NVARCHAR(20) DEFAULT 'TEXT', -- TEXT, EMOJI, PRODUCT_MENTION, SYSTEM
-    IsDeleted BIT DEFAULT 0,
-    DeletedBy INT NULL,
-    CreatedAt DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (SessionID) REFERENCES LiveSession(SessionID) ON DELETE CASCADE,
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (DeletedBy) REFERENCES Users(UserID)
-);
-
-CREATE TABLE LiveSessionStat (
-    StatID INT IDENTITY PRIMARY KEY,
-    SessionID INT NOT NULL,
-    SnapshotTime DATETIME DEFAULT GETDATE(),
-    ActiveViewers INT,
-    TotalMessages INT,
-    UniqueViewers INT,
-    ProductsViewed INT,
-    ProductsPurchased INT,
-    TotalRevenue DECIMAL(12,2),
-    AverageDuration INT, -- in seconds
-    FOREIGN KEY (SessionID) REFERENCES LiveSession(SessionID) ON DELETE CASCADE
-);
-
-CREATE TABLE LiveSessionViewer (
-    ViewerID INT IDENTITY PRIMARY KEY,
-    SessionID INT NOT NULL,
+/* =========================================================
+   BLOG / COMMUNITY POSTS
+========================================================= */
+CREATE TABLE CommunityPosts (
+    PostID BIGINT IDENTITY PRIMARY KEY,
     CustomerID INT NULL,
-    ViewerSessionID NVARCHAR(100) UNIQUE, -- For anonymous viewers
-    JoinedAt DATETIME DEFAULT GETDATE(),
-    LeftAt DATETIME NULL,
-    TotalDuration INT, -- in seconds
-    FOREIGN KEY (SessionID) REFERENCES LiveSession(SessionID) ON DELETE CASCADE,
-    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+    AuthorUserID INT NOT NULL,
+    Title NVARCHAR(200) NOT NULL,
+    Slug NVARCHAR(220) NULL UNIQUE,
+    Content NVARCHAR(MAX) NOT NULL,
+    CoverImageUrl NVARCHAR(500) NULL,
+    MediaUrls NVARCHAR(MAX) NULL,
+    Status NVARCHAR(20) NOT NULL DEFAULT 'PENDING'
+        CHECK (Status IN ('PENDING','APPROVED','REJECTED','HIDDEN','DELETED')),
+    SubmittedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    ApprovedAt DATETIME2 NULL,
+    ApprovedByUserID INT NULL,
+    RejectedAt DATETIME2 NULL,
+    RejectedByUserID INT NULL,
+    RejectReason NVARCHAR(500) NULL,
+    Visibility NVARCHAR(20) NOT NULL DEFAULT 'PUBLIC'
+        CHECK (Visibility IN ('PUBLIC','FRIENDS','PRIVATE')),
+    IsPinned BIT NOT NULL DEFAULT 0,
+    PinnedAt DATETIME2 NULL,
+    ViewCount BIGINT NOT NULL DEFAULT 0,
+    LikeCount BIGINT NOT NULL DEFAULT 0,
+    CommentCount BIGINT NOT NULL DEFAULT 0,
+    UpdatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    CONSTRAINT FK_CommunityPosts_Customers FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+    CONSTRAINT FK_CommunityPosts_AuthorUser FOREIGN KEY (AuthorUserID) REFERENCES Users(UserID),
+    CONSTRAINT FK_CommunityPosts_ApprovedBy FOREIGN KEY (ApprovedByUserID) REFERENCES Users(UserID),
+    CONSTRAINT FK_CommunityPosts_RejectedBy FOREIGN KEY (RejectedByUserID) REFERENCES Users(UserID)
 );
+GO
 
-/* Create indexes for better performance */
-CREATE INDEX IX_LiveSession_StaffID ON LiveSession(StaffID);
-CREATE INDEX IX_LiveSession_Status ON LiveSession(Status);
-CREATE INDEX IX_LiveSession_CreatedAt ON LiveSession(CreatedAt);
-CREATE INDEX IX_LiveProduct_SessionID ON LiveProduct(SessionID);
-CREATE INDEX IX_LiveProduct_ProductID ON LiveProduct(ProductID);
-CREATE INDEX IX_LiveChat_SessionID ON LiveChat(SessionID);
-CREATE INDEX IX_LiveChat_CreatedAt ON LiveChat(CreatedAt);
-CREATE INDEX IX_LiveSessionStat_SessionID ON LiveSessionStat(SessionID);
-CREATE INDEX IX_LiveSessionViewer_SessionID ON LiveSessionViewer(SessionID);
-CREATE INDEX IX_LiveSessionViewer_CustomerID ON LiveSessionViewer(CustomerID);
+CREATE INDEX IX_CommunityPosts_Status_SubmittedAt
+ON CommunityPosts(Status, SubmittedAt);
+GO
+
+CREATE TABLE PostComments (
+    CommentID BIGINT IDENTITY PRIMARY KEY,
+    PostID BIGINT NOT NULL,
+    AuthorUserID INT NOT NULL,
+    CustomerID INT NULL,
+    Content NVARCHAR(MAX) NOT NULL,
+    LikeCount BIGINT NOT NULL DEFAULT 0,
+    CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    UpdatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    IsEdited BIT NOT NULL DEFAULT 0,
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    CONSTRAINT FK_PostComments_CommunityPosts FOREIGN KEY (PostID) REFERENCES CommunityPosts(PostID) ON DELETE NO ACTION,
+    CONSTRAINT FK_PostComments_AuthorUser FOREIGN KEY (AuthorUserID) REFERENCES Users(UserID),
+    CONSTRAINT FK_PostComments_Customer FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+GO
+
+CREATE TABLE PostLikes (
+    LikeID BIGINT IDENTITY PRIMARY KEY,
+    PostID BIGINT NOT NULL,
+    UserID INT NOT NULL,
+    CustomerID INT NULL,
+    ReactionType VARCHAR(20) DEFAULT 'LIKE' CHECK (ReactionType IN ('LIKE','LOVE','HAHA','WOW','SAD','ANGRY')),
+    CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    CONSTRAINT FK_PostLikes_CommunityPosts FOREIGN KEY (PostID) REFERENCES CommunityPosts(PostID) ON DELETE NO ACTION,
+    CONSTRAINT FK_PostLikes_User FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    CONSTRAINT FK_PostLikes_Customer FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+    CONSTRAINT UQ_PostLikes_User UNIQUE (PostID, UserID)
+);
+GO
+
+CREATE TABLE CommentLikes (
+    CommentLikeID BIGINT IDENTITY PRIMARY KEY,
+    CommentID BIGINT NOT NULL,
+    UserID INT NOT NULL,
+    CustomerID INT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    CONSTRAINT FK_CommentLikes_PostComments FOREIGN KEY (CommentID) REFERENCES PostComments(CommentID) ON DELETE NO ACTION,
+    CONSTRAINT FK_CommentLikes_User FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    CONSTRAINT FK_CommentLikes_Customer FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+    CONSTRAINT UQ_CommentLikes_User UNIQUE (CommentID, UserID)
+);
+GO
+
+CREATE TABLE PostShares (
+    ShareID BIGINT IDENTITY PRIMARY KEY,
+    PostID BIGINT NOT NULL,
+    UserID INT NOT NULL,
+    CustomerID INT NULL,
+    ShareMessage NVARCHAR(MAX) NULL,
+    SharedToFacebook BIT DEFAULT 0,
+    SharedToTwitter BIT DEFAULT 0,
+    SharedToWhatsApp BIT DEFAULT 0,
+    CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    CONSTRAINT FK_PostShares_CommunityPosts FOREIGN KEY (PostID) REFERENCES CommunityPosts(PostID) ON DELETE NO ACTION,
+    CONSTRAINT FK_PostShares_User FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    CONSTRAINT FK_PostShares_Customer FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+GO
+
+CREATE TABLE UserFollows (
+    FollowID BIGINT IDENTITY PRIMARY KEY,
+    FollowerUserID INT NOT NULL,
+    FollowerCustomerID INT NULL,
+    FollowingUserID INT NOT NULL,
+    FollowingCustomerID INT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    IsBlocked BIT DEFAULT 0,
+    CONSTRAINT FK_UserFollows_FollowerUser FOREIGN KEY (FollowerUserID) REFERENCES Users(UserID) ON DELETE NO ACTION,
+    CONSTRAINT FK_UserFollows_FollowerCustomer FOREIGN KEY (FollowerCustomerID) REFERENCES Customers(CustomerID),
+    CONSTRAINT FK_UserFollows_FollowingUser FOREIGN KEY (FollowingUserID) REFERENCES Users(UserID) ON DELETE NO ACTION,
+    CONSTRAINT FK_UserFollows_FollowingCustomer FOREIGN KEY (FollowingCustomerID) REFERENCES Customers(CustomerID),
+    CONSTRAINT UQ_UserFollows UNIQUE (FollowerUserID, FollowingUserID)
+);
+GO
+
+CREATE TABLE Notifications (
+    NotificationID BIGINT IDENTITY PRIMARY KEY,
+    RecipientUserID INT NOT NULL,
+    ActorUserID INT NOT NULL,
+    NotificationType VARCHAR(50) NOT NULL CHECK (NotificationType IN ('POST_LIKE','POST_COMMENT','COMMENT_LIKE','POST_SHARE','USER_FOLLOW','POST_APPROVED')),
+    PostID BIGINT NULL,
+    CommentID BIGINT NULL,
+    Message NVARCHAR(500) NOT NULL,
+    IsRead BIT NOT NULL DEFAULT 0,
+    CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    ReadAt DATETIME2 NULL,
+    CONSTRAINT FK_Notifications_RecipientUser FOREIGN KEY (RecipientUserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    CONSTRAINT FK_Notifications_ActorUser FOREIGN KEY (ActorUserID) REFERENCES Users(UserID) ON DELETE NO ACTION,
+    CONSTRAINT FK_Notifications_CommunityPosts FOREIGN KEY (PostID) REFERENCES CommunityPosts(PostID) ON DELETE NO ACTION,
+    CONSTRAINT FK_Notifications_PostComments FOREIGN KEY (CommentID) REFERENCES PostComments(CommentID) ON DELETE NO ACTION
+);
+GO
+
+CREATE INDEX IX_PostComments_PostID ON PostComments(PostID, CreatedAt DESC);
+GO
+CREATE INDEX IX_PostLikes_PostID ON PostLikes(PostID);
+GO
+CREATE INDEX IX_PostLikes_UserID ON PostLikes(UserID);
+GO
+CREATE INDEX IX_CommentLikes_CommentID ON CommentLikes(CommentID);
+GO
+CREATE INDEX IX_PostShares_PostID ON PostShares(PostID);
+GO
+CREATE INDEX IX_UserFollows_FollowerUserID ON UserFollows(FollowerUserID);
+GO
+CREATE INDEX IX_UserFollows_FollowingUserID ON UserFollows(FollowingUserID);
+GO
+CREATE INDEX IX_Notifications_RecipientUserID ON Notifications(RecipientUserID, IsRead, CreatedAt DESC);
+GO
+
+CREATE TABLE FeedbackTickets (
+    TicketID BIGINT IDENTITY PRIMARY KEY,
+    CustomerID INT NULL,
+    SenderUserID INT NOT NULL,
+    Subject NVARCHAR(200) NULL,
+    Content NVARCHAR(MAX) NOT NULL,
+    Type NVARCHAR(30) NOT NULL DEFAULT 'GENERAL'
+        CHECK (Type IN ('GENERAL','BUG','FEATURE','COMPLAINT','PAYMENT','DELIVERY','REFUND','OTHER')),
+    Priority NVARCHAR(10) NOT NULL DEFAULT 'NORMAL'
+        CHECK (Priority IN ('LOW','NORMAL','HIGH','URGENT')),
+    AttachmentUrl NVARCHAR(500) NULL,
+    AttachmentUrls NVARCHAR(MAX) NULL,
+    Status NVARCHAR(20) NOT NULL DEFAULT 'OPEN'
+        CHECK (Status IN ('OPEN','IN_PROGRESS','WAITING_CUSTOMER','RESOLVED','REJECTED','CLOSED')),
+    CreatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    UpdatedAt DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    AssignedToUserID INT NULL,
+    AssignedAt DATETIME2 NULL,
+    Response NVARCHAR(MAX) NULL,
+    RespondedAt DATETIME2 NULL,
+    ResolvedAt DATETIME2 NULL,
+    ClosedAt DATETIME2 NULL,
+    CloseNote NVARCHAR(500) NULL,
+    CustomerRating INT NULL CHECK (CustomerRating BETWEEN 1 AND 5),
+    CustomerNote NVARCHAR(500) NULL,
+    CONSTRAINT FK_FeedbackTickets_Customers FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+    CONSTRAINT FK_FeedbackTickets_SenderUser FOREIGN KEY (SenderUserID) REFERENCES Users(UserID),
+    CONSTRAINT FK_FeedbackTickets_AssignedToUser FOREIGN KEY (AssignedToUserID) REFERENCES Users(UserID)
+);
+GO
+
+CREATE INDEX IX_FeedbackTickets_Status_CreatedAt
+ON FeedbackTickets(Status, CreatedAt);
 GO
 
 -- Sample Data Insertions
 
 INSERT INTO Users (Username, PasswordHash, Email, Role)
 VALUES
-('customer','b6c45863875e34487ca3c155ed145efe12a74581e27befec5aa661b8ee8ca6dd','customer@ezmart.vn','CUSTOMER'),
-('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'admin@ezmart.vn', 'ADMIN'),
-('staff', '1562206543da764123c21bd524674f0a8aaf49c8a89744c97352fe677f7e4006', 'staff@ezmart.vn', 'STAFF');
+('admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'admin@ezmart.vn', 'ADMIN'),
+('bo', '123456', 'bo@ezmart.vn', 'CUSTOMER'),
+('toan', '123456', 'toan@ezmart.vn', 'STAFF'),
+('lam', '123456', 'lam@ezmart.vn', 'CUSTOMER');
 GO
 
 INSERT INTO Customers (UserID, FirstName, LastName, City, Country, MobilePhone)
 VALUES
 (2, 'Pham Tan', 'Bo', 'Ho Chi Minh', 'Vietnam', '0909000001'),
-(3, 'Truong Van', 'Lam', 'Ho Chi Minh', 'Vietnam', '0909000002');
+(4, 'Truong Van', 'Lam', 'Ho Chi Minh', 'Vietnam', '0909000002');
+GO
+
+INSERT INTO Staffs (UserID, FirstName, LastName, PhoneNumber, Department, HireDate)
+VALUES
+(3, 'Nguyen Minh', 'Toan', '0909111111', 'Customer Support', GETDATE());
 GO
 
 INSERT INTO Admins (UserID, AdminLevel)
 VALUES (1, 'SUPER_ADMIN');
 GO
 
+/* =========================
+   FULL INSERT CATEGORIES
+========================= */
 INSERT INTO Categories (CategoryName, Description, Status)
 VALUES
-(N'Food', N'Thực phẩm', N'ACTIVE'),
-(N'Drink', N'Nước uống', N'ACTIVE'),
-(N'Household', N'Đồ gia dụng', N'ACTIVE');
+(N'Food',            N'Thực phẩm',            'Active'),
+(N'Drink',           N'Nước uống',             'Active'),
+(N'Household',       N'Đồ gia dụng',           'Active'),
+(N'Fruit',           N'Trái cây tươi',         'Active'),
+(N'Vegetable',       N'Rau củ tươi',           'Active'),
+(N'Meat & Seafood',  N'Thịt cá hải sản',       'Active'),
+(N'Snack',           N'Đồ ăn vặt',             'Active'),
+(N'Personal Care',   N'Chăm sóc cá nhân',      'Active');
 GO
 
-INSERT INTO Brands (BrandName, Country)
-VALUES
-('Vinamilk', 'Vietnam'),
-('TH True Milk', 'Vietnam'),
-('Omo', 'Vietnam');
+/* =========================
+   CATEGORY IMAGES (file name only)
+========================= */
+
+UPDATE Categories SET ImageURL = 'food.png'
+WHERE CategoryName = N'Food';
+
+UPDATE Categories SET ImageURL = 'drink.png'
+WHERE CategoryName = N'Drink';
+
+UPDATE Categories SET ImageURL = 'household.png'
+WHERE CategoryName = N'Household';
+
+UPDATE Categories SET ImageURL = 'fruit.png'
+WHERE CategoryName = N'Fruit';
+
+UPDATE Categories SET ImageURL = 'vegetable.png'
+WHERE CategoryName = N'Vegetable';
+
+UPDATE Categories SET ImageURL = 'meat-seafood.png'
+WHERE CategoryName = N'Meat & Seafood';
+
+UPDATE Categories SET ImageURL = 'snack.png'
+WHERE CategoryName = N'Snack';
+
+UPDATE Categories SET ImageURL = 'personal-care.png'
+WHERE CategoryName = N'Personal Care';
 GO
 
-INSERT INTO Products (CategoryID, BrandID, ProductName, UnitPrice, StockQuantity, Status)
+/* =========================
+   FULL INSERT BRANDS
+========================= */
+INSERT INTO Brands (BrandName, Country, Email, Phone, Website)
 VALUES
-(1, 1, N'Sữa tươi Vinamilk 1L', 32000, 100, 'ACTIVE'),
-(1, 2, N'Sữa TH True Milk 1L', 34000, 80, 'ACTIVE'),
-(3, 3, N'Bột giặt Omo 3kg', 95000, 50, 'ACTIVE');
+(N'Vinamilk',     N'Vietnam',      N'contact@vinamilk.com.vn', N'0280000001', N'https://www.vinamilk.com.vn'),
+(N'TH True Milk', N'Vietnam',      N'contact@thtruemilk.vn',  N'0280000002', N'https://www.thmilk.vn'),
+(N'Co.op Select', N'Vietnam',      N'contact@coopselect.vn',  N'0280000003', N'https://coopselect.vn'),
+(N'Nestle',       N'Switzerland',  N'info@nestle.com',        N'+410000000', N'https://www.nestle.com'),
+(N'Pepsi',        N'USA',          N'contact@pepsi.com',      N'+100000000', N'https://www.pepsi.com'),
+(N'Heineken',     N'Netherlands',  N'info@heineken.com',      N'+310000000', N'https://www.theheinekencompany.com'),
+(N'P&G',          N'USA',          N'contact@pg.com',         N'+100000001', N'https://us.pg.com'),
+(N'Unilever',     N'UK',           N'contact@unilever.com',  N'+440000000', N'https://www.unilever.com');
 GO
+
+/* =========================
+   FULL INSERT PRODUCTS
+========================= */
+
+INSERT INTO Products (CategoryID, BrandID, ProductName, Description, UnitPrice, StockQuantity, Status)
+VALUES
+/* ===== FOOD ===== */
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Food'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Vinamilk'),
+ N'Sữa tươi Vinamilk 1L', N'Sữa tươi tiệt trùng 1L.', 32, 150, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Food'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'TH True Milk'),
+ N'Sữa TH True Milk 1L', N'Sữa tươi nguyên chất.', 34, 120, 'Active'),
+
+/* ===== FRUIT ===== */
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Fruit'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Co.op Select'),
+ N'Chuối Cavendish 1kg', N'Chuối tươi, phù hợp ăn liền.', 35, 100, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Fruit'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Co.op Select'),
+ N'Táo đỏ 1kg', N'Táo giòn ngọt.', 120, 80, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Fruit'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Co.op Select'),
+ N'Dâu tây 500g', N'Dâu tây tươi Đà Lạt.', 95, 60, 'Active'),
+
+/* ===== VEGETABLE ===== */
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Vegetable'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Co.op Select'),
+ N'Rau muống 500g', N'Rau muống tươi.', 18, 200, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Vegetable'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Co.op Select'),
+ N'Cà chua 1kg', N'Cà chua chín đỏ.', 45, 150, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Vegetable'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Co.op Select'),
+ N'Cà rốt 1kg', N'Cà rốt tươi.', 32, 120, 'Active'),
+
+/* ===== MEAT & SEAFOOD ===== */
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Meat & Seafood'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Co.op Select'),
+ N'Ức gà 500g', N'Ức gà tươi ít mỡ.', 95, 90, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Meat & Seafood'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Co.op Select'),
+ N'Cá hồi phi lê 200g', N'Cá hồi tươi.', 320, 50, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Meat & Seafood'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Co.op Select'),
+ N'Tôm thẻ 500g', N'Tôm thẻ tươi sống.', 210, 40, 'Active'),
+
+/* ===== DRINK ===== */
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Drink'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Pepsi'),
+ N'Pepsi lon 330ml', N'Nước ngọt có ga.', 12, 400, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Drink'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Heineken'),
+ N'Heineken lon 330ml', N'Bia Heineken lon.', 28, 300, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Drink'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Nestle'),
+ N'Nước suối 500ml', N'Nước uống tinh khiết.', 6, 600, 'Active'),
+
+/* ===== SNACK ===== */
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Snack'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Nestle'),
+ N'Socola thanh 40g', N'Socola ăn liền.', 15, 500, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Snack'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Nestle'),
+ N'Bánh quy bơ 200g', N'Bánh quy bơ giòn.', 35, 250, 'Active'),
+
+/* ===== HOUSEHOLD ===== */
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Household'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Unilever'),
+ N'Nước rửa chén 750ml', N'Nước rửa chén hương chanh.', 55, 180, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Household'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'P&G'),
+ N'Nước lau sàn 1L', N'Nước lau sàn diệt khuẩn.', 45, 140, 'Active'),
+
+/* ===== PERSONAL CARE ===== */
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Personal Care'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'P&G'),
+ N'Dầu gội 650ml', N'Dầu gội sạch gàu.', 120, 100, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Personal Care'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'Unilever'),
+ N'Sữa tắm 650g', N'Sữa tắm dưỡng ẩm.', 115, 95, 'Active'),
+
+((SELECT CategoryID FROM Categories WHERE CategoryName=N'Personal Care'),
+ (SELECT BrandID FROM Brands WHERE BrandName=N'P&G'),
+ N'Kem đánh răng 100g', N'Kem đánh răng thơm mát.', 22, 220, 'Active');
+GO
+
+/* =========================================================
+   FULL INSERT PRODUCT IMAGES
+   (2–4 images per product)
+========================================================= */
+
+INSERT INTO ProductImages (ProductID, ImageURL)
+SELECT p.ProductID, v.ImageURL
+FROM Products p
+JOIN (VALUES
+/* ===== FOOD ===== */
+(N'Sữa tươi Vinamilk 1L', '/resources/uploads/products/sua-tuoi-vinamilk-1l-1.jpg'),
+(N'Sữa tươi Vinamilk 1L', '/resources/uploads/products/sua-tuoi-vinamilk-1l-2.png'),
+(N'Sữa tươi Vinamilk 1L', '/resources/uploads/products/sua-tuoi-vinamilk-1l-3.jpg'),
+
+(N'Sữa TH True Milk 1L', '/resources/uploads/products/sua-th-true-milk-1l-1.jpg'),
+(N'Sữa TH True Milk 1L', '/resources/uploads/products/sua-th-true-milk-1l-2.png'),
+
+/* ===== FRUIT ===== */
+(N'Chuối Cavendish 1kg', '/resources/uploads/products/chuoi-cavendish-1kg-1.jpg'),
+(N'Chuối Cavendish 1kg', '/resources/uploads/products/chuoi-cavendish-1kg-2.png'),
+(N'Chuối Cavendish 1kg', '/resources/uploads/products/chuoi-cavendish-1kg-3.jpg'),
+
+(N'Táo đỏ 1kg', '/resources/uploads/products/tao-do-1kg-1.jpg'),
+(N'Táo đỏ 1kg', '/resources/uploads/products/tao-do-1kg-2.png'),
+
+(N'Dâu tây 500g', '/resources/uploads/products/dau-tay-500g-1.jpg'),
+(N'Dâu tây 500g', '/resources/uploads/products/dau-tay-500g-2.png'),
+(N'Dâu tây 500g', '/resources/uploads/products/dau-tay-500g-3.jpg'),
+(N'Dâu tây 500g', '/resources/uploads/products/dau-tay-500g-4.png'),
+
+/* ===== VEGETABLE ===== */
+(N'Rau muống 500g', '/resources/uploads/products/rau-muong-500g-1.jpg'),
+(N'Rau muống 500g', '/resources/uploads/products/rau-muong-500g-2.png'),
+
+(N'Cà chua 1kg', '/resources/uploads/products/ca-chua-1kg-1.jpg'),
+(N'Cà chua 1kg', '/resources/uploads/products/ca-chua-1kg-2.png'),
+(N'Cà chua 1kg', '/resources/uploads/products/ca-chua-1kg-3.jpg'),
+
+(N'Cà rốt 1kg', '/resources/uploads/products/ca-rot-1kg-1.jpg'),
+(N'Cà rốt 1kg', '/resources/uploads/products/ca-rot-1kg-2.png'),
+
+/* ===== MEAT & SEAFOOD ===== */
+(N'Ức gà 500g', '/resources/uploads/products/uc-ga-500g-1.jpg'),
+(N'Ức gà 500g', '/resources/uploads/products/uc-ga-500g-2.png'),
+
+(N'Cá hồi phi lê 200g', '/resources/uploads/products/ca-hoi-phile-200g-1.jpg'),
+(N'Cá hồi phi lê 200g', '/resources/uploads/products/ca-hoi-phile-200g-2.png'),
+(N'Cá hồi phi lê 200g', '/resources/uploads/products/ca-hoi-phile-200g-3.jpg'),
+
+(N'Tôm thẻ 500g', '/resources/uploads/products/tom-the-500g-1.jpg'),
+(N'Tôm thẻ 500g', '/resources/uploads/products/tom-the-500g-2.png'),
+(N'Tôm thẻ 500g', '/resources/uploads/products/tom-the-500g-3.jpg'),
+
+/* ===== DRINK ===== */
+(N'Pepsi lon 330ml', '/resources/uploads/products/pepsi-330ml-1.jpg'),
+(N'Pepsi lon 330ml', '/resources/uploads/products/pepsi-330ml-2.png'),
+
+(N'Heineken lon 330ml', '/resources/uploads/products/heineken-330ml-1.jpg'),
+(N'Heineken lon 330ml', '/resources/uploads/products/heineken-330ml-2.png'),
+(N'Heineken lon 330ml', '/resources/uploads/products/heineken-330ml-3.jpg'),
+
+(N'Nước suối 500ml', '/resources/uploads/products/nuoc-suoi-500ml-1.jpg'),
+(N'Nước suối 500ml', '/resources/uploads/products/nuoc-suoi-500ml-2.png'),
+
+/* ===== SNACK ===== */
+(N'Socola thanh 40g', '/resources/uploads/products/socola-40g-1.jpg'),
+(N'Socola thanh 40g', '/resources/uploads/products/socola-40g-2.png'),
+
+(N'Bánh quy bơ 200g', '/resources/uploads/products/banh-quy-bo-200g-1.jpg'),
+(N'Bánh quy bơ 200g', '/resources/uploads/products/banh-quy-bo-200g-2.png'),
+(N'Bánh quy bơ 200g', '/resources/uploads/products/banh-quy-bo-200g-3.jpg'),
+
+/* ===== HOUSEHOLD ===== */
+(N'Nước rửa chén 750ml', '/resources/uploads/products/nuoc-rua-chen-750ml-1.jpg'),
+(N'Nước rửa chén 750ml', '/resources/uploads/products/nuoc-rua-chen-750ml-2.png'),
+
+(N'Nước lau sàn 1L', '/resources/uploads/products/nuoc-lau-san-1l-1.jpg'),
+(N'Nước lau sàn 1L', '/resources/uploads/products/nuoc-lau-san-1l-2.png'),
+(N'Nước lau sàn 1L', '/resources/uploads/products/nuoc-lau-san-1l-3.jpg'),
+
+/* ===== PERSONAL CARE ===== */
+(N'Dầu gội 650ml', '/resources/uploads/products/dau-goi-650ml-1.jpg'),
+(N'Dầu gội 650ml', '/resources/uploads/products/dau-goi-650ml-2.png'),
+
+(N'Sữa tắm 650g', '/resources/uploads/products/sua-tam-650g-1.jpg'),
+(N'Sữa tắm 650g', '/resources/uploads/products/sua-tam-650g-2.png'),
+(N'Sữa tắm 650g', '/resources/uploads/products/sua-tam-650g-3.jpg'),
+
+(N'Kem đánh răng 100g', '/resources/uploads/products/kem-danh-rang-100g-1.jpg'),
+(N'Kem đánh răng 100g', '/resources/uploads/products/kem-danh-rang-100g-2.png')
+) AS v(ProductName, ImageURL)
+ON p.ProductName = v.ProductName;
+GO
+
+
 
 INSERT INTO Offers (OfferName, OfferType, DiscountValue, StartDate, EndDate, Status, BannerImage, VoucherEnabled)
 VALUES
-(N'Giảm giá sữa', 'Percentage', 10, '2024-01-01', '2026-12-31', 'active', NULL, 0),
-(N'Khuyến mãi đồ gia dụng', 'Fixed Amount', 50000, '2024-01-01', '2026-12-31', 'active', NULL, 1);
+(N'Giảm giá 10%', 'Percentage', 10, '2024-01-01', '2026-12-31', 'Active', 'banner1.jpg', 0),
+(N'Khuyến mãi giảm 5$', 'Fixed Amount', 5, '2024-01-01', '2026-12-31', 'Active', 'banner2.jpg', 1);
 GO
 
 INSERT INTO ProductOffers (ProductID, OfferID)

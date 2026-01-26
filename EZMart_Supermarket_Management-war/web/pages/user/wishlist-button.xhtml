@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+    <!-- Reusable Wishlist Button Component -->
+    <ui:composition>
+        <style>
+            .wishlist-button-container {
+                display: inline-block;
+                position: relative;
+            }
+
+            .wishlist-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 10px 16px;
+                background: #fff;
+                border: 2px solid #e74c3c;
+                color: #e74c3c;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                text-decoration: none;
+                min-width: 150px;
+            }
+
+            .wishlist-btn:hover {
+                background: #fff5f5;
+                transform: scale(1.05);
+            }
+
+            .wishlist-btn.in-wishlist {
+                background: #e74c3c;
+                color: white;
+            }
+
+            .wishlist-btn.in-wishlist:hover {
+                background: #c0392b;
+            }
+
+            .wishlist-icon {
+                font-size: 16px;
+                display: inline-block;
+            }
+
+            .wishlist-tooltip {
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #333;
+                color: white;
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 12px;
+                white-space: nowrap;
+                margin-bottom: 10px;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                pointer-events: none;
+                z-index: 1000;
+            }
+
+            .wishlist-tooltip::after {
+                content: '';
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                border: 5px solid transparent;
+                border-top-color: #333;
+            }
+
+            .wishlist-button-container:hover .wishlist-tooltip {
+                opacity: 1;
+                visibility: visible;
+                margin-bottom: 15px;
+            }
+
+            @media (max-width: 576px) {
+                .wishlist-btn {
+                    padding: 8px 12px;
+                    font-size: 12px;
+                    min-width: auto;
+                }
+
+                .wishlist-btn span {
+                    display: none;
+                }
+
+                .wishlist-icon {
+                    font-size: 18px;
+                }
+            }
+        </style>
+
+        <div class="wishlist-button-container">
+            <div class="wishlist-tooltip" id="wishlistTooltip">
+                <h:outputText rendered="#{wishlistMB.isProductInWishlist(productDetail.productID)}"
+                            value="Đã thêm vào yêu thích"/>
+                <h:outputText rendered="#{!wishlistMB.isProductInWishlist(productDetail.productID)}"
+                            value="Thêm vào yêu thích"/>
+            </div>
+
+            <h:form style="display: inline-block;">
+                <h:panelGroup rendered="#{auth.loggedIn}">
+                    <!-- If already in wishlist -->
+                    <h:commandButton 
+                        rendered="#{wishlistMB.isProductInWishlist(productDetail.productID)}"
+                        value="❤️ Đã thêm"
+                        action="#{wishlistMB.removeFromWishlist(productDetail.productID)}"
+                        styleClass="wishlist-btn in-wishlist">
+                        <f:ajax execute="@this" render="@form" oncomplete="updateWishlistUI()"/>
+                    </h:commandButton>
+
+                    <!-- If not in wishlist -->
+                    <h:commandButton 
+                        rendered="#{!wishlistMB.isProductInWishlist(productDetail.productID)}"
+                        value="🤍 Thêm vào yêu thích"
+                        action="#{wishlistMB.addToWishlist(productDetail.productID)}"
+                        styleClass="wishlist-btn">
+                        <f:ajax execute="@this" render="@form" oncomplete="updateWishlistUI()"/>
+                    </h:commandButton>
+                </h:panelGroup>
+
+                <!-- If not logged in -->
+                <h:panelGroup rendered="#{!auth.loggedIn}">
+                    <h:link value="🤍 Thêm vào yêu thích"
+                           outcome="login?faces-redirect=true"
+                           styleClass="wishlist-btn"
+                           style="text-decoration: none; display: flex;"/>
+                </h:panelGroup>
+            </h:form>
+        </div>
+
+        <script>
+            function updateWishlistUI() {
+                // Optional: Update UI after wishlist action
+                var tooltip = document.getElementById('wishlistTooltip');
+                if (tooltip) {
+                    tooltip.style.opacity = '1';
+                    tooltip.style.visibility = 'visible';
+                    setTimeout(function() {
+                        tooltip.style.opacity = '0';
+                        tooltip.style.visibility = 'hidden';
+                    }, 2000);
+                }
+            }
+
+            // Check if product is in wishlist on page load
+            function checkWishlistStatus() {
+                var productID = document.querySelector('[id*="productID"]');
+                if (productID) {
+                    fetch('/EZMart_Supermarket_Management/api/wishlist/check/' + productID.value)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.inWishlist) {
+                                var btn = document.querySelector('.wishlist-btn');
+                                if (btn) {
+                                    btn.classList.add('in-wishlist');
+                                }
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+            }
+
+            // Run on page load
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', checkWishlistStatus);
+            } else {
+                checkWishlistStatus();
+            }
+        </script>
+    </ui:composition>
+
+</html>

@@ -45,10 +45,24 @@ public class DealsManagementMB implements Serializable {
 
     private List<Offers> availableDeals;
     private List<Products> associatedProducts;
+    private Offers selectedOfferForClaim; // Store the offer when user clicks Claim
 
     @PostConstruct
     public void init() {
         loadAvailableDeals();
+    }
+
+    // Prepare voucher claim - store the offer and show confirmation dialog
+    public void prepareClaimVoucher(Offers deal) {
+        this.selectedOfferForClaim = deal;
+    }
+
+    // Confirm and execute the voucher claim
+    public void confirmClaimVoucher() {
+        if (selectedOfferForClaim != null) {
+            claimVoucher(selectedOfferForClaim);
+            selectedOfferForClaim = null;
+        }
     }
 
     public void loadAvailableDeals() {
@@ -136,7 +150,21 @@ public class DealsManagementMB implements Serializable {
             newVoucher.setIsUsed(false);
             newVoucher.setDiscountValue(BigDecimal.valueOf(deal.getDiscountValue()));
             newVoucher.setVoucherCode(generateUniqueVoucherCode(customerId, deal.getOfferID()));
-            newVoucher.setExpiryDate(deal.getEndDate());
+
+            // Set expiry date to avoid timezone issues - use only the date part
+            Date expiryDate = deal.getEndDate();
+            if (expiryDate != null) {
+                // Create a new date with only the date components to avoid timezone conversion issues
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.setTime(expiryDate);
+                cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+                cal.set(java.util.Calendar.MINUTE, 0);
+                cal.set(java.util.Calendar.SECOND, 0);
+                cal.set(java.util.Calendar.MILLISECOND, 0);
+                newVoucher.setExpiryDate(cal.getTime());
+            } else {
+                newVoucher.setExpiryDate(deal.getEndDate());
+            }
 
             vouchersFacade.create(newVoucher);
 
@@ -210,6 +238,20 @@ public class DealsManagementMB implements Serializable {
         return "";
     }
 
+    public String productImageUrl(entityclass.Products product) {
+        if (product != null && product.getProductImagesList() != null && !product.getProductImagesList().isEmpty()) {
+            return product.getProductImagesList().get(0).getImageURL();
+        }
+        return null;
+    }
+
+    public String getProductImage(Products product) {
+        if (product != null && product.getProductImagesList() != null && !product.getProductImagesList().isEmpty()) {
+            return "/uploads/products/" + product.getProductImagesList().get(0).getImageURL();
+        }
+        return "/images/no-image.png";
+    }
+
     private String generateUniqueVoucherCode(Integer customerId, Integer offerId) {
         try {
             String input = customerId + "-" + offerId + "-" + System.currentTimeMillis();
@@ -234,5 +276,13 @@ public class DealsManagementMB implements Serializable {
 
     public void setAvailableDeals(List<Offers> availableDeals) {
         this.availableDeals = availableDeals;
+    }
+
+    public Offers getSelectedOfferForClaim() {
+        return selectedOfferForClaim;
+    }
+
+    public void setSelectedOfferForClaim(Offers selectedOfferForClaim) {
+        this.selectedOfferForClaim = selectedOfferForClaim;
     }
 }

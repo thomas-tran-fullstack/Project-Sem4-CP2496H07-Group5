@@ -2,6 +2,7 @@ package controllers;
 
 import entityclass.Admins;
 import entityclass.Customers;
+import entityclass.Staffs;
 import entityclass.Users;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -21,6 +22,7 @@ import services.TimeFormatUtil;
 import services.UserDTO;
 import sessionbeans.AdminsFacadeLocal;
 import sessionbeans.CustomersFacadeLocal;
+import sessionbeans.StaffsFacadeLocal;
 import sessionbeans.UsersFacadeLocal;
 
 /**
@@ -42,6 +44,9 @@ public class UserManagementController implements Serializable {
 
     @EJB
     private AdminsFacadeLocal adminsFacade;
+
+    @EJB
+    private StaffsFacadeLocal staffsFacade;
 
     private List<UserDTO> allUsers = new ArrayList<>();
     private List<UserDTO> users = new ArrayList<>();
@@ -512,9 +517,16 @@ public class UserManagementController implements Serializable {
             if (user != null) {
                 System.out.println("Current status: " + user.getStatus());
                 user.setStatus("INACTIVE");
+                user.setBanUntil(null);
                 System.out.println("Setting status to INACTIVE");
                 usersFacade.edit(user);
                 System.out.println("User edited successfully");
+
+                // Force logout immediately if this user is currently logged in
+                try {
+                    utils.OnlineUserRegistry.forceLogout(userId);
+                } catch (Exception ignored) {
+                }
 
                 // Verify the change
                 Users updatedUser = usersFacade.find(userId);
@@ -916,6 +928,16 @@ public class UserManagementController implements Serializable {
             // Update display string
             editBanUntilDisplay = formatBanUntil(user.getBanUntil());
 
+            // Force logout if user becomes INACTIVE or BANNED
+            try {
+                boolean shouldKick = "INACTIVE".equalsIgnoreCase(status)
+                        || (user.getBanUntil() != null && user.getBanUntil().after(new Date()));
+                if (shouldKick) {
+                    utils.OnlineUserRegistry.forceLogout(user.getUserID());
+                }
+            } catch (Exception ignored) {
+            }
+
             context.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO,
                             "User '" + user.getUsername() + "' updated successfully!", ""));
@@ -1244,7 +1266,21 @@ public class UserManagementController implements Serializable {
                     System.err.println("UserManagementController.createNewUser: Error creating customer: " + e.getMessage());
                 }
             } else if ("STAFF".equalsIgnoreCase(newUserRole)) {
-                System.out.println("UserManagementController.createNewUser: Staff user created");
+                try {
+                    Staffs staff = new Staffs();
+                    staff.setFirstName(newUserFirstName != null ? newUserFirstName : "");
+                    staff.setMiddleName(newUserMiddleName != null ? newUserMiddleName : "");
+                    staff.setLastName(newUserLastName != null ? newUserLastName : "");
+                    staff.setMobilePhone(newUserPhone != null ? newUserPhone : "");
+                    staff.setStatus("ACTIVE");
+                    staff.setCreatedAt(new Date());
+                    staff.setUserID(newUser);
+                    staffsFacade.create(staff);
+                    System.out.println("UserManagementController.createNewUser: Created staff for user " + newUser.getUsername());
+                } catch (Exception e) {
+                    System.err.println("UserManagementController.createNewUser: Error creating staff: " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
             
             // Success message - show with notification

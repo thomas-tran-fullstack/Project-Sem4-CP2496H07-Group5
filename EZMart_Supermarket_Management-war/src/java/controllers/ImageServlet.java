@@ -67,22 +67,62 @@ else if (relativePath.startsWith("categories/")) {
                     filePath = userHomePath.resolve(fileName);
                 }
             }
-        } else {
-            // Direct file access for products (when pathInfo is just the filename)
-            if (relativePath.startsWith("uploads/products/")) {
-                relativePath = relativePath.substring("uploads/products/".length());
-            } else if (relativePath.startsWith("products/")) {
-                relativePath = relativePath.substring("products/".length());
+        } else if (relativePath.startsWith("payment_proofs/")) {
+            // Payment proof images - first try webapp resources/uploads/payment_proofs, then user.home/uploads/payment_proofs
+            String fileName = relativePath.substring("payment_proofs/".length());
+            String realPath = getServletContext().getRealPath("/resources/uploads/payment_proofs/");
+            if (realPath != null) {
+                Path webappPath = Paths.get(realPath);
+                filePath = webappPath.resolve(fileName);
+                // If not found in webapp, try user.home
+                if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
+                    Path userHomePath = Paths.get(System.getProperty("user.home"), "uploads", "payment_proofs");
+                    filePath = userHomePath.resolve(fileName);
+                }
             }
-            // First try user.home/uploads/products
-            Path uploadPath = Paths.get(System.getProperty("user.home"), "uploads", "products");
-            filePath = uploadPath.resolve(relativePath);
-            if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
-                // If not found, try webapp resources/uploads/products
-                String realPath = getServletContext().getRealPath("/resources/uploads/products/");
-                if (realPath != null) {
-                    Path webappPath = Paths.get(realPath);
-                    filePath = webappPath.resolve(relativePath);
+        } else {
+            // Handle payment_proofs
+            if (relativePath.startsWith("uploads/payment_proofs/")) {
+                relativePath = relativePath.substring("uploads/payment_proofs/".length());
+                Path uploadPath = Paths.get(System.getProperty("user.home"), "uploads", "payment_proofs");
+                filePath = uploadPath.resolve(relativePath);
+                if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
+                    // If not found, try webapp resources/uploads/payment_proofs
+                    String realPath = getServletContext().getRealPath("/resources/uploads/payment_proofs/");
+                    if (realPath != null) {
+                        Path webappPath = Paths.get(realPath);
+                        filePath = webappPath.resolve(relativePath);
+                    }
+                }
+            } else if (relativePath.startsWith("payment_proofs/")) {
+                relativePath = relativePath.substring("payment_proofs/".length());
+                Path uploadPath = Paths.get(System.getProperty("user.home"), "uploads", "payment_proofs");
+                filePath = uploadPath.resolve(relativePath);
+                if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
+                    // If not found, try webapp resources/uploads/payment_proofs
+                    String realPath = getServletContext().getRealPath("/resources/uploads/payment_proofs/");
+                    if (realPath != null) {
+                        Path webappPath = Paths.get(realPath);
+                        filePath = webappPath.resolve(relativePath);
+                    }
+                }
+            } else {
+                // Direct file access for products (when pathInfo is just the filename)
+                if (relativePath.startsWith("uploads/products/")) {
+                    relativePath = relativePath.substring("uploads/products/".length());
+                } else if (relativePath.startsWith("products/")) {
+                    relativePath = relativePath.substring("products/".length());
+                }
+                // First try user.home/uploads/products
+                Path uploadPath = Paths.get(System.getProperty("user.home"), "uploads", "products");
+                filePath = uploadPath.resolve(relativePath);
+                if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
+                    // If not found, try webapp resources/uploads/products
+                    String realPath = getServletContext().getRealPath("/resources/uploads/products/");
+                    if (realPath != null) {
+                        Path webappPath = Paths.get(realPath);
+                        filePath = webappPath.resolve(relativePath);
+                    }
                 }
             }
         }

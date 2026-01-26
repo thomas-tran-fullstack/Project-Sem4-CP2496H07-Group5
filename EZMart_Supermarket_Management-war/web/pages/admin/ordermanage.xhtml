@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition template="/templates/admin/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core">
+    xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
     <ui:define name="content">
         <h:form id="orderForm">
@@ -12,21 +13,23 @@
                 </div>
 
                 <!-- Messages -->
-                <h:messages id="globalMessages" showDetail="true" showSummary="false"
-                    errorClass="text-red-600" infoClass="text-green-600" layout="table" styleClass="mb-4" />
+                <h:messages id="globalMessages" showDetail="true" showSummary="false" errorClass="text-red-600"
+                    infoClass="text-green-600" layout="table" styleClass="mb-4" />
 
                 <!-- Filters -->
-                <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg mb-8">
+                <div
+                    class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg mb-8">
                     <div class="flex flex-col md:flex-row gap-4">
                         <div class="flex-1">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Status Filter
                             </label>
-                            <h:selectOneMenu value="#{adminOrderMB.selectedStatus}" class="form-select w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#112116] h-10 px-3 text-sm">
+                            <h:selectOneMenu value="#{adminOrderMB.selectedStatus}"
+                                class="form-select w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#112116] h-10 px-3 text-sm">
                                 <f:selectItem itemLabel="All Orders" itemValue="all" />
                                 <f:selectItem itemLabel="New" itemValue="NEW" />
                                 <f:selectItem itemLabel="Processing" itemValue="PROCESSING" />
-                                <f:selectItem itemLabel="Shipped" itemValue="SHIPPED" />
+                                <f:selectItem itemLabel="Shipping" itemValue="SHIPPING" />
                                 <f:selectItem itemLabel="Delivered" itemValue="DELIVERED" />
                                 <f:selectItem itemLabel="Cancelled" itemValue="CANCELLED" />
                                 <f:selectItem itemLabel="Waiting Confirmation" itemValue="WAITING_CONFIRM" />
@@ -37,7 +40,9 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Search Order ID or Customer
                             </label>
-                            <h:inputText value="#{adminOrderMB.searchTerm}" class="form-input w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#112116] h-10 px-3 text-sm" placeholder="Enter Order ID or customer name">
+                            <h:inputText value="#{adminOrderMB.searchTerm}"
+                                class="form-input w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#112116] h-10 px-3 text-sm"
+                                placeholder="Enter Order ID or customer name">
                                 <f:ajax event="keyup" execute="@this" render="ordersTable" />
                             </h:inputText>
                         </div>
@@ -45,8 +50,9 @@
                 </div>
 
                 <!-- Orders Table -->
-                <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 shadow-lg overflow-hidden">
-                    <h:dataTable id="ordersTable" value="#{adminOrderMB.filteredOrders}" var="order" 
+                <div
+                    class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 shadow-lg overflow-hidden">
+                    <h:dataTable id="ordersTable" value="#{adminOrderMB.filteredOrders}" var="order"
                         styleClass="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
                         headerClass="bg-gray-50 dark:bg-[#1a2e22] px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                         columnClasses="px-6 py-4 whitespace-nowrap">
@@ -58,7 +64,8 @@
 
                         <h:column>
                             <f:facet name="header">Customer</f:facet>
-                            <div class="text-sm text-gray-900 dark:text-white">#{adminOrderMB.getCustomerName(order)}</div>
+                            <div class="text-sm text-gray-900 dark:text-white">#{adminOrderMB.getCustomerName(order)}
+                            </div>
                         </h:column>
 
                         <h:column>
@@ -72,7 +79,9 @@
 
                         <h:column>
                             <f:facet name="header">Items</f:facet>
-                            <span class="text-sm text-gray-500 dark:text-gray-400">#{adminOrderMB.getOrderItems(order).size()} items</span>
+                            <span
+                                class="text-sm text-gray-500 dark:text-gray-400">#{adminOrderMB.getOrderItems(order).size()}
+                                items</span>
                         </h:column>
 
                         <h:column>
@@ -82,29 +91,59 @@
 
                         <h:column>
                             <f:facet name="header">Status</f:facet>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{adminOrderMB.getStatusStyle(order.status)}">
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{adminOrderMB.getStatusStyle(order.status)}">
                                 #{adminOrderMB.getStatusDisplay(order.status)}
                             </span>
                         </h:column>
 
                         <h:column>
                             <f:facet name="header">Payment</f:facet>
-                            <span class="text-sm text-gray-500 dark:text-gray-400">#{adminOrderMB.getPaymentStatusDisplay(order.paymentStatus)}</span>
+                            <span
+                                class="text-sm text-gray-500 dark:text-gray-400">#{adminOrderMB.getPaymentStatusDisplay(order.paymentStatus)}</span>
                         </h:column>
 
                         <h:column>
                             <f:facet name="header">Actions</f:facet>
                             <div class="flex items-center gap-2">
-                                <!-- View Button -->
-                                <h:commandButton value="View" action="#{adminOrderMB.selectOrderForView(order)}"
+                                <!-- View Button - Always visible -->
+                                <h:commandButton value="View Detail" action="#{adminOrderMB.selectOrderForView(order)}"
                                     styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-blue-600 bg-blue-100 hover:bg-blue-200 transition-colors cursor-pointer">
-                                    <f:ajax execute="@this" render=":orderForm:orderDetailContent :orderForm:orderDetailModalTitle" onevent="function(data) { if(data.status === 'success') { document.getElementById('orderDetailModal').style.display = 'block'; } }" />
+                                    <f:ajax execute="@this"
+                                        render=":orderForm:orderDetailContent :orderForm:orderDetailModalTitle"
+                                        onevent="function(data) { if(data.status === 'success') { document.getElementById('orderDetailModal').style.display = 'block'; } }" />
                                 </h:commandButton>
-                                <!-- Update Status Button -->
-                                <h:commandButton value="Update Status" action="#{adminOrderMB.selectOrderForUpdate(order)}"
-                                    styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-green-600 bg-green-100 hover:bg-green-200 transition-colors cursor-pointer">
-                                    <f:ajax execute="@this" render=":orderForm:statusModalContent" onevent="function(data) { if(data.status === 'success') { document.getElementById('statusModal').style.display = 'block'; } }" />
-                                </h:commandButton>
+
+                                <!-- Actions based on order status -->
+                                <h:panelGroup rendered="#{order.status == 'NEW'}">
+                                    <!-- Cancel Button -->
+                                    <h:commandButton value="Cancel" action="#{adminOrderMB.selectOrderForCancel(order)}"
+                                        styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-red-600 bg-red-100 hover:bg-red-200 transition-colors cursor-pointer">
+                                        <f:ajax execute="@this" render=":orderForm:statusModalContent"
+                                            onevent="function(data) { if(data.status === 'success') { document.getElementById('statusModal').style.display = 'block'; } }" />
+                                    </h:commandButton>
+                                    <!-- Confirmed Button -->
+                                    <h:commandButton value="Confirmed" action="#{adminOrderMB.confirmOrder(order)}"
+                                        styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-green-600 bg-green-100 hover:bg-green-200 transition-colors cursor-pointer">
+                                        <f:ajax execute="@this" render=":orderForm:ordersTable :orderForm:globalMessages" />
+                                    </h:commandButton>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{order.status == 'CONFIRMED'}">
+                                    <!-- Shipped Button -->
+                                    <h:commandButton value="Shipping" action="#{adminOrderMB.shipOrder(order)}"
+                                        styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-purple-600 bg-purple-100 hover:bg-purple-200 transition-colors cursor-pointer">
+                                        <f:ajax execute="@this" render=":orderForm:ordersTable :orderForm:globalMessages" />
+                                    </h:commandButton>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{order.status == 'SHIPPING'}">
+                                    <!-- Completed Button -->
+                                    <h:commandButton value="Completed" action="#{adminOrderMB.completeOrder(order)}"
+                                        styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-green-600 bg-green-100 hover:bg-green-200 transition-colors cursor-pointer">
+                                        <f:ajax execute="@this" render=":orderForm:ordersTable :orderForm:globalMessages" />
+                                    </h:commandButton>
+                                </h:panelGroup>
                             </div>
                         </h:column>
                     </h:dataTable>
@@ -117,11 +156,14 @@
             </div>
 
             <!-- Status Update Modal -->
-            <div id="statusModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50" style="display: none;">
+            <div id="statusModal"
+                class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50"
+                style="display: none;">
                 <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-[#1a2e22]">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white">Update Order Status</h3>
-                        <button onclick="document.getElementById('statusModal').style.display='none';" class="text-gray-400 hover:text-gray-600">
+                        <button onclick="document.getElementById('statusModal').style.display='none';"
+                            class="text-gray-400 hover:text-gray-600">
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
@@ -131,23 +173,41 @@
                                 Order ##{adminOrderMB.selectedOrder.orderID}
                             </p>
                             <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">New Status</label>
-                                <h:selectOneMenu value="#{adminOrderMB.newStatus}" class="form-select w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#112116] h-10 px-3 text-sm">
-                                    <f:selectItem itemLabel="New" itemValue="NEW" />
-                                    <f:selectItem itemLabel="Processing" itemValue="PROCESSING" />
-                                    <f:selectItem itemLabel="Shipped" itemValue="SHIPPED" />
-                                    <f:selectItem itemLabel="Delivered" itemValue="DELIVERED" />
-                                    <f:selectItem itemLabel="Cancelled" itemValue="CANCELLED" />
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">New
+                                    Status</label>
+                                <h:selectOneMenu value="#{adminOrderMB.newStatus}"
+                                    class="form-select w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#112116] h-10 px-3 text-sm">
+                                    <f:selectItem itemLabel="WAITING_CONFIRM" itemValue="WAITING_CONFIRM" />
+                                    <f:selectItem itemLabel="CONFIRMED" itemValue="CONFIRMED" />
+                                    <f:selectItem itemLabel="SHIPPING" itemValue="SHIPPING" />
+                                    <f:selectItem itemLabel="COMPLETED" itemValue="COMPLETED" />
+                                    <f:selectItem itemLabel="CANCELLED" itemValue="CANCELLED" />
+                                    <f:ajax event="change" execute="@this" render="cancelReasonPanel" />
                                 </h:selectOneMenu>
                             </div>
+
+                            <!-- Cancel Reason Input - Only show when CANCELLED is selected -->
+                            <h:panelGroup id="cancelReasonPanel" rendered="#{adminOrderMB.newStatus == 'CANCELLED'}">
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Cancel Reason <span class="text-red-500">*</span></label>
+                                    <h:inputTextarea value="#{adminOrderMB.cancelReason}"
+                                        class="form-textarea w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#112116] px-3 py-2 text-sm"
+                                        rows="3" placeholder="Please provide a reason for cancelling this order..."
+                                        required="true" requiredMessage="Cancel reason is required when cancelling an order" />
+                                    <h:message for="cancelReason" styleClass="text-red-500 text-xs mt-1" />
+                                </div>
+                            </h:panelGroup>
+
                             <div class="flex justify-end gap-3">
-                                <button type="button" onclick="document.getElementById('statusModal').style.display='none';" 
+                                <button type="button"
+                                    onclick="document.getElementById('statusModal').style.display='none';"
                                     class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
                                     Cancel
                                 </button>
                                 <h:commandButton action="#{adminOrderMB.updateOrderStatus()}" value="Update"
                                     styleClass="px-4 py-2 bg-primary text-white rounded-lg hover:bg-green-600 transition-colors cursor-pointer">
-                                    <f:ajax execute="@form" render=":orderForm:ordersTable :orderForm:globalMessages" onevent="function(data) { if(data.status === 'complete') { document.getElementById('statusModal').style.display='none'; } }" />
+                                    <f:ajax execute="@form" render=":orderForm:ordersTable :orderForm:globalMessages"
+                                        onevent="function(data) { if(data.status === 'complete') { document.getElementById('statusModal').style.display='none'; } }" />
                                 </h:commandButton>
                             </div>
                         </h:panelGroup>
@@ -156,11 +216,16 @@
             </div>
 
             <!-- Order Detail Modal -->
-            <div id="orderDetailModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50" style="display: none;">
-                <div class="relative top-10 mx-auto p-5 border w-full max-w-3xl shadow-lg rounded-md bg-white dark:bg-[#1a2e22]">
+            <div id="orderDetailModal"
+                class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50"
+                style="display: none;">
+                <div
+                    class="relative top-10 mx-auto p-5 border w-full max-w-3xl shadow-lg rounded-md bg-white dark:bg-[#1a2e22]">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 id="orderDetailModalTitle" class="text-lg font-medium text-gray-900 dark:text-white">Order Details</h3>
-                        <button onclick="document.getElementById('orderDetailModal').style.display='none';" class="text-gray-400 hover:text-gray-600">
+                        <h3 id="orderDetailModalTitle" class="text-lg font-medium text-gray-900 dark:text-white">Order
+                            Details</h3>
+                        <button onclick="document.getElementById('orderDetailModal').style.display='none';"
+                            class="text-gray-400 hover:text-gray-600">
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
@@ -168,7 +233,8 @@
                         <h:panelGroup rendered="#{not empty adminOrderMB.selectedOrder}">
                             <!-- Order Information -->
                             <div class="mb-4">
-                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Order Information</h4>
+                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Order Information
+                                </h4>
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                     <div>
                                         <span class="text-gray-500 dark:text-gray-400">Order ID:</span>
@@ -184,7 +250,8 @@
                                     </div>
                                     <div>
                                         <span class="text-gray-500 dark:text-gray-400">Status:</span>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2 #{adminOrderMB.getStatusStyle(adminOrderMB.selectedOrder.status)}">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2 #{adminOrderMB.getStatusStyle(adminOrderMB.selectedOrder.status)}">
                                             #{adminOrderMB.getStatusDisplay(adminOrderMB.selectedOrder.status)}
                                         </span>
                                     </div>
@@ -192,42 +259,125 @@
                                         <span class="text-gray-500 dark:text-gray-400">Total:</span>
                                         <span class="font-bold ml-2">$#{adminOrderMB.selectedOrder.totalAmount}</span>
                                     </div>
+                                    <div>
+                                        <span class="text-gray-500 dark:text-gray-400">Payment Method:</span>
+                                        <span
+                                            class="font-medium ml-2">#{adminOrderMB.selectedOrder.paymentMethod}</span>
+                                    </div>
+                                    <!-- Cancel Reason - Only show for cancelled orders -->
+                                    <h:panelGroup rendered="#{adminOrderMB.selectedOrder.status == 'CANCELLED' and not empty adminOrderMB.selectedOrder.cancelReason}">
+                                        <div class="md:col-span-2 mt-2">
+                                            <span class="text-gray-500 dark:text-gray-400">Cancel Reason:</span>
+                                            <div class="mt-1 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-800 dark:text-red-200">
+                                                #{adminOrderMB.selectedOrder.cancelReason}
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
                                 </div>
                             </div>
 
                             <!-- Customer Information -->
                             <div class="mb-4">
-                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Information</h4>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">
-                                    #{adminOrderMB.getCustomerName(adminOrderMB.selectedOrder)}
-                                </p>
+                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer
+                                    Information</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span class="text-gray-500 dark:text-gray-400">Name:</span>
+                                        <span
+                                            class="font-medium ml-2">#{adminOrderMB.getCustomerName(adminOrderMB.selectedOrder)}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-500 dark:text-gray-400">Phone:</span>
+                                        <span
+                                            class="font-medium ml-2">#{adminOrderMB.getCustomerPhone(adminOrderMB.selectedOrder)}</span>
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <span class="text-gray-500 dark:text-gray-400">Address:</span>
+                                        <span
+                                            class="font-medium ml-2">#{adminOrderMB.getCustomerAddress(adminOrderMB.selectedOrder)}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-500 dark:text-gray-400">Shipping Method:</span>
+                                        <span
+                                            class="font-medium ml-2">#{adminOrderMB.selectedOrder.shippingMethod}</span>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Payment Proof Section -->
-                            <div class="mb-4">
-                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Proof</h4>
-                                <h:panelGroup rendered="#{not empty adminOrderMB.selectedOrder.paymentProof}">
-                                    <div class="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                                        <span class="material-symbols-outlined text-blue-600 text-3xl">receipt</span>
-                                        <div class="flex-1">
-                                            <p class="text-sm font-medium text-blue-900 dark:text-blue-100">
-                                                Payment Proof Uploaded
-                                            </p>
-                                            <p class="text-xs text-blue-700 dark:text-blue-300">
-                                                File: #{adminOrderMB.selectedOrder.paymentProof.fileName}
-                                            </p>
+                            <h:panelGroup rendered="#{adminOrderMB.selectedOrder.paymentMethod == 'ONLINE'}">
+                                <div class="mb-4">
+                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Proof
+                                    </h4>
+                                    <h:panelGroup
+                                        rendered="#{not empty adminOrderMB.getPaymentProof(adminOrderMB.selectedOrder)}">
+                                        <div
+                                            class="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                                            <div class="flex items-center gap-3 mb-3">
+                                                <span
+                                                    class="material-symbols-outlined text-blue-600 text-3xl">receipt</span>
+                                                <div class="flex-1">
+                                                    <p class="text-sm font-medium text-blue-900 dark:text-blue-100">
+                                                        Payment Proof Uploaded
+                                                    </p>
+                                                    <p class="text-xs text-blue-700 dark:text-blue-300">
+                                                        File:
+                                                        #{adminOrderMB.getPaymentProof(adminOrderMB.selectedOrder).imagePath}
+                                                    </p>
+                                                    <p class="text-xs text-blue-700 dark:text-blue-300">
+                                                        Status:
+                                                        #{adminOrderMB.getPaymentProof(adminOrderMB.selectedOrder).status}
+                                                    </p>
+                                                </div>
+                                                <button type="button"
+                                                    onclick="showPaymentProof('#{request.contextPath}/images#{adminOrderMB.getPaymentProof(adminOrderMB.selectedOrder).imagePath}')"
+                                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-blue-600 bg-blue-100 hover:bg-blue-200 transition-colors cursor-pointer">
+                                                    View File
+                                                </button>
+                                            </div>
+                                            <!-- Payment Proof Actions -->
+                                            <h:panelGroup
+                                                rendered="#{adminOrderMB.getPaymentProof(adminOrderMB.selectedOrder).status != 'APPROVED' and adminOrderMB.getPaymentProof(adminOrderMB.selectedOrder).status != 'REJECTED'}">
+                                                <div class="flex gap-2">
+                                                    <h:commandButton
+                                                        action="#{adminOrderMB.approvePaymentProof(adminOrderMB.selectedOrder)}"
+                                                        value="Approve Payment"
+                                                        styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors cursor-pointer">
+                                                        <f:ajax execute="@this"
+                                                            render=":orderForm:ordersTable :orderForm:orderDetailContent :orderForm:globalMessages" />
+                                                    </h:commandButton>
+                                                    <h:commandButton
+                                                        action="#{adminOrderMB.rejectPaymentProof(adminOrderMB.selectedOrder)}"
+                                                        value="Reject Payment"
+                                                        styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors cursor-pointer">
+                                                        <f:ajax execute="@this"
+                                                            render=":orderForm:ordersTable :orderForm:orderDetailContent :orderForm:globalMessages" />
+                                                    </h:commandButton>
+                                                </div>
+                                            </h:panelGroup>
+                                            <h:panelGroup
+                                                rendered="#{adminOrderMB.getPaymentProof(adminOrderMB.selectedOrder).status == 'APPROVED'}">
+                                                <div class="flex items-center gap-2 text-green-600">
+                                                    <span class="material-symbols-outlined text-lg">check_circle</span>
+                                                    <span class="text-sm font-medium">Payment Approved</span>
+                                                </div>
+                                            </h:panelGroup>
+                                            <h:panelGroup
+                                                rendered="#{adminOrderMB.getPaymentProof(adminOrderMB.selectedOrder).status == 'REJECTED'}">
+                                                <div class="flex items-center gap-2 text-red-600">
+                                                    <span class="material-symbols-outlined text-lg">cancel</span>
+                                                    <span class="text-sm font-medium">Payment Rejected</span>
+                                                </div>
+                                            </h:panelGroup>
                                         </div>
-                                        <h:outputLink value="#{request.contextPath}/payment-proof/#{adminOrderMB.selectedOrder.paymentProof.fileName}" 
-                                            target="_blank"
-                                            styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-blue-600 bg-blue-100 hover:bg-blue-200 transition-colors">
-                                            View File
-                                        </h:outputLink>
-                                    </div>
-                                </h:panelGroup>
-                                <h:panelGroup rendered="#{empty adminOrderMB.selectedOrder.paymentProof}">
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 italic">No payment proof uploaded yet</p>
-                                </h:panelGroup>
-                            </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup
+                                        rendered="#{empty adminOrderMB.getPaymentProof(adminOrderMB.selectedOrder)}">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 italic">No payment proof
+                                            uploaded yet</p>
+                                    </h:panelGroup>
+                                </div>
+                            </h:panelGroup>
 
                             <!-- Order Items -->
                             <div>
@@ -236,26 +386,56 @@
                                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                         <thead class="bg-gray-50 dark:bg-[#1a2e22]">
                                             <tr>
-                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Item</th>
-                                                <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Qty</th>
-                                                <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Price</th>
-                                                <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Total</th>
+                                                <th
+                                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                                    Item</th>
+                                                <th
+                                                    class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                                    Qty</th>
+                                                <th
+                                                    class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                                    Price</th>
+                                                <th
+                                                    class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                                    Total</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                            <ui:repeat value="#{adminOrderMB.getOrderItems(adminOrderMB.selectedOrder)}" var="item">
+                                            <ui:repeat value="#{adminOrderMB.getOrderItems(adminOrderMB.selectedOrder)}"
+                                                var="item">
                                                 <tr>
-                                                    <td class="px-4 py-2 text-sm text-gray-900 dark:text-white">#{item.productName}</td>
-                                                    <td class="px-4 py-2 text-sm text-gray-900 dark:text-white text-right">#{item.quantity}</td>
-                                                    <td class="px-4 py-2 text-sm text-gray-900 dark:text-white text-right">$#{item.unitPrice}</td>
-                                                    <td class="px-4 py-2 text-sm text-gray-900 dark:text-white text-right font-medium">$#{item.totalPrice}</td>
+                                                    <td class="px-4 py-2 text-sm">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="h-10 w-10 rounded bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
+                                                                <ui:param name="productImgPath" value="#{adminOrderMB.getProductImage(item)}" />
+                                                                <img alt="#{item.productName}"
+                                                                    class="h-full w-full object-cover"
+                                                                    src="#{request.contextPath}#{productImgPath}"
+                                                                    onerror="this.onerror=null; this.src='/images/work.png';" />
+                                                            </div>
+                                                            <span class="text-gray-900 dark:text-white">#{item.productName}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td
+                                                        class="px-4 py-2 text-sm text-gray-900 dark:text-white text-right">
+                                                        #{item.quantity}</td>
+                                                    <td
+                                                        class="px-4 py-2 text-sm text-gray-900 dark:text-white text-right">
+                                                        $#{item.unitPrice}</td>
+                                                    <td
+                                                        class="px-4 py-2 text-sm text-gray-900 dark:text-white text-right font-medium">
+                                                        $#{item.totalPrice}</td>
                                                 </tr>
                                             </ui:repeat>
                                         </tbody>
                                         <tfoot class="bg-gray-50 dark:bg-[#1a2e22]">
                                             <tr>
-                                                <td colspan="3" class="px-4 py-2 text-right text-sm font-medium text-gray-900 dark:text-white">Order Total:</td>
-                                                <td class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-white">$#{adminOrderMB.selectedOrder.totalAmount}</td>
+                                                <td colspan="3"
+                                                    class="px-4 py-2 text-right text-sm font-medium text-gray-900 dark:text-white">
+                                                    Order Total:</td>
+                                                <td
+                                                    class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-white">
+                                                    $#{adminOrderMB.selectedOrder.totalAmount}</td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -263,28 +443,52 @@
                             </div>
                         </h:panelGroup>
                         <h:panelGroup rendered="#{empty adminOrderMB.selectedOrder}">
-                            <p class="text-center text-gray-500 dark:text-gray-400 py-8">Select an order to view details</p>
+                            <p class="text-center text-gray-500 dark:text-gray-400 py-8">Select an order to view details
+                            </p>
                         </h:panelGroup>
                     </h:panelGroup>
                 </div>
             </div>
+
+            <!-- Payment Proof Modal -->
+            <div id="paymentProofModal"
+                class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50"
+                style="display: none;">
+                <div
+                    class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-[#1a2e22]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Payment Proof</h3>
+                        <button onclick="document.getElementById('paymentProofModal').style.display='none';"
+                            class="text-gray-400 hover:text-gray-600">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                    <div class="text-center">
+                        <img id="paymentProofImage" src="" alt="Payment Proof"
+                            class="max-w-full max-h-96 mx-auto rounded-lg shadow-lg" />
+                    </div>
+                </div>
+            </div>
         </h:form>
 
-        <h:outputScript target="body">
-            //<![CDATA[
-            // Close modals when clicking outside
-            window.onclick = function(event) {
-                var statusModal = document.getElementById('statusModal');
-                var orderDetailModal = document.getElementById('orderDetailModal');
-                if (event.target === statusModal) {
-                    statusModal.style.display = 'none';
-                }
-                if (event.target === orderDetailModal) {
-                    orderDetailModal.style.display = 'none';
-                }
-            }
-            //]]>
-        </h:outputScript>
+       <h:outputScript target="body">
+    function closeIfClickedOutside(event) {
+        var statusModal = document.getElementById('statusModal');
+        var orderDetailModal = document.getElementById('orderDetailModal');
+        var paymentProofModal = document.getElementById('paymentProofModal');
+
+        if (event.target === statusModal) statusModal.style.display = 'none';
+        if (event.target === orderDetailModal) orderDetailModal.style.display = 'none';
+        if (event.target === paymentProofModal) paymentProofModal.style.display = 'none';
+    }
+
+    window.addEventListener('click', closeIfClickedOutside);
+
+    function showPaymentProof(imageSrc) {
+        var img = document.getElementById('paymentProofImage');
+        img.src = imageSrc;
+        document.getElementById('paymentProofModal').style.display = 'block';
+    }
+</h:outputScript>
     </ui:define>
 </ui:composition>
-

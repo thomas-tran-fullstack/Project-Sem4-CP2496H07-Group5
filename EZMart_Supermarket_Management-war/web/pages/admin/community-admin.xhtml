@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="/templates/admin/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui">
+    <f:metadata>
+        <f:viewAction action="#{communityMB.checkAdminLogin}" />
+    </f:metadata>
+    <ui:define name="content">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Community Blog Moderation</h1>
+                <p class="text-lg text-gray-600 dark:text-gray-300">Review and approve customer posts</p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <h:form id="tabForm">
+                <div class="flex gap-4 mb-8 border-b border-gray-200 dark:border-gray-700">
+                    <h:commandButton value="Pending Review (#{communityMB.pendingPosts.size()})" 
+                                     action="#{communityMB.changeTab('pending')}"
+                                     immediate="true"
+                                     update="tabForm,moderationForm"
+                                     styleClass="px-4 py-3 font-semibold border-b-2 #{communityMB.currentTab.equals('pending') ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}"/>
+                    <h:commandButton value="All Posts (#{communityMB.allPosts.size()})" 
+                                     action="#{communityMB.changeTab('all')}"
+                                     immediate="true"
+                                     update="tabForm,moderationForm"
+                                     styleClass="px-4 py-3 font-semibold border-b-2 #{communityMB.currentTab.equals('all') ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}"/>
+                    <h:commandButton value="Approved (#{communityMB.approvedPosts.size()})" 
+                                     action="#{communityMB.changeTab('approved')}"
+                                     immediate="true"
+                                     update="tabForm,moderationForm"
+                                     styleClass="px-4 py-3 font-semibold border-b-2 #{communityMB.currentTab.equals('approved') ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}"/>
+                </div>
+            </h:form>
+
+            <h:form id="moderationForm">
+                <!-- Messages -->
+                <h:messages id="messages" globalOnly="true" 
+                           infoClass="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-200"
+                           warnClass="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg text-yellow-700 dark:text-yellow-200"
+                           errorClass="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-200"
+                           showDetail="true" closable="true" />
+
+                <!-- Pending Review Section -->
+                <h:panelGroup rendered="#{communityMB.currentTab.equals('pending')}">
+                    <div class="space-y-6">
+                        <h:panelGroup rendered="#{communityMB.pendingPosts.size() > 0}">
+                            <ui:repeat value="#{communityMB.pendingPosts}" var="post">
+                                <div class="bg-white dark:bg-[#1a2e22] rounded-lg border border-yellow-200 dark:border-yellow-800 overflow-hidden">
+                                    <!-- Post Header -->
+                                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border-b border-yellow-200 dark:border-yellow-800 p-4">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <h3 class="text-xl font-bold text-gray-900 dark:text-white">#{post.title}</h3>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                    by <span class="font-semibold">#{post.customer.firstName} #{post.customer.lastName} (#{post.authorUser.username})</span>
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                                                    Submitted: <h:outputText value="#{post.submittedAt}">
+                                                        <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                                                    </h:outputText>
+                                                </p>
+                                            </div>
+                                            <span class="px-3 py-1 bg-yellow-500 text-white text-xs font-bold rounded-full">PENDING</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Post Content Preview -->
+                                    <div class="p-6">
+                                        <!-- Cover Image -->
+                                        <h:panelGroup rendered="#{post.coverImageUrl != null}">
+                                            <div class="mb-6 rounded-lg overflow-hidden">
+                                                <img src="#{post.coverImageUrl}" alt="#{post.title}" class="w-full h-64 object-cover"/>
+                                            </div>
+                                        </h:panelGroup>
+
+                                        <!-- Content -->
+                                        <p class="text-gray-700 dark:text-gray-300 mb-6 whitespace-pre-wrap leading-relaxed">#{post.content}</p>
+
+                                        <!-- Moderation Section -->
+                                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+                                            <h:outputLabel for="rejectReason" value="Rejection Reason (if rejecting)" styleClass="block font-bold text-gray-900 dark:text-white mb-3"/>
+                                            <h:inputTextarea id="rejectReason" value="#{communityMB.rejectReason}"
+                                                           placeholder="Explain why this post is rejected (optional for approval)"
+                                                           styleClass="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px] mb-4"/>
+
+                                            <div class="flex gap-3 justify-end">
+                                                <h:commandButton value="Approve"
+                                                               action="#{communityMB.approvePost(post)}"
+                                                               update="moderationForm"
+                                                               styleClass="px-6 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-colors"/>
+                                                <h:commandButton value="Reject"
+                                                               action="#{communityMB.rejectPost(post)}"
+                                                               update="moderationForm"
+                                                               onclick="return confirm('This will reject the post. Continue?')"
+                                                               styleClass="px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition-colors"/>
+                                                <h:commandButton value="View Details"
+                                                               action="#{communityMB.selectPost(post)}"
+                                                               update="moderationForm"
+                                                               styleClass="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{communityMB.pendingPosts.size() == 0}">
+                            <div class="text-center py-12 bg-white dark:bg-[#1a2e22] rounded-lg border border-gray-200 dark:border-gray-700">
+                                <p class="text-gray-500 dark:text-gray-400 text-lg">✅ No pending posts. All caught up!</p>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+
+                <!-- All Posts Section -->
+                <h:panelGroup rendered="#{communityMB.currentTab.equals('all')}">
+                    <div class="space-y-4">
+                        <!-- Filter Options -->
+                        <div class="bg-white dark:bg-[#1a2e22] rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6">
+                            <h:outputLabel for="statusFilter" value="Filter by Status:" styleClass="font-semibold text-gray-900 dark:text-white mr-3"/>
+                            <h:selectOneMenu id="statusFilter" value="#{communityMB.statusFilter}"
+                                           onchange="submit()"
+                                           styleClass="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <f:selectItem itemValue="" itemLabel="All Status"/>
+                                <f:selectItem itemValue="APPROVED" itemLabel="Approved"/>
+                                <f:selectItem itemValue="PENDING" itemLabel="Pending"/>
+                                <f:selectItem itemValue="REJECTED" itemLabel="Rejected"/>
+                                <f:selectItem itemValue="HIDDEN" itemLabel="Hidden"/>
+                                <f:selectItem itemValue="DELETED" itemLabel="Deleted"/>
+                            </h:selectOneMenu>
+                        </div>
+
+                        <h:panelGroup rendered="#{communityMB.allPosts.size() > 0}">
+                            <ui:repeat value="#{communityMB.allPosts}" var="post">
+                                <div class="bg-white dark:bg-[#1a2e22] rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex-1">
+                                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">#{post.title}</h3>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                by #{post.authorUser.username} • 
+                                                <h:outputText value="#{post.submittedAt}">
+                                                    <f:convertDateTime pattern="MMM dd, yyyy" />
+                                                </h:outputText>
+                                            </p>
+                                        </div>
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold text-white #{post.status.equals('APPROVED') ? 'bg-green-500' : post.status.equals('PENDING') ? 'bg-yellow-500' : post.status.equals('REJECTED') ? 'bg-red-500' : 'bg-gray-500'}">
+                                            #{post.status}
+                                        </span>
+                                    </div>
+
+                                    <!-- Approval Info -->
+                                    <h:panelGroup rendered="#{post.approvedByUserID != null}">
+                                        <p class="text-xs text-gray-500 dark:text-gray-500 mb-3">
+                                            Reviewed on <h:outputText value="#{post.approvedAt}">
+                                                <f:convertDateTime pattern="MMM dd, yyyy HH:mm" />
+                                            </h:outputText>
+                                        </p>
+                                    </h:panelGroup>
+
+                                    <!-- Preview -->
+                                    <p class="text-gray-700 dark:text-gray-300 mb-4 line-clamp-2">#{post.content.substring(0, post.content.length() > 120 ? 120 : post.content.length())}...</p>
+
+                                    <!-- Stats -->
+                                    <div class="flex gap-6 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                        <span>👁️ #{post.viewCount}</span>
+                                        <span>❤️ #{post.likeCount}</span>
+                                        <span>💬 #{post.commentCount}</span>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="flex gap-3">
+                                        <h:commandButton value="View Details"
+                                                       action="#{communityMB.selectPost(post)}"
+                                                       update="moderationForm"
+                                                       styleClass="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold rounded transition-colors"/>
+                                        <h:commandButton rendered="#{not post.status.equals('HIDDEN')}" 
+                                                       value="Hide" 
+                                                       action="#{communityMB.hidePost(post)}"
+                                                       update="moderationForm"
+                                                       styleClass="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded transition-colors"/>
+                                        <h:commandButton rendered="#{post.status.equals('HIDDEN')}" 
+                                                       value="Unhide" 
+                                                       action="#{communityMB.unhidePost(post)}"
+                                                       update="moderationForm"
+                                                       styleClass="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded transition-colors"/>
+                                        <h:commandButton value="Delete"
+                                                       action="#{communityMB.deletePost(post)}"
+                                                       update="moderationForm"
+                                                       onclick="return confirm('Permanently delete this post?')"
+                                                       styleClass="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded transition-colors"/>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{communityMB.allPosts.size() == 0}">
+                            <div class="text-center py-12 bg-white dark:bg-[#1a2e22] rounded-lg border border-gray-200 dark:border-gray-700">
+                                <p class="text-gray-500 dark:text-gray-400 text-lg">No posts found</p>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+
+                <!-- Approved Posts Section -->
+                <h:panelGroup rendered="#{communityMB.currentTab.equals('approved')}">
+                    <div class="space-y-4">
+                        <h:panelGroup rendered="#{communityMB.approvedPosts.size() > 0}">
+                            <ui:repeat value="#{communityMB.approvedPosts}" var="post">
+                                <div class="bg-white dark:bg-[#1a2e22] rounded-lg border border-green-200 dark:border-green-800 p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex-1">
+                                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">#{post.title}</h3>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                by #{post.authorUser.username} • Published
+                                            </p>
+                                        </div>
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold text-white bg-green-500">APPROVED</span>
+                                    </div>
+
+                                    <p class="text-gray-700 dark:text-gray-300 mb-4 line-clamp-2">#{post.content.substring(0, post.content.length() > 120 ? 120 : post.content.length())}...</p>
+
+                                    <div class="flex gap-6 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                        <span>👁️ #{post.viewCount}</span>
+                                        <span>❤️ #{post.likeCount}</span>
+                                        <span>💬 #{post.commentCount}</span>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <h:commandButton value="View"
+                                                       action="#{communityMB.selectPost(post)}"
+                                                       update="moderationForm"
+                                                       styleClass="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold rounded transition-colors"/>
+                                        <h:commandButton value="Hide"
+                                                       action="#{communityMB.hidePost(post)}"
+                                                       update="moderationForm"
+                                                       styleClass="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded transition-colors"/>
+                                        <h:commandButton value="Delete"
+                                                       action="#{communityMB.deletePost(post)}"
+                                                       update="moderationForm"
+                                                       onclick="return confirm('Permanently delete this post?')"
+                                                       styleClass="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded transition-colors"/>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{communityMB.approvedPosts.size() == 0}">
+                            <div class="text-center py-12 bg-white dark:bg-[#1a2e22] rounded-lg border border-gray-200 dark:border-gray-700">
+                                <p class="text-gray-500 dark:text-gray-400 text-lg">No approved posts yet</p>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+
+                <!-- Post Detail View Modal -->
+                <h:panelGroup rendered="#{communityMB.selectedPost != null}">
+                    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" 
+                         onclick="if(event.target === this) document.getElementById('moderationForm:closeDetailBtn').click()">
+                        <div class="bg-white dark:bg-[#1a2e22] rounded-lg border border-gray-200 dark:border-gray-700 max-w-2xl w-full max-h-96 overflow-y-auto">
+                            <!-- Modal Header -->
+                            <div class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 sticky top-0">
+                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">#{communityMB.selectedPost.title}</h2>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                    by #{communityMB.selectedPost.authorUser.username}
+                                </p>
+                            </div>
+
+                            <!-- Modal Content -->
+                            <div class="p-6">
+                                <!-- Cover Image -->
+                                <h:panelGroup rendered="#{communityMB.selectedPost.coverImageUrl != null}">
+                                    <div class="mb-6 rounded-lg overflow-hidden">
+                                        <img src="#{communityMB.selectedPost.coverImageUrl}" alt="#{communityMB.selectedPost.title}" class="w-full h-64 object-cover"/>
+                                    </div>
+                                </h:panelGroup>
+
+                                <!-- Content -->
+                                <p class="text-gray-900 dark:text-gray-100 whitespace-pre-wrap leading-relaxed">#{communityMB.selectedPost.content}</p>
+                            </div>
+
+                            <!-- Modal Footer -->
+                            <div class="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-6">
+                                <h:commandButton id="closeDetailBtn"
+                                               value="Close"
+                                               action="#{communityMB.selectPost(null)}"
+                                               immediate="true"
+                                               update="moderationForm"
+                                               styleClass="px-6 py-2 bg-gray-400 hover:bg-gray-500 text-white font-bold rounded-lg transition-colors"/>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

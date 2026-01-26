@@ -4,99 +4,149 @@
     <aside
         class="hidden md:flex flex-col w-64 bg-white dark:bg-[#1a2e22] border-r border-slate-100 dark:border-slate-800 h-full">
         <div class="p-6 flex items-center gap-3">
-            <div class="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-white">
-                <span class="material-symbols-outlined text-2xl">local_grocery_store</span>
-            </div>
-            <div>
-                <h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">EZMart</h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Admin Panel</p>
-            </div>
+            <img src="#{request.contextPath}/resources/images/page_logo.png" alt="EZMart Logo" class="h-auto w-full" />
         </div>
-        <nav class="flex-1 px-4 space-y-1 overflow-y-auto mt-4">
+        <nav class="flex-1 px-4 space-y-1 overflow-y-auto mt-4" id="sidebarNav">
             <h:link outcome="/pages/admin/dashboard"
-                styleClass="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-semibold group transition-all">
-                <span class="material-symbols-outlined fill-1">dashboard</span>
+                styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                data-page="dashboard">
+                <span class="material-symbols-outlined group-hover:text-primary transition-colors">dashboard</span>
                 Dashboard
             </h:link>
             <h:link outcome="/pages/admin/productsmanage"
-                styleClass="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group">
+                styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                data-page="productsmanage">
                 <span class="material-symbols-outlined group-hover:text-primary transition-colors">inventory_2</span>
                 Products
             </h:link>
             <h:link outcome="/pages/admin/categoriesmanage"
-                styleClass="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group">
+                styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                data-page="categoriesmanage">
                 <span class="material-symbols-outlined group-hover:text-primary transition-colors">category</span>
                 Categories
             </h:link>
             <h:link outcome="/pages/admin/suppliermanage"
-                styleClass="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group">
+                styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                data-page="suppliermanage">
                 <span class="material-symbols-outlined group-hover:text-primary transition-colors">business</span>
                 Suppliers
             </h:link>
             <h:link outcome="/pages/admin/offersmanage"
-                styleClass="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group">
+                styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                data-page="offersmanage">
                 <span class="material-symbols-outlined group-hover:text-primary transition-colors">local_offer</span>
                 Offers
             </h:link>
             <h:link outcome="/pages/admin/vouchersmanage"
-                styleClass="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group">
-                <span class="material-symbols-outlined group-hover:text-primary transition-colors">confirmation_number</span>
+                styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                data-page="vouchersmanage">
+                <span
+                    class="material-symbols-outlined group-hover:text-primary transition-colors">confirmation_number</span>
                 Vouchers
             </h:link>
-            <h:link outcome="/pages/admin/pricehistorymanage"
-                styleClass="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group">
-                <span class="material-symbols-outlined group-hover:text-primary transition-colors">timeline</span>
-                Price History
-            </h:link>
             <h:link outcome="/pages/admin/ordermanage"
-                styleClass="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group">
+                styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                data-page="ordermanage">
                 <span class="material-symbols-outlined group-hover:text-primary transition-colors">receipt_long</span>
                 Orders
             </h:link>
-            <h:link outcome="/pages/admin/livestream"
-                styleClass="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group">
-                <span class="material-symbols-outlined group-hover:text-primary transition-colors">videocam</span>
-                Livestream
-            </h:link>
             <h:link outcome="/pages/admin/usermanage"
-                styleClass="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group">
+                styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                data-page="usermanage">
                 <span class="material-symbols-outlined group-hover:text-primary transition-colors">group</span>
                 Users
             </h:link>
-            <h:link outcome="/pages/admin/dashboard"
-                styleClass="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group">
-                <span class="material-symbols-outlined group-hover:text-primary transition-colors">analytics</span>
-                Analytics
+            <h:link outcome="/pages/admin/reviewmanage.xhtml"
+                styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                data-page="reviewmanage">
+                <span class="material-symbols-outlined group-hover:text-primary transition-colors">rate_review</span>
+                Reviews
             </h:link>
+            <h:link outcome="/pages/admin/feedbackmanagement"
+                styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                data-page="feedbackmanagement">
+                <span class="material-symbols-outlined group-hover:text-primary transition-colors">feedback</span>
+                Feedback
+            </h:link>
+            <h:link outcome="/pages/admin/community-admin"
+                styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                data-page="community-admin">
+                <span class="material-symbols-outlined group-hover:text-primary transition-colors">forum</span>
+                Community Blog
+            </h:link>
+            <h:link outcome="/pages/admin/community-stats"
+                styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                data-page="community-stats">
+                <span class="material-symbols-outlined group-hover:text-primary transition-colors">trending_up</span>
+                Community Stats
+            </h:link>
+
             <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800">
                 <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Account</p>
                 <h:link outcome="/pages/admin/profileadmin"
-                    styleClass="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group">
+                    styleClass="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white font-medium transition-all group"
+                    data-page="profileadmin">
                     <span class="material-symbols-outlined group-hover:text-primary transition-colors">person</span>
                     Profile
                 </h:link>
             </div>
         </nav>
-        <div class="p-4 border-t border-slate-100 dark:border-slate-800">
-            <div class="flex items-center gap-3 p-2 rounded-lg bg-slate-50 dark:bg-white/5">
-                <h:link outcome="/pages/admin/profileadmin"
-                    class="flex items-center gap-3 flex-1 min-w-0 cursor-pointer">
-                    <div class="h-10 w-10 rounded-full bg-cover bg-center" data-alt="User profile picture of admin"
-                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBUP9eN_BL3PDpzHZ6MPb2fpfpXafiHfRzaZf5k5XSqEdVADjSIz1wsaTmd8LivjUqS5d2HMelEAHkhfBh_Ds3XcknvvHuzH5r0MHZK-R2rsSwqhWd_6zhAVwQI3Qmk-Ey2ZxeYtcQP2LqFwzcC8Ud0nVZErDeMmJ9ZljEkSb8F6T4e_TmLEmVskIGTE_bFJLN3R4c9ISK1jlGuOJOjqDjILoBa74aO7UcYM3H4z840cZLABtEF1lE6xwce-Elbafi9QArstmKaivM');">
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">
-                            #{auth.currentUser.username}</p>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 truncate">#{auth.currentUser.email}</p>
-                    </div>
-                </h:link>
+         <div class="p-4 border-t border-slate-100 dark:border-slate-800">
+            <div class="flex items-center gap-3 p-2 rounded-lg bg-slate-50 dark:bg-white/5 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                onclick="handleAdminUserSectionClick();">
+                <div class="h-10 w-10 rounded-full bg-cover bg-center" data-alt="User avatar small"
+                    style="background-image: url('#{auth.userProfileImageUrl}');">
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                        #{auth.displayName != null and auth.displayName != '' ? auth.displayName : (auth.currentUser != null ? auth.currentUser.username : 'Guest')}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 truncate">#{auth.currentUser != null ? auth.currentUser.email : ''}</p>
+                </div>
                 <h:form>
                     <h:commandLink action="#{auth.logout()}"
-                        styleClass="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 border-none bg-transparent p-0">
+                        styleClass="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 border-none bg-transparent p-0"
+                        onclick="event.stopPropagation();">
                         <span class="material-symbols-outlined text-[20px]">logout</span>
-               </h:commandLink>
+                    </h:commandLink>
                 </h:form>
             </div>
         </div>
     </aside>
+
+    <script>
+        //<![CDATA[
+        // Set active sidebar link based on current page
+        function setActiveSidebarLink() {
+            const currentPath = window.location.pathname;
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            
+            sidebarLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && currentPath.includes(href.split('/').pop())) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', setActiveSidebarLink);
+        
+        function handleAdminUserSectionClick() {
+            // Check if user is logged in
+            var currentUser = "#{auth.currentUser}";
+            var contextPath = "#{request.contextPath}";
+            
+            if (!currentUser || currentUser === '' || currentUser === 'null') {
+                // Not logged in, redirect to login
+                window.location.href = contextPath + '/pages/user/login.xhtml';
+                return;
+            }
+            
+            // User is logged in, navigate to admin profile
+            window.location.href = contextPath + '/pages/admin/profileadmin.xhtml';
+        }
+        //]]>
+    </script>
 </ui:composition>

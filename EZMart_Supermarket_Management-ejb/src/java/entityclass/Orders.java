@@ -68,6 +68,11 @@ public class Orders implements Serializable {
     @Size(max = 50)
     @Column(name = "ShippingMethod")
     private String shippingMethod;
+    @Column(name = "StockDeducted")
+    private Boolean stockDeducted = false;
+    @Size(max = 500)
+    @Column(name = "CancelReason")
+    private String cancelReason;
     @JoinColumn(name = "CustomerID", referencedColumnName = "CustomerID")
     @ManyToOne
     private Customers customerID;
@@ -189,5 +194,21 @@ public class Orders implements Serializable {
     public void setShippingMethod(String shippingMethod) {
         this.shippingMethod = shippingMethod;
     }
-    
+
+    public Boolean getStockDeducted() {
+        return stockDeducted;
+    }
+
+    public void setStockDeducted(Boolean stockDeducted) {
+        this.stockDeducted = stockDeducted;
+    }
+
+    public String getCancelReason() {
+        return cancelReason;
+    }
+
+    public void setCancelReason(String cancelReason) {
+        this.cancelReason = cancelReason;
+    }
+
 }

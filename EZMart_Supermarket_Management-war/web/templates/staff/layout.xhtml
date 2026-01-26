@@ -8,6 +8,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/xhtml.xhtml to edit this te
 
 <h:head>
     <title>Staff - EZMart</title>
+    <link rel="icon" type="image/png" href="#{facesContext.externalContext.requestContextPath}/resources/images/web_logo.png" sizes="192x192"/>
+    <link rel="apple-touch-icon" href="#{facesContext.externalContext.requestContextPath}/resources/images/web_logo.png"/>
     <meta charset="UTF-8" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
@@ -66,13 +68,44 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/xhtml.xhtml to edit this te
         .dark ::-webkit-scrollbar-thumb {
             background: #334155;
         }
+
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Active sidebar link styling */
+        .sidebar-link.active {
+            background-color: #17cf54;
+            color: white;
+            font-weight: 600;
+        }
+
+        .sidebar-link.active .material-symbols-outlined {
+            color: white !important;
+        }
+
+        .dark .sidebar-link.active {
+            background-color: #17cf54;
+            color: white;
+        }
     </style>
 </h:head>
 
-<h:body class="bg-gray-100">
-   
-        <!-- Header -->
-        <ui:include src="/templates/staff/header.xhtml" />
+<h:body class="bg-gray-100"
+        data-session-user-id="#{chatController.currentUser.userID ne null ? chatController.currentUser.userID : ''}"
+        data-session-user-role="#{chatController.currentUserRole}">
 
         <div style="display: flex; min-height: 100vh;">
 

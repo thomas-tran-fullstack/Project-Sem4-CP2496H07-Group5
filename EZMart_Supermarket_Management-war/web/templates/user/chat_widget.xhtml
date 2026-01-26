@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>EZMart Chat</title>
+
+    <style>
+        /* =========================
+           CHAT WIDGET (Messenger-like)
+        ========================= */
+        .chat-widget-container{
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        .chat-toggle-btn{
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(76,175,80,.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all .25s ease;
+            position: relative;
+        }
+        .chat-toggle-btn:hover{
+            transform: scale(1.06);
+            box-shadow: 0 6px 20px rgba(76,175,80,.5);
+        }
+
+        .chat-badge{
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f44336;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse{
+            0%{transform: scale(1)}
+            50%{transform: scale(1.1)}
+            100%{transform: scale(1)}
+        }
+
+        /* =========================
+           WINDOW LAYOUT (FIX overflow)
+        ========================= */
+        .chat-window{
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            height: 500px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp .25s ease;
+        }
+        .chat-window.active{ display:flex; }
+
+        @keyframes slideUp{
+            from{opacity:0; transform: translateY(15px);}
+            to{opacity:1; transform: translateY(0);}
+        }
+
+        .chat-header{
+            flex: 0 0 auto;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: #fff;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header-left{
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+
+        .chat-avatar{
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #fff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:700;
+            color:#4CAF50;
+            font-size:18px;
+        }
+
+        .chat-header-info h3{
+            margin:0;
+            font-size:16px;
+            font-weight:700;
+        }
+        .chat-header-info p{
+            margin:2px 0 0;
+            font-size:12px;
+            opacity:.9;
+        }
+
+        .chat-header-btn{
+            background: rgba(255,255,255,.2);
+            border:none;
+            color:#fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            transition: background .2s;
+        }
+        .chat-header-btn:hover{ background: rgba(255,255,255,.3); }
+
+        /* ✅ content dưới header phải chiếm hết chiều cao còn lại */
+        #chatContent{
+            flex: 1 1 auto;
+            min-height: 0;               /* QUAN TRỌNG */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================
+           COMMON: Messages area
+        ========================= */
+        .chat-messages-area{
+            flex: 1 1 auto;
+            min-height: 0;               /* QUAN TRỌNG */
+            display:flex;
+            flex-direction: column;
+            background:#f5f5f5;
+        }
+        .messages-container{
+            flex: 1 1 auto;
+            min-height: 0;               /* QUAN TRỌNG */
+            overflow-y:auto;
+            padding: 16px;
+            display:flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message{
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .message.sent{
+            background:#4CAF50;
+            color:#fff;
+            align-self:flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .message.received{
+            background:#fff;
+            color:#333;
+            align-self:flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,.08);
+        }
+        .message-time{
+            font-size:10px;
+            opacity:.7;
+            margin-top:4px;
+            text-align:right;
+        }
+
+        /* ✅ input luôn dính đáy, không bị đẩy rớt */
+        .message-input-area{
+            flex: 0 0 auto;
+            padding: 12px 16px;
+            background:#fff;
+            border-top: 1px solid #eee;
+            display:flex;
+            gap: 10px;
+            align-items:center;
+        }
+        .message-input{
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            font-size: 14px;
+            outline:none;
+        }
+        .message-input:focus{ border-color:#4CAF50; }
+
+        .send-btn{
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background:#4CAF50;
+            color:#fff;
+            border:none;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size: 18px;
+            transition: all .2s;
+        }
+        .send-btn:hover{ background:#45a049; transform: scale(1.04); }
+
+        .start-chat-btn{
+            width: 100%;
+            padding: 14px 20px;
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .start-chat-btn:hover{ background: #45a049; }
+
+        .chat-empty-state{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            height: 100%;
+            color:#999;
+            text-align:center;
+            padding: 40px 20px;
+        }
+        .chat-empty-state h4{
+            margin: 8px 0 6px;
+            color:#666;
+        }
+        .chat-empty-state p{
+            margin:0;
+            font-size: 13px;
+        }
+
+        .chat-status-message{
+            background: #f5f5f5;
+            border-left: 4px solid #4CAF50;
+            padding: 12px 16px;
+            margin: 0 16px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        /* =========================
+           STAFF: list + back header
+        ========================= */
+        .chat-conversations-list{
+            flex:1 1 auto;
+            min-height:0;
+            overflow-y:auto;
+            padding: 10px;
+        }
+        .conversation-item{
+            display:flex;
+            align-items:center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            cursor:pointer;
+            transition: background .2s;
+            text-decoration:none;
+            color: inherit;
+        }
+        .conversation-item:hover{ background:#f5f5f5; }
+        .conversation-item.active{ background:#e8f5e9; }
+
+        .conversation-avatar{
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background:#e0e0e0;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight: 700;
+            color:#666;
+            flex-shrink:0;
+        }
+        .conversation-info{ flex:1; min-width:0; }
+        .conversation-name{
+            font-weight:700;
+            color:#333;
+            margin-bottom:4px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .conversation-time{
+            font-size: 11px;
+            color:#999;
+            font-weight: 400;
+        }
+        .conversation-preview{
+            font-size: 13px;
+            color:#666;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        .unread-badge{
+            background:#4CAF50;
+            color:#fff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+
+        .chat-back-header{
+            flex: 0 0 auto;
+            display:flex;
+            align-items:center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+        .back-btn{
+            display:inline-flex;
+            align-items:center;
+            gap: 6px;
+            text-decoration:none;
+            color:#333;
+            font-weight: 600;
+        }
+        .chat-participant{
+            font-weight: 700;
+            color:#333;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+            flex:1;
+        }
+
+        /* Scrollbar */
+        .chat-conversations-list::-webkit-scrollbar,
+        .messages-container::-webkit-scrollbar { width: 6px; }
+        .chat-conversations-list::-webkit-scrollbar-thumb,
+        .messages-container::-webkit-scrollbar-thumb { background:#ccc; border-radius:3px; }
+        .chat-conversations-list::-webkit-scrollbar-track,
+        .messages-container::-webkit-scrollbar-track { background: transparent; }
+
+        /* Responsive */
+        @media (max-width: 480px){
+            .chat-window{
+                width: calc(100vw - 20px);
+                height: calc(100vh - 100px);
+                bottom: 90px;
+                right: 10px;
+                left: 10px;
+            }
+        }
+    </style>
+
+    <script>
+        window.ChatJS = window.ChatJS || {
+            toggleChat: function () {
+                var w = document.getElementById("chatWindow");
+                if (!w) return;
+                w.classList.toggle("active");
+                if (w.classList.contains("active")) {
+                    setTimeout(function(){ ChatJS.scrollToBottomCustomer(); ChatJS.scrollToBottomStaff(); }, 50);
+                }
+            },
+            closeChat: function () {
+                var w = document.getElementById("chatWindow");
+                if (w) w.classList.remove("active");
+            },
+            scrollToBottomCustomer: function(){
+                var el = document.getElementById("messagesContainerCustomer");
+                if (el) el.scrollTop = el.scrollHeight;
+            },
+            scrollToBottomStaff: function(){
+                var el = document.getElementById("messagesContainerStaff");
+                if (el) el.scrollTop = el.scrollHeight;
+            }
+        };
+    </script>
+</h:head>
+
+<h:body>
+
+<div class="chat-widget-container" id="chatWidget"
+     data-user-id="#{chatController.currentUser.userID ne null ? chatController.currentUser.userID : 0}"
+     data-user-role="#{chatController.currentUserRole}">
+
+    <!-- Toggle Button -->
+    <button type="button" class="chat-toggle-btn" onclick="ChatJS.toggleChat()">
+        <span style="font-size: 22px;">💬</span>
+        <h:panelGroup rendered="#{chatController.unreadCount > 0}">
+            <span class="chat-badge">#{chatController.unreadCount}</span>
+        </h:panelGroup>
+    </button>
+
+    <!-- Chat Window -->
+    <div class="chat-window" id="chatWindow">
+
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <div class="chat-avatar">EZ</div>
+                <div class="chat-header-info">
+                    <h3>EZMart Support</h3>
+                    <p>Support for your problems!</p>
+                </div>
+            </div>
+            <button type="button" class="chat-header-btn" onclick="ChatJS.closeChat()" title="Đóng">✕</button>
+        </div>
+
+        <!-- Content -->
+        <h:panelGroup id="chatContent">
+            <f:event type="preRenderComponent" listener="#{chatController.resetCustomerChatState}" />
+            
+            <!-- =========================
+                 CUSTOMER VIEW
+            ========================= -->
+            <h:panelGroup rendered="#{chatController.currentUserRole == 'CUSTOMER'}">
+                <div class="chat-messages-area">
+
+                    <!-- Status message when chat request is pending -->
+                    <h:panelGroup rendered="#{chatController.chatRequestPending}">
+                        <div class="chat-status-message">
+                            <h:outputText value="Your chat request has been sent. Please wait for a staff member to accept your request." />
+                        </div>
+                    </h:panelGroup>
+
+                    <!-- Status message when all staff rejected the request -->
+                    <h:panelGroup rendered="#{chatController.chatRequestRejected}">
+                        <div class="chat-status-message" style="border-left-color: #f44336;">
+                            <h:outputText value="All staff members are currently busy. Please resend your request again in a few minutes. We apologize for the inconvenience." />
+                        </div>
+                    </h:panelGroup>
+
+                    <!-- Messages container -->
+                    <div class="messages-container" id="messagesContainerCustomer">
+                        <ui:repeat value="#{chatController.messages}" var="message">
+                            <div class="message #{message.senderUserID == chatController.currentUser.userID ? 'sent' : 'received'}">
+                                <div class="message-content">#{message.content}</div>
+                                <div class="message-time">
+                                    <h:outputText value="#{message.sentAt}">
+                                        <f:convertDateTime pattern="HH:mm" />
+                                    </h:outputText>
+                                </div>
+                            </div>
+                        </ui:repeat>
+
+                        <h:panelGroup rendered="#{empty chatController.messages and not chatController.chatRequestPending and not chatController.chatRequestRejected}">
+                            <div class="chat-empty-state">
+                                <h4>Chat Request Sent</h4>
+                                <p>Your chat request has been sent. Please wait for a staff member to accept your request.</p>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+
+                    <h:form id="customerMessageForm">
+                        <!-- Show "Start Chat" button when no active conversation -->
+                        <h:panelGroup rendered="#{chatController.selectedConversation == null and not chatController.chatRequestPending}">
+                            <div class="message-input-area">
+                                <h:commandButton id="startChatBtn"
+                                                 value="Start Chat"
+                                                 styleClass="start-chat-btn"
+                                                 action="#{chatController.startChatRequest}"
+                                                 onclick="console.log('Button clicked!');">
+                                    <f:ajax execute="@form"
+                                            render="chatContent"
+                                            onevent="function(d){ console.log('AJAX response:', d.status); if(d.status==='success'){ setTimeout(ChatJS.scrollToBottomCustomer, 50);} }"/>
+                                </h:commandButton>
+                            </div>
+                        </h:panelGroup>
+
+                        <!-- Show message input when conversation is ACCEPTED or request pending -->
+                        <h:panelGroup rendered="#{(chatController.selectedConversation != null and chatController.selectedConversation.requestStatus == 'ACCEPTED') or chatController.chatRequestPending}">
+                            <div class="message-input-area">
+                                <h:inputText id="messageInput"
+                                             value="#{chatController.newMessage}"
+                                             styleClass="message-input"
+                                             autocomplete="off"
+                                             placeholder="Type a message..."
+                                             disabled="#{chatController.chatRequestPending}" />
+
+                                <h:commandButton id="sendBtn"
+                                                 value="➤"
+                                                 styleClass="send-btn"
+                                                 action="#{chatController.sendMessage}"
+                                                 disabled="#{chatController.chatRequestPending}">
+                                    <f:ajax execute="@form"
+                                            render="chatContent"
+                                            onevent="function(d){ if(d.status==='success'){ setTimeout(ChatJS.scrollToBottomCustomer, 50);} }"/>
+                                </h:commandButton>
+                            </div>
+
+                            <!-- End Chat button when conversation is active -->
+                            <h:panelGroup rendered="#{chatController.selectedConversation != null and chatController.selectedConversation.requestStatus == 'ACCEPTED' and not chatController.chatRequestPending}">
+                                <div style="padding: 12px 16px; text-align: center;">
+                                    <h:commandButton value="End This Chat"
+                                                     styleClass="start-chat-btn"
+                                                     style="background: #f44336; margin-top: 8px;"
+                                                     action="#{chatController.endChat}">
+                                        <f:ajax execute="@form"
+                                                render="chatContent"/>
+                                    </h:commandButton>
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </h:form>
+
+                </div>
+            </h:panelGroup>
+
+            <!-- =========================
+                 STAFF VIEW
+            ========================= -->
+            <h:panelGroup rendered="#{chatController.currentUserRole == 'STAFF'}">
+
+                <!-- Staff: list when not selected -->
+                <h:panelGroup rendered="#{empty chatController.selectedConversationId}">
+                    <div class="chat-conversations-list">
+                        <h:form id="conversationsForm">
+                            <ui:repeat value="#{chatController.conversations}" var="conv">
+                                <h:commandLink action="#{chatController.selectConversation(conv.conversationID)}"
+                                               styleClass="conversation-item #{chatController.selectedConversationId == conv.conversationID ? 'active' : ''}">
+                                    <f:ajax execute="@this"
+                                            render="chatContent conversationsForm"
+                                            onevent="function(d){ if(d.status==='success'){ setTimeout(ChatJS.scrollToBottomStaff, 50);} }"/>
+
+                                    <div class="conversation-avatar">👤</div>
+
+                                    <div class="conversation-info">
+                                        <div class="conversation-name">
+                                            <span>#{chatController.otherParticipantName(conv)}</span>
+                                            <span class="conversation-time">
+                                                <h:outputText value="#{conv.lastMessageAt}">
+                                                    <f:convertDateTime pattern="HH:mm" />
+                                                </h:outputText>
+                                            </span>
+                                        </div>
+                                        <div class="conversation-preview">Click để xem tin nhắn</div>
+                                    </div>
+
+                                    <h:panelGroup rendered="#{chatController.countUnreadByConversation(conv.conversationID) > 0}">
+                                        <span class="unread-badge">
+                                            #{chatController.countUnreadByConversation(conv.conversationID)}
+                                        </span>
+                                    </h:panelGroup>
+                                </h:commandLink>
+                            </ui:repeat>
+
+                            <h:panelGroup rendered="#{empty chatController.conversations}">
+                                <div class="chat-empty-state">
+                                    <h4>Chưa có cuộc trò chuyện</h4>
+                                    <p>Chờ khách hàng liên hệ với bạn</p>
+                                </div>
+                            </h:panelGroup>
+                        </h:form>
+                    </div>
+                </h:panelGroup>
+
+                <!-- Staff: messages when selected -->
+                <h:panelGroup rendered="#{not empty chatController.selectedConversationId}">
+                    <div class="chat-messages-area">
+
+                        <div class="chat-back-header">
+                            <h:form id="backForm">
+                                <h:commandLink action="#{chatController.clearSelection}" styleClass="back-btn">
+                                    <f:ajax execute="@this" render="chatContent conversationsForm"/>
+                                    ← Quay lại
+                                </h:commandLink>
+                            </h:form>
+                            <div class="chat-participant">
+                                #{chatController.otherParticipantName(chatController.selectedConversation)}
+                            </div>
+                        </div>
+
+                        <div class="messages-container" id="messagesContainerStaff">
+                            <ui:repeat value="#{chatController.messages}" var="msg">
+                                <div class="message #{msg.senderRole == 'STAFF' ? 'sent' : 'received'}">
+                                    <div class="message-content">#{msg.content}</div>
+                                    <div class="message-time">
+                                        <h:outputText value="#{msg.sentAt}">
+                                            <f:convertDateTime pattern="HH:mm" />
+                                        </h:outputText>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+
+                            <h:panelGroup rendered="#{empty chatController.messages}">
+                                <div class="chat-empty-state">
+                                    <h4>Chưa có tin nhắn</h4>
+                                    <p>Hãy gửi lời chào tới khách hàng</p>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+
+                        <h:form id="staffMessageForm">
+                            <div class="message-input-area">
+                                <h:inputText id="messageInput"
+                                             value="#{chatController.newMessage}"
+                                             styleClass="message-input"
+                                             autocomplete="off"
+                                             placeholder="Nhập tin nhắn..."
+                                             onkeypress="if(event.keyCode==13){event.preventDefault();document.getElementById('staffMessageForm:sendBtn').click();}" />
+
+                                <h:commandButton id="sendBtn"
+                                                 value="➤"
+                                                 styleClass="send-btn"
+                                                 action="#{chatController.sendMessage}">
+                                    <f:ajax execute="@form"
+                                            render="chatContent conversationsForm"
+                                            onevent="function(d){ if(d.status==='success'){ setTimeout(ChatJS.scrollToBottomStaff, 50);} }"/>
+                                </h:commandButton>
+                            </div>
+                        </h:form>
+                    </div>
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <!-- =========================
+                 UNKNOWN ROLE
+            ========================= -->
+            <h:panelGroup rendered="#{chatController.currentUserRole != 'CUSTOMER' and chatController.currentUserRole != 'STAFF'}">
+                <div class="chat-empty-state">
+                    <h4>Không thể tải chat</h4>
+                    <p>Vui lòng đăng nhập lại</p>
+                </div>
+            </h:panelGroup>
+        </h:panelGroup>
+    </div>
+</div>
+</h:body>
+</html>

@@ -5,8 +5,11 @@
 package sessionbeans;
 
 import entityclass.Orders;
+import entityclass.OrderDetails;
+import entityclass.Products;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
 
@@ -46,5 +49,63 @@ public class OrdersFacade extends AbstractFacade<Orders> implements OrdersFacade
                 .setParameter("customer", customer)
                 .getResultList();
     }
-    
+
+    @Override
+    public Orders findOrderWithDetails(Integer orderId) {
+        try {
+            return em.createQuery("SELECT o FROM Orders o LEFT JOIN FETCH o.orderDetailsList WHERE o.orderID = :orderId", Orders.class)
+                    .setParameter("orderId", orderId)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+     @Override
+    public void confirmOrderAndDeductStock(Integer orderId) {
+
+        Orders order = em.find(Orders.class, orderId, LockModeType.PESSIMISTIC_WRITE);
+        if (order == null) {
+            throw new IllegalStateException("Order not found");
+        }
+
+        // tránh trừ 2 lần
+        if (Boolean.TRUE.equals(order.getStockDeducted())) {
+            order.setStatus("CONFIRMED");
+            em.merge(order);
+            return;
+        }
+
+        List<OrderDetails> details = em.createQuery(
+            "SELECT od FROM OrderDetails od "
+          + "JOIN FETCH od.productID "
+          + "WHERE od.orderID.orderID = :oid", OrderDetails.class)
+            .setParameter("oid", orderId)
+            .getResultList();
+
+        // kiểm tra & trừ stock
+        for (OrderDetails item : details) {
+            Products product = em.find(
+                    Products.class,
+                    item.getProductID().getProductID(),
+                    LockModeType.PESSIMISTIC_WRITE
+            );
+
+            int required = item.getQuantity();
+            int available = product.getStockQuantity();
+
+            if (available < required) {
+                throw new IllegalStateException(
+                        "Insufficient stock for product: " + product.getProductName()
+                );
+            }
+
+            product.setStockQuantity(available - required);
+            em.merge(product);
+        }
+
+        order.setStatus("CONFIRMED");
+        order.setStockDeducted(true);
+        em.merge(order);
+    }
 }
