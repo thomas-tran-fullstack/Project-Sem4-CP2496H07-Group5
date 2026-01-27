@@ -24,97 +24,91 @@
                                 styleClass="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-primary"
                                 placeholder="Search customers...">
                                 <f:ajax event="keyup" execute="@this"
-                                        render=":chatForm:pendingList :chatForm:conversationsList" />
+                                        render=":chatForm:currentContent" />
                             </h:inputText>
                         </div>
                     </div>
 
-                    <!-- Pending Chat Requests (for staff) -->
-                    <h:panelGroup rendered="#{chatController.currentUserRole == 'STAFF'}">
-                        <!-- FIX: biến div id=pendingList thành JSF component để render được -->
-                        <h:panelGroup id="pendingList" layout="block" styleClass="flex-1 overflow-y-auto">
-                            <!-- Pending Requests Section -->
-                            <div class="px-4 py-3 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-900">
-                                <h3 class="text-sm font-bold text-red-700 dark:text-red-300 mb-2">
-                                    <span class="material-symbols-outlined text-base align-middle">priority_high</span>
-                                    #{msg['chat.pendingRequests']}
-                                </h3>
-                            </div>
-
-                            <!-- Pending Customer Requests -->
-                            <ui:repeat value="#{chatController.pendingCustomers}" var="conv">
-                                <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-red-50/50 dark:bg-red-900/10">
-                                    <div class="flex items-start gap-3">
-                                        <!-- Avatar -->
-                                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-green-600 flex items-center justify-center flex-shrink-0 overflow-hidden text-white">
-                                            <span class="material-symbols-outlined">person</span>
-                                        </div>
+                <h:panelGroup rendered="#{chatController.currentUserRole == 'STAFF'}" id="currentContent" layout="block" styleClass="flex-1 overflow-y-auto">
+                    <!-- Unified Conversations & Pending Requests List -->
+                    <h:panelGroup layout="block" styleClass="flex-1 overflow-y-auto">
+                        <!-- Pending Requests First -->
+                        <ui:repeat value="#{chatController.pendingCustomers}" var="conv">
+                            <h:panelGroup rendered="#{!chatController.isConversationHidden(conv.conversationID)}">
+                                <div class="p-3 border-b border-slate-200 dark:border-slate-700 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 transition">
+                                    <div class="flex items-center gap-3">
+                                        <!-- Avatar from database -->
+                                        <h:panelGroup rendered="#{conv.customerID.userID.avatarUrl != null and !conv.customerID.userID.avatarUrl.isEmpty()}">
+                                            <img src="#{conv.customerID.userID.avatarUrl}" 
+                                                 alt="#{conv.customerID.firstName}" 
+                                                 class="h-10 w-10 rounded-full object-cover flex-shrink-0" />
+                                        </h:panelGroup>
+                                        
+                                        <!-- Default avatar if no image -->
+                                        <h:panelGroup rendered="#{conv.customerID.userID.avatarUrl == null or conv.customerID.userID.avatarUrl.isEmpty()}">
+                                            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
+                                                #{conv.customerID.firstName.charAt(0)}
+                                            </div>
+                                        </h:panelGroup>
 
                                         <!-- Info -->
                                         <div class="flex-1 min-w-0">
                                             <p class="font-semibold text-slate-900 dark:text-white truncate text-sm">
                                                 #{conv.customerID.firstName} #{conv.customerID.lastName}
                                             </p>
-                                            <p class="text-xs text-slate-500 dark:text-slate-400">
-                                                <h:outputText value="#{msg['chat.requestSentTitle']}" />
+                                            <p class="text-xs text-red-600 dark:text-red-400 font-bold">
+                                                <span class="material-symbols-outlined text-xs align-middle">priority_high</span>
+                                                Pending Request
                                             </p>
                                         </div>
-                                    </div>
 
-                                    <!-- Accept/Reject Buttons -->
-                                    <div class="flex gap-2 mt-3">
-                                        <h:commandButton value="#{msg['chat.accept']}"
-                                            action="#{chatController.acceptChatRequest(conv.conversationID)}"
-                                            styleClass="flex-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded transition">
-                                            <f:ajax execute="@form"
-                                                    render=":chatForm:pendingList :chatForm:conversationsList :chatForm:chatArea" />
-                                        </h:commandButton>
+                                        <!-- Action Buttons -->
+                                        <div class="flex gap-2 flex-shrink-0">
+                                            <h:commandButton 
+                                                action="#{chatController.acceptChatRequest(conv.conversationID)}"
+                                                value="✓"
+                                                styleClass="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition font-bold text-lg"
+                                                title="Accept">
+                                                <f:ajax execute="@form"
+                                                        render=":chatForm:currentContent" />
+                                            </h:commandButton>
 
-                                        <h:commandButton value="#{msg['chat.reject']}"
-                                            action="#{chatController.rejectChatRequest(conv.conversationID)}"
-                                            styleClass="flex-1 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded transition">
-                                            <f:ajax execute="@form"
-                                                    render=":chatForm:pendingList :chatForm:conversationsList" />
-                                        </h:commandButton>
-                                    </div>
-                                </div>
-                            </ui:repeat>
-
-                            <!-- No Pending Requests -->
-                            <ui:fragment rendered="#{empty chatController.pendingCustomers}">
-                                <div class="p-6 text-center text-slate-500 dark:text-slate-400">
-                                    <span class="material-symbols-outlined text-3xl block mb-2 opacity-50">hourglass_empty</span>
-                                    <p class="text-sm">No pending chat requests</p>
-                                </div>
-                            </ui:fragment>
-                        </h:panelGroup>
-                    </h:panelGroup>
-
-                    <!-- Accepted Conversations List -->
-                    <h:panelGroup rendered="#{chatController.currentUserRole == 'STAFF'}">
-                        <div class="px-4 py-3 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-                            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                #{msg['chat.acceptedChats']}
-                            </h3>
-                        </div>
-                    </h:panelGroup>
-
-                    <!-- Conversations List -->
-                    <!-- FIX: biến div id=conversationsList thành JSF component để render được -->
-                    <h:panelGroup id="conversationsList" layout="block" styleClass="flex-1 overflow-y-auto">
-                        <ui:repeat value="#{chatController.conversations}" var="conv">
-                            <h:panelGroup rendered="#{conv.requestStatus == 'ACCEPTED' or conv.requestStatus == null}">
-                                <h:commandLink action="#{chatController.selectConversation(conv.conversationID)}"
-                                    styleClass="block p-4 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition #{chatController.selectedConversationId == conv.conversationID ? 'bg-primary/10' : ''}">
-                                    <!-- FIX: update=... là sai với h:commandLink (JSF). Dùng f:ajax render -->
-                                    <f:ajax execute="@this"
-                                            render=":chatForm:chatArea :chatForm:messagesContainer :chatForm:conversationsList" />
-
-                                    <div class="flex items-start gap-3">
-                                        <!-- Avatar -->
-                                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-green-600 flex items-center justify-center flex-shrink-0 overflow-hidden text-white">
-                                            <span class="material-symbols-outlined text-lg">person</span>
+                                            <h:commandButton 
+                                                action="#{chatController.hideConversation(conv.conversationID)}"
+                                                value="✕"
+                                                styleClass="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-bold text-lg"
+                                                title="Hide">
+                                                <f:ajax execute="@form"
+                                                        render=":chatForm:currentContent" />
+                                            </h:commandButton>
                                         </div>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </ui:repeat>
+
+                        <!-- Accepted Conversations -->
+                        <ui:repeat value="#{chatController.conversations}" var="conv">
+                            <h:panelGroup rendered="#{(conv.requestStatus == 'ACCEPTED' or conv.requestStatus == null) and !chatController.isConversationHidden(conv.conversationID)}">
+                                <h:commandLink action="#{chatController.selectConversation(conv.conversationID)}"
+                                    styleClass="block p-3 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition #{chatController.selectedConversationId == conv.conversationID ? 'bg-primary/10' : ''}">
+                                    <f:ajax execute="@this"
+                                            render=":chatForm:chatArea :chatForm:messagesContainer :chatForm:currentContent" />
+
+                                    <div class="flex items-center gap-3">
+                                        <!-- Avatar from database -->
+                                        <h:panelGroup rendered="#{conv.customerID.userID.avatarUrl != null and !conv.customerID.userID.avatarUrl.isEmpty()}">
+                                            <img src="#{conv.customerID.userID.avatarUrl}" 
+                                                 alt="#{conv.customerID.firstName}" 
+                                                 class="h-10 w-10 rounded-full object-cover flex-shrink-0" />
+                                        </h:panelGroup>
+                                        
+                                        <!-- Default avatar if no image -->
+                                        <h:panelGroup rendered="#{conv.customerID.userID.avatarUrl == null or conv.customerID.userID.avatarUrl.isEmpty()}">
+                                            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-green-600 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
+                                                #{conv.customerID.firstName.charAt(0)}
+                                            </div>
+                                        </h:panelGroup>
 
                                         <!-- Info -->
                                         <div class="flex-1 min-w-0">
@@ -124,12 +118,12 @@
                                                 </p>
                                                 <span class="text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">
                                                     <h:outputText value="#{conv.lastMessageAt}">
-                                                        <f:convertDateTime pattern="HH:mm" />
+                                                        <f:convertDateTime pattern="HH:mm" timeZone="Asia/Ho_Chi_Minh" />
                                                     </h:outputText>
                                                 </span>
                                             </div>
                                             <p class="text-xs text-slate-600 dark:text-slate-400 truncate">
-                                                Last message preview...
+                                                Last message...
                                             </p>
 
                                             <!-- Unread badge -->
@@ -139,19 +133,30 @@
                                                 </span>
                                             </ui:fragment>
                                         </div>
+
+                                        <!-- Hide Button -->
+                                        <h:commandButton 
+                                            action="#{chatController.hideConversation(conv.conversationID)}"
+                                            value="✕"
+                                            styleClass="px-3 py-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition font-bold"
+                                            title="Hide chat">
+                                            <f:ajax execute="@form"
+                                                    render=":chatForm:currentContent :chatForm:chatArea" />
+                                        </h:commandButton>
                                     </div>
                                 </h:commandLink>
                             </h:panelGroup>
                         </ui:repeat>
 
                         <!-- Empty State -->
-                        <ui:fragment rendered="#{empty chatController.conversations}">
+                        <ui:fragment rendered="#{empty chatController.conversations and empty chatController.pendingCustomers}">
                             <div class="p-8 text-center">
                                 <span class="material-symbols-outlined text-slate-400 text-5xl block mb-3">chat_bubble_outline</span>
-                                <p class="text-slate-500 dark:text-slate-400">#{msg['chat.noActiveChats']}</p>
+                                <p class="text-slate-500 dark:text-slate-400">No conversations yet</p>
                             </div>
                         </ui:fragment>
                     </h:panelGroup>
+                </h:panelGroup>
                 </div>
 
                 <!-- Chat Area -->
@@ -186,7 +191,7 @@
                                             <p class="text-sm">#{msg.content}</p>
                                             <p class="text-xs opacity-70 mt-1">
                                                 <h:outputText value="#{msg.sentAt}">
-                                                    <f:convertDateTime pattern="HH:mm" />
+                                                    <f:convertDateTime pattern="HH:mm" timeZone="Asia/Ho_Chi_Minh" />
                                                 </h:outputText>
                                             </p>
                                         </div>
@@ -200,7 +205,7 @@
                                             <p class="text-sm">#{msg.content}</p>
                                             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
                                                 <h:outputText value="#{msg.sentAt}">
-                                                    <f:convertDateTime pattern="HH:mm" />
+                                                    <f:convertDateTime pattern="HH:mm" timeZone="Asia/Ho_Chi_Minh" />
                                                 </h:outputText>
                                             </p>
                                         </div>
@@ -252,6 +257,55 @@
                     </h:panelGroup>
                 </h:panelGroup>
             </div>
+
+            <!-- Auto-refresh polling for real-time updates -->
+            <h:outputScript target="body">
+                (function() {
+                    let autoRefreshInterval = null;
+                    const REFRESH_INTERVAL = 2000; // 2 seconds
+                    const chatForm = document.getElementById('chatForm');
+
+                    function startAutoRefresh() {
+                        if (autoRefreshInterval) return; // Already running
+                        
+                        autoRefreshInterval = setInterval(function() {
+                            if (chatForm) {
+                                jsf.ajax.request(
+                                    chatForm,
+                                    null,
+                                    {
+                                        execute: '@form',
+                                        render: ':chatForm:messagesContainer :chatForm:currentContent :chatForm:chatArea',
+                                        onevent: function(data) {
+                                            if (data.status === 'success') {
+                                                var el = document.getElementById('chatForm:messagesContainer');
+                                                if (el) {
+                                                    el.scrollTop = el.scrollHeight;
+                                                }
+                                            }
+                                        }
+                                    }
+                                );
+                            }
+                        }, REFRESH_INTERVAL);
+                    }
+
+                    function stopAutoRefresh() {
+                        if (autoRefreshInterval) {
+                            clearInterval(autoRefreshInterval);
+                            autoRefreshInterval = null;
+                        }
+                    }
+
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', startAutoRefresh);
+                    } else {
+                        startAutoRefresh();
+                    }
+
+                    window.addEventListener('beforeunload', stopAutoRefresh);
+                })()
+            </h:outputScript>
         </h:form>
     </ui:define>
 </ui:composition>

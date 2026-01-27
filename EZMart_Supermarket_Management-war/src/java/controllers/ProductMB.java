@@ -679,9 +679,20 @@ public class ProductMB implements Serializable {
     }
 
     public String productImageUrl(Products product) {
-        List<ProductImages> images = productImagesFacade.findByProductID(product);
-        if (images != null && !images.isEmpty()) {
-            return images.get(0).getImageURL();
+        // Use product relationship instead of facade
+        if (product != null && product.getProductImagesList() != null && !product.getProductImagesList().isEmpty()) {
+            String imageUrl = product.getProductImagesList().get(0).getImageURL();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                // Convert /uploads/ path to /resources/uploads/ for ImageServlet
+                if (imageUrl.startsWith("/uploads/products/")) {
+                    return "/resources" + imageUrl;
+                } else if (imageUrl.startsWith("/uploads/")) {
+                    return "/resources" + imageUrl;
+                } else if (!imageUrl.startsWith("/resources/uploads/")) {
+                    return "/resources/uploads/products/" + imageUrl;
+                }
+                return imageUrl;
+            }
         }
         return null; // No image available
     }
@@ -709,8 +720,13 @@ public class ProductMB implements Serializable {
     public void addToCart() {
         // Check if user is logged in
         if (!auth.isLoggedIn()) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Please login to add items to cart"));
+            try {
+                FacesContext.getCurrentInstance().getExternalContext()
+                    .redirect(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/pages/user/login.xhtml");
+            } catch (Exception e) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Please login to add items to cart"));
+            }
             return;
         }
 
@@ -744,8 +760,13 @@ public class ProductMB implements Serializable {
     public void addProductToCart(Products product) {
         // Check if user is logged in
         if (!auth.isLoggedIn()) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Please login to add items to cart"));
+            try {
+                FacesContext.getCurrentInstance().getExternalContext()
+                    .redirect(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/pages/user/login.xhtml");
+            } catch (Exception e) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Please login to add items to cart"));
+            }
             return;
         }
         // Check if product is out of stock

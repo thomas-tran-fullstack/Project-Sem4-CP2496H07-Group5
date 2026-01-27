@@ -27,6 +27,7 @@ public class CartItemsFacade extends AbstractFacade<CartItems> implements CartIt
 
         return em.createQuery(
                 "SELECT ci FROM CartItems ci " +
+                "JOIN FETCH ci.productID p " +
                 "WHERE ci.cartID.cartID = :cartId " +
                 "ORDER BY ci.cartItemID DESC",
                 CartItems.class

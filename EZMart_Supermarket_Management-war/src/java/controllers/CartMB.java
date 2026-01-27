@@ -121,8 +121,13 @@ public class CartMB implements Serializable {
         if (product == null || product.getProductID() == null || quantity <= 0) return;
 
         if (!auth.isLoggedIn() || auth.getCurrentCustomer() == null) {
-            FacesContext.getCurrentInstance().addMessage(null,
+            try {
+                FacesContext.getCurrentInstance().getExternalContext()
+                    .redirect(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/pages/user/login.xhtml");
+            } catch (Exception e) {
+                FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Please login to add items to cart"));
+            }
             return;
         }
 
@@ -385,9 +390,31 @@ public class CartMB implements Serializable {
 
     // ===================== UI HELPERS =====================
     public String productImageUrl(Products product) {
-        if (product == null) return null;
-        List<ProductImages> images = productImagesFacade.findByProductID(product);
-        return (images != null && !images.isEmpty()) ? images.get(0).getImageURL() : null;
+        if (product == null) {
+            return "https://via.placeholder.com/300x300?text=No+Product";
+        }
+
+        try {
+            // Use facade to get images - similar to WishlistMB
+            List<ProductImages> images = productImagesFacade.findByProductID(product);
+            if (images != null && !images.isEmpty()) {
+                String imageUrl = images.get(0).getImageURL();
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    // Convert /uploads/ path to /resources/uploads/ for ImageServlet
+                    if (imageUrl.startsWith("/resources/uploads/")) {
+                        return imageUrl;
+                    } else if (imageUrl.startsWith("/uploads/")) {
+                        return "/resources" + imageUrl;
+                    } else {
+                        // Just filename, add full prefix
+                        return "/resources/uploads/products/" + imageUrl;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error getting product image: " + e.getMessage());
+        }
+        return "https://via.placeholder.com/300x300?text=No+Image";
     }
 
     public BigDecimal getItemTotal(CartItems item) {
@@ -399,6 +426,7 @@ public class CartMB implements Serializable {
 
     // ===================== GETTERS =====================
     public boolean isCartEmpty() { return cartItems == null || cartItems.isEmpty(); }
+    public boolean getCartEmpty() { return isCartEmpty(); } // Getter for EL expression
     public int getCartItemCount() { return cartItems != null ? cartItems.size() : 0; }
 
     public List<CartItems> getCartItems() { return cartItems; }

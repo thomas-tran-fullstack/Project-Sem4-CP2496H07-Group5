@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -72,6 +73,9 @@ public class ChatController implements Serializable {
 
     // Pending customers waiting for acceptance
     private List<ChatConversations> pendingCustomers;
+    
+    // Hidden conversations (for staff to hide unwanted chats)
+    private Set<Integer> hiddenConversationIds = ConcurrentHashMap.newKeySet();
 
     // Unread message count
     private int unreadCount = 0;
@@ -1104,5 +1108,28 @@ public class ChatController implements Serializable {
 
     public void setChatRequestRejected(boolean rejected) {
         this.chatRequestRejected = rejected;
+    }
+    
+    /**
+     * Hide a conversation from the list (staff-only)
+     */
+    public String hideConversation(Integer conversationId) {
+        if (conversationId != null) {
+            hiddenConversationIds.add(conversationId);
+            if (selectedConversationId != null && selectedConversationId.equals(conversationId)) {
+                selectedConversationId = null;
+                selectedConversation = null;
+            }
+            loadConversations();
+            loadUnreadCount();
+        }
+        return null;
+    }
+    
+    /**
+     * Check if conversation is hidden
+     */
+    public boolean isConversationHidden(Integer conversationId) {
+        return conversationId != null && hiddenConversationIds.contains(conversationId);
     }
 }

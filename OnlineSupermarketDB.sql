@@ -1049,9 +1049,9 @@ GO
 INSERT INTO Users (Username, PasswordHash, Email, Role)
 VALUES
 ('admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'admin@ezmart.vn', 'ADMIN'),
-('bo', '123456', 'bo@ezmart.vn', 'CUSTOMER'),
-('toan', '123456', 'toan@ezmart.vn', 'STAFF'),
-('lam', '123456', 'lam@ezmart.vn', 'CUSTOMER');
+('bo', '5064d613a4b518ec6c35af8557f53bc644a0b415d87b970a69d39b5a98786bc2', 'bo@ezmart.vn', 'CUSTOMER'),
+('toan', 'd41f4810c7b667864c620f7554a2e08b8d9f07b473409617c317f0bebdfba56d', 'toan@ezmart.vn', 'STAFF'),
+('lam', '9355d502f0368aa08681ace906499bbad445fbf827ad00e789266e495a639249', 'lam@ezmart.vn', 'CUSTOMER');
 GO
 
 INSERT INTO Customers (UserID, FirstName, LastName, City, Country, MobilePhone)
@@ -1060,10 +1060,11 @@ VALUES
 (4, 'Truong Van', 'Lam', 'Ho Chi Minh', 'Vietnam', '0909000002');
 GO
 
-INSERT INTO Staffs (UserID, FirstName, LastName, PhoneNumber, Department, HireDate)
+INSERT INTO Staffs (UserID, FirstName, LastName, MobilePhone, CreatedAt, Status)
 VALUES
-(3, 'Nguyen Minh', 'Toan', '0909111111', 'Customer Support', GETDATE());
+(3, N'Nguyen Minh', N'Toan', N'0909111111', GETDATE(), N'ACTIVE');
 GO
+
 
 INSERT INTO Admins (UserID, AdminLevel)
 VALUES (1, 'SUPER_ADMIN');

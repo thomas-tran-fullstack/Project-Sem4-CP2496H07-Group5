@@ -392,17 +392,23 @@
 
     <script>
         window.ChatJS = window.ChatJS || {
+            autoRefreshInterval: null,
+            
             toggleChat: function () {
                 var w = document.getElementById("chatWindow");
                 if (!w) return;
                 w.classList.toggle("active");
                 if (w.classList.contains("active")) {
                     setTimeout(function(){ ChatJS.scrollToBottomCustomer(); ChatJS.scrollToBottomStaff(); }, 50);
+                    this.startAutoRefresh();
+                } else {
+                    this.stopAutoRefresh();
                 }
             },
             closeChat: function () {
                 var w = document.getElementById("chatWindow");
                 if (w) w.classList.remove("active");
+                this.stopAutoRefresh();
             },
             scrollToBottomCustomer: function(){
                 var el = document.getElementById("messagesContainerCustomer");
@@ -411,6 +417,68 @@
             scrollToBottomStaff: function(){
                 var el = document.getElementById("messagesContainerStaff");
                 if (el) el.scrollTop = el.scrollHeight;
+            },
+            
+            // Auto-refresh messages every 2 seconds
+            startAutoRefresh: function() {
+                if (this.autoRefreshInterval) return; // Already running
+                
+                this.autoRefreshInterval = setInterval(function() {
+                    // Trigger AJAX reload for chat content
+                    var customerForm = document.getElementById('customerMessageForm');
+                    var staffForm = document.getElementById('staffMessageForm');
+                    var formToUse = customerForm || staffForm;
+                    
+                    if (formToUse) {
+                        // Simulate user clicking to refresh
+                        var radioButton = document.createElement('input');
+                        radioButton.type = 'hidden';
+                        radioButton.name = formToUse.id.split(':')[0] + ':j_idt_refresh';
+                        radioButton.value = 'true';
+                        
+                        // Submit an AJAX request to reload messages
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', window.location.href, true);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        xhr.setRequestHeader('Faces-Request', 'partial/ajax');
+                        
+                        var formData = new FormData(formToUse);
+                        var params = new URLSearchParams(formData);
+                        params.append('javax.faces.behavior.event', 'change');
+                        params.append('javax.faces.partial.ajax', 'true');
+                        params.append('javax.faces.partial.execute', 'chatContent');
+                        params.append('javax.faces.partial.render', 'chatContent');
+                        
+                        xhr.onload = function() {
+                            if (xhr.status === 200) {
+                                var response = xhr.responseText;
+                                // Parse the response and update chat content
+                                var parser = new DOMParser();
+                                var doc = parser.parseFromString(response, 'text/html');
+                                var newContent = doc.querySelector('[id*="chatContent"]');
+                                if (newContent) {
+                                    var chatContent = document.getElementById('chatContent');
+                                    if (chatContent) {
+                                        chatContent.innerHTML = newContent.innerHTML;
+                                        setTimeout(function() { 
+                                            ChatJS.scrollToBottomCustomer(); 
+                                            ChatJS.scrollToBottomStaff(); 
+                                        }, 50);
+                                    }
+                                }
+                            }
+                        };
+                        
+                        xhr.send(params.toString());
+                    }
+                }, 2000); // Refresh every 2 seconds
+            },
+            
+            stopAutoRefresh: function() {
+                if (this.autoRefreshInterval) {
+                    clearInterval(this.autoRefreshInterval);
+                    this.autoRefreshInterval = null;
+                }
             }
         };
     </script>
@@ -476,7 +544,7 @@
                                 <div class="message-content">#{message.content}</div>
                                 <div class="message-time">
                                     <h:outputText value="#{message.sentAt}">
-                                        <f:convertDateTime pattern="HH:mm" />
+                                        <f:convertDateTime pattern="HH:mm" timeZone="Asia/Ho_Chi_Minh" />
                                     </h:outputText>
                                 </div>
                             </div>
@@ -568,7 +636,7 @@
                                             <span>#{chatController.otherParticipantName(conv)}</span>
                                             <span class="conversation-time">
                                                 <h:outputText value="#{conv.lastMessageAt}">
-                                                    <f:convertDateTime pattern="HH:mm" />
+                                                    <f:convertDateTime pattern="HH:mm" timeZone="Asia/Ho_Chi_Minh" />
                                                 </h:outputText>
                                             </span>
                                         </div>
@@ -615,7 +683,7 @@
                                     <div class="message-content">#{msg.content}</div>
                                     <div class="message-time">
                                         <h:outputText value="#{msg.sentAt}">
-                                            <f:convertDateTime pattern="HH:mm" />
+                                            <f:convertDateTime pattern="HH:mm" timeZone="Asia/Ho_Chi_Minh" />
                                         </h:outputText>
                                     </div>
                                 </div>

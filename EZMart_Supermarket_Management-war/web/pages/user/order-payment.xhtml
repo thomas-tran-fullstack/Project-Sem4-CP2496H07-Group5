@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition template="/templates/user/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core">
+                xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core">
 
     <ui:define name="content">
         <h:outputScript target="body">
@@ -114,20 +114,22 @@
                         <div
                             class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg text-center">
                             <h2 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-4">Scan QR Code</h2>
+
                             <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-6 mb-4">
                                 <div
                                     class="w-48 h-48 mx-auto bg-white border-2 border-gray-300 rounded-lg flex items-center justify-center">
-                                    <!-- QR Code Placeholder - Replace with actual QR code image -->
-                                    <div class="text-center">
-                                        <span class="material-symbols-outlined text-gray-400 text-6xl">qr_code</span>
-                                        <p class="text-xs text-gray-500 mt-2">QR Code</p>
-                                    </div>
+                                    <img
+                                        src="#{resource['images/qr-payment.png']}"
+                                        alt="QR Payment"
+                                        class="w-44 h-44 object-contain" />
                                 </div>
                             </div>
+
                             <p class="text-sm text-gray-600 dark:text-gray-400">
                                 Scan this QR code with your banking app to make payment
                             </p>
                         </div>
+
 
                         <!-- Payment Proof Upload -->
                         <div
@@ -143,8 +145,8 @@
                                     <div
                                         class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-primary transition-colors">
                                         <h:inputFile id="paymentProof" value="#{orderPaymentMB.paymentProofFile}"
-                                            class="hidden" required="true"
-                                            onchange="handleFileSelect(this, 'paymentForm:fileNameDisplay')" />
+                                                     class="hidden" required="true"
+                                                     onchange="handleFileSelect(this, 'paymentForm:fileNameDisplay')" />
                                         <label for="paymentForm:paymentProof" class="cursor-pointer">
                                             <span
                                                 class="material-symbols-outlined text-gray-400 text-3xl mb-2 block">cloud_upload</span>
@@ -157,12 +159,12 @@
                                         </label>
                                     </div>
                                     <div id="paymentForm:fileNameDisplay"
-                                        class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hidden">
+                                         class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hidden">
                                         <div class="flex items-center gap-2">
                                             <span
                                                 class="material-symbols-outlined text-blue-600 text-sm">description</span>
                                             <span id="fileNameText"
-                                                class="text-sm text-blue-800 dark:text-blue-200"></span>
+                                                  class="text-sm text-blue-800 dark:text-blue-200"></span>
                                         </div>
                                     </div>
                                     <ui:fragment rendered="#{orderPaymentMB.paymentProofFile != null}">
@@ -183,8 +185,8 @@
                                         Transaction ID (Optional)
                                     </label>
                                     <h:inputText id="transactionId" value="#{orderPaymentMB.transactionId}"
-                                        class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
-                                        placeholder="Enter transaction ID from your bank" />
+                                                 class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
+                                                 placeholder="Enter transaction ID from your bank" />
                                 </div>
 
                                 <div>
@@ -192,8 +194,8 @@
                                         Additional Notes (Optional)
                                     </label>
                                     <h:inputTextarea id="paymentNotes" value="#{orderPaymentMB.paymentNotes}"
-                                        class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] px-4 py-3 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors resize-none"
-                                        rows="3" placeholder="Any additional information about your payment" />
+                                                     class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] px-4 py-3 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors resize-none"
+                                                     rows="3" placeholder="Any additional information about your payment" />
                                 </div>
                             </div>
 
