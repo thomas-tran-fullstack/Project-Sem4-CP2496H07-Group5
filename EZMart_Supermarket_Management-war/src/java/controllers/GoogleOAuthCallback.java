@@ -79,7 +79,7 @@ public class GoogleOAuthCallback extends HttpServlet {
         
         try {
             // Exchange code for token
-            String tokenResponse = exchangeCodeForToken(code);
+            String tokenResponse = exchangeCodeForToken(code, request);
             JsonReader reader = Json.createReader(new java.io.StringReader(tokenResponse));
             JsonObject tokenJson = reader.readObject();
 
@@ -119,17 +119,24 @@ public class GoogleOAuthCallback extends HttpServlet {
         }
     }
     
-    private String exchangeCodeForToken(String code) throws Exception {
+    private String exchangeCodeForToken(String code, HttpServletRequest request) throws Exception {
         URL url = new URL(GoogleOAuthConfig.TOKEN_URL);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setDoOutput(true);
         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         
+        // Get dynamic redirect URI based on current request
+        String redirectUri = GoogleOAuthConfig.getRedirectUri(request);
+        System.out.println("=== GoogleOAuthCallback.exchangeCodeForToken ===");
+        System.out.println("Request URL: " + request.getRequestURL());
+        System.out.println("Redirect URI: " + redirectUri);
+        System.out.println("================================================");
+        
         String params = "client_id=" + URLEncoder.encode(GoogleOAuthConfig.CLIENT_ID, StandardCharsets.UTF_8)
                 + "&client_secret=" + URLEncoder.encode(GoogleOAuthConfig.CLIENT_SECRET, StandardCharsets.UTF_8)
                 + "&code=" + URLEncoder.encode(code, StandardCharsets.UTF_8)
-                + "&redirect_uri=" + URLEncoder.encode(GoogleOAuthConfig.REDIRECT_URI, StandardCharsets.UTF_8)
+                + "&redirect_uri=" + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8)
                 + "&grant_type=authorization_code";
         
         try (OutputStream os = conn.getOutputStream()) {

@@ -15,6 +15,7 @@ import jakarta.inject.Named;
 import jakarta.inject.Inject;
 import jakarta.faces.context.FacesContext;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import sessionbeans.CustomersFacadeLocal;
 import sessionbeans.UsersFacadeLocal;
 import sessionbeans.AddressesFacadeLocal;
@@ -1318,9 +1319,19 @@ public class AuthController implements Serializable {
      */
     public String redirectToGoogleOAuth() {
         try {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            HttpServletRequest request = (HttpServletRequest) fc.getExternalContext().getRequest();
+            
+            // Get dynamic redirect URI based on current request
+            String redirectUri = GoogleOAuthConfig.getRedirectUri(request);
+            System.out.println("=== AuthController.redirectToGoogleOAuth ===");
+            System.out.println("Request URL: " + request.getRequestURL());
+            System.out.println("Redirect URI: " + redirectUri);
+            System.out.println("=========================================");
+            
             String authUrl = GoogleOAuthConfig.AUTHORIZATION_URL
                     + "?client_id=" + java.net.URLEncoder.encode(GoogleOAuthConfig.CLIENT_ID, "UTF-8")
-                    + "&redirect_uri=" + java.net.URLEncoder.encode(GoogleOAuthConfig.REDIRECT_URI, "UTF-8")
+                    + "&redirect_uri=" + java.net.URLEncoder.encode(redirectUri, "UTF-8")
                     + "&response_type=code"
                     + "&scope=" + java.net.URLEncoder.encode(GoogleOAuthConfig.SCOPE, "UTF-8")
                     + "&prompt=select_account"

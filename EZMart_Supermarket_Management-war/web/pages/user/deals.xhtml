@@ -52,7 +52,7 @@
                                 <!-- Fallback background when no banner -->
                                 <h:panelGroup rendered="#{empty deal.bannerImage}">
                                     <div class="h-52 md:h-60 bg-gradient-to-r from-primary to-primary-dark"></div>
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                                 </h:panelGroup>
 
                                 <!-- Text overlay -->
@@ -93,7 +93,7 @@
                             </div>
 
                             <!-- Associated Products (for PERCENTAGE) -->
-                            <h:panelGroup rendered="#{deal.offerType != null and deal.offerType.toLowerCase() == 'percentage'}">
+<h:panelGroup rendered="#{deal.offerType != null and deal.offerType.toLowerCase() == 'percentage'}">
                                 <div class="p-6 md:p-8 border-t border-gray-100 dark:border-gray-800">
                                     <div class="flex items-center justify-between mb-6">
                                         <h4 class="text-xl font-bold text-gray-900 dark:text-white">
@@ -107,14 +107,24 @@
                                     <ui:fragment rendered="#{not empty dealsMB.getAssociatedProducts(deal)}">
                                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                                             <ui:repeat var="product" value="#{dealsMB.getAssociatedProducts(deal)}">
-                                                <div class="rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-5 hover:shadow-lg transition">
+                                                <div class="group rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-5 hover:shadow-lg transition">
                                                     <!-- Product Image -->
-                                                    <div class="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden mb-3">
-                                                        <ui:param name="productImgPath" value="#{dealsMB.productImageUrl(product)}" />
-                                                        <img alt="#{product.productName}"
-                                                            class="h-full w-full object-cover"
-                                                            src="#{request.contextPath}#{productImgPath}"
-                                                            onerror="this.onerror=null; this.src='/images/work.png';" />
+                                                    <div class="relative aspect-square mb-4">
+                                                        <h:link outcome="productdetail" styleClass="block w-full h-full">
+                                                            <f:param name="productId" value="#{product.productID}" />
+
+                                                            <div class="relative aspect-square bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
+                                                                <ui:param name="productImgPath" value="#{productMB.productImageUrl(product)}" />
+                                                                <img src="#{request.contextPath}#{productImgPath}"
+                                                                    rendered="#{not empty productImgPath}"
+                                                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                                    alt="#{product.productName}" />
+                                                                <div class="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"
+                                                                    rendered="#{empty productImgPath}">
+                                                                    <span class="material-symbols-outlined text-6xl">image</span>
+                                                                </div>
+</div>
+                                                        </h:link>
                                                     </div>
                                                     <div class="mb-3">
                                                         <h5 class="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2">
@@ -124,10 +134,10 @@
 
                                                     <div class="flex flex-wrap items-center gap-2 mb-4">
                                                         <span class="text-xs text-gray-500 dark:text-gray-400 line-through">
-                                                            #{product.unitPrice} VND
+                                                            #{product.unitPrice} $
                                                         </span>
                                                         <span class="text-base font-extrabold text-green-600">
-                                                            #{dealsMB.getDiscountedPrice(product, deal)} VND
+                                                            #{dealsMB.getDiscountedPrice(product, deal)} $
                                                         </span>
                                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
                                                             #{dealsMB.getDiscountDisplay(product, deal)}
@@ -151,7 +161,7 @@
                                             <span class="text-gray-500 dark:text-gray-400 italic">
                                                 All products are eligible for this offer
                                             </span>
-                                        </div>
+</div>
                                     </ui:fragment>
                                 </div>
                             </h:panelGroup>
