@@ -2,7 +2,7 @@
 <ui:composition template="/templates/user/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core">
     <ui:define name="content">
-        <h:form>
+        <div>
             <div class="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-8 py-6">
                 <!-- Breadcrumbs -->
                 <nav aria-label="Breadcrumb" class="flex mb-6">
@@ -96,12 +96,14 @@
                             <div class="flex items-center gap-3">
                                 <h:outputLabel for="sort" value="Sort by:"
                                     styleClass="text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap" />
-                                <h:selectOneMenu value="#{productMB.selectedSort}"
-                                    styleClass="block w-full rounded-lg border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 py-2 pl-3 pr-10 text-sm focus:border-primary focus:ring-primary sm:w-44"
-                                    id="sort">
-                                    <f:selectItems value="#{productMB.sortItems}" />
-                                    <f:ajax event="change" execute="@this" render="@form" />
-                                </h:selectOneMenu>
+                                <h:form id="sortForm">
+                                    <h:selectOneMenu value="#{productMB.selectedSort}"
+                                        styleClass="block w-full rounded-lg border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 py-2 pl-3 pr-10 text-sm focus:border-primary focus:ring-primary sm:w-44"
+                                        id="sort">
+                                        <f:selectItems value="#{productMB.sortItems}" />
+                                        <f:ajax event="change" execute="@this" render="productsForm" />
+                                    </h:selectOneMenu>
+                                </h:form>
                             </div>
                         </div>
                         <!-- Products Grid -->
@@ -118,58 +120,76 @@
                                 <ui:repeat value="#{productMB.paginatedProducts}" var="product">
 
                                     <div
-                                        class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
+                                        class="group bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col relative">
 
-                                        <!-- CLICK ĐI DETAIL -->
-                                        <h:link outcome="productdetail">
-                                            <f:param name="productId" value="#{product.productID}" />
+                                        <!-- CLICK ĐI DETAIL + Wishlist Button -->
+                                        <div class="relative aspect-square mb-4">
+                                            <h:link outcome="productdetail" styleClass="block w-full h-full">
+                                                <f:param name="productId" value="#{product.productID}" />
 
-                                            <div
-                                                class="relative aspect-square mb-4 bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
-                                                <ui:param name="productImgPath"
-                                                    value="#{productMB.productImageUrl(product)}" />
-                                                <img src="#{request.contextPath}#{productImgPath}"
-                                                    rendered="#{not empty productImgPath}"
-                                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                    alt="#{product.productName}" />
-                                                <div class="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"
-                                                    rendered="#{empty productImgPath}">
-                                                    <span class="material-symbols-outlined text-6xl">image</span>
+                                                <div class="relative aspect-square bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
+                                                    <ui:param name="productImgPath"
+                                                        value="#{productMB.productImageUrl(product)}" />
+                                                    <img src="#{request.contextPath}#{productImgPath}"
+                                                        rendered="#{not empty productImgPath}"
+                                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        alt="#{product.productName}" />
+                                                    <div class="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"
+                                                        rendered="#{empty productImgPath}">
+                                                        <span class="material-symbols-outlined text-6xl">image</span>
+                                                    </div>
                                                 </div>
-                                                
-                                                <!-- Wishlist Button - Top Right Corner -->
+                                            </h:link>
+
+                                            <!-- Wishlist Button - Positioned Over Image with Proper Z-index -->
+                                            <h:panelGroup layout="block" style="position: absolute; top: 8px; right: 8px; z-index: 50; pointer-events: auto;">
                                                 <h:panelGroup rendered="#{auth.loggedIn}">
-                                                    <div class="absolute top-2 right-2 z-10">
-                                                        <h:commandButton 
-                                                            rendered="#{!wishlistMB.isProductInWishlist(product.productID)}"
-                                                            action="#{wishlistMB.addToWishlist(product.productID)}"
-                                                            styleClass="w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-red-100 text-slate-400 hover:text-red-600 transition-colors shadow-md hover:shadow-lg"
-                                                            title="Add to Wishlist"
-                                                            value="🤍"
-                                                            style="font-size: 20px; border: none; padding: 0; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                            <f:ajax execute="@this" render="@form" immediate="true"/>
-                                                        </h:commandButton>
-                                                        <h:commandButton 
-                                                            rendered="#{wishlistMB.isProductInWishlist(product.productID)}"
-                                                            action="#{wishlistMB.removeFromWishlist(product.productID)}"
-                                                            styleClass="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors shadow-md hover:shadow-lg"
-                                                            title="Remove from Wishlist"
-                                                            value="❤️"
-                                                            style="font-size: 20px; border: none; padding: 0; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                            <f:ajax execute="@this" render="@form" immediate="true"/>
-                                                        </h:commandButton>
+                                                    <h:panelGroup rendered="#{!wishlistMB.isProductInWishlist(product.productID)}">
+                                                        <div style="width: 40px; height: 40px;">
+                                                            <h:commandButton 
+                                                                action="#{wishlistMB.addToWishlist(product.productID)}"
+                                                                type="button"
+                                                                value="🤍"
+                                                                styleClass="w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-red-100 text-slate-400 hover:text-red-600 transition-colors shadow-md hover:shadow-lg"
+                                                                style="font-size: 20px; border: none; padding: 0; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background-color: rgba(255, 255, 255, 0.9);">
+                                                                <f:ajax execute="@this" render="@form"/>
+                                                            </h:commandButton>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                    
+                                                    <h:panelGroup rendered="#{wishlistMB.isProductInWishlist(product.productID)}">
+                                                        <div style="width: 40px; height: 40px;">
+                                                            <h:commandButton 
+                                                                action="#{wishlistMB.removeFromWishlist(product.productID)}"
+                                                                type="button"
+                                                                value="❤️"
+                                                                styleClass="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors shadow-md hover:shadow-lg"
+                                                                style="font-size: 20px; border: none; padding: 0; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                                <f:ajax execute="@this" render="@form"/>
+                                                            </h:commandButton>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </h:panelGroup>
+
+                                                <h:panelGroup rendered="#{not auth.loggedIn}">
+                                                    <div style="width: 40px; height: 40px;">
+                                                        <h:link outcome="login" title="Login to add to wishlist"
+                                                            styleClass="w-10 h-10 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-red-100 text-slate-400 hover:text-red-600 transition-colors shadow-md hover:shadow-lg no-underline"
+                                                            style="background-color: rgba(255, 255, 255, 0.9); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                            <span style="font-size:20px;">🤍</span>
+                                                        </h:link>
                                                     </div>
                                                 </h:panelGroup>
-                                            </div>
+                                            </h:panelGroup>
+                                        </div>
 
-                                            <div class="mb-2">
-                                                <h3 class="font-bold text-lg">#{product.productName}</h3>
-                                                <p class="text-sm text-slate-500">#{product.categoryID.categoryName}</p>
-                                                <p class="text-xs font-medium #{productMB.isOutOfStock(product) ? 'text-red-600' : productMB.isLowStock(product) ? 'text-orange-600' : 'text-green-600'}">
-                                                    #{productMB.getStockStatus(product)}
-                                                </p>
-                                            </div>
-                                        </h:link>
+                                        <div class="mb-2">
+                                            <h3 class="font-bold text-lg">#{product.productName}</h3>
+                                            <p class="text-sm text-slate-500">#{product.categoryID.categoryName}</p>
+                                            <p class="text-xs font-medium #{productMB.isOutOfStock(product) ? 'text-red-600' : productMB.isLowStock(product) ? 'text-orange-600' : 'text-green-600'}">
+                                                #{productMB.getStockStatus(product)}
+                                            </p>
+                                        </div>
 
                                         <!-- GIÁ + ADD TO CART -->
                                         <div class="flex items-end justify-between mt-auto">
@@ -202,7 +222,6 @@
                                 </ui:repeat>
 
                             </div>
-                        </h:form>
                         <!-- Pagination -->
                         <div class="mt-12 flex justify-center">
                             <nav aria-label="Pagination" class="flex items-center gap-1">
@@ -229,9 +248,10 @@
                                 </h:commandLink>
                             </nav>
                         </div>
+                        </h:form>
                     </main>
                 </div>
             </div>
-        </h:form>
+        </div>
     </ui:define>
 </ui:composition>

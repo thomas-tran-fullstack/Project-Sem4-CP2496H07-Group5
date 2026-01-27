@@ -18,14 +18,7 @@
                     </div>
 
                     <div class="flex gap-3">
-                        <button class="inline-flex items-center gap-2 px-4 py-2
-                                   bg-slate-100 dark:bg-white/10
-                                   hover:bg-slate-200 dark:hover:bg-white/20
-                                   text-slate-700 dark:text-slate-300
-                                   rounded-lg font-medium transition">
-                            <span class="material-symbols-outlined text-lg">download</span>
-                            Export Data
-                        </button>
+            
 
                         <h:link outcome="addcategory" class="inline-flex items-center gap-2 px-4 py-2
                                    bg-primary hover:bg-primary/90
@@ -61,33 +54,13 @@
                    text-white rounded-lg font-medium" />
 
                                 <!-- Clear button -->
-                                <h:commandButton value="Clear" action="#{categoryMB.loadCategories()}" class="h-11 px-4 bg-slate-100 hover:bg-slate-200
-                   text-slate-700 rounded-lg font-medium" />
+                             
                             </div>
                         </div>
 
 
                         <!-- Status -->
-                        <div class="md:col-span-3">
-                            <h:selectOneMenu class="w-full h-11 px-3 rounded-lg
-                                   bg-white dark:bg-surface-dark
-                                   shadow-sm">
-                                <f:selectItem itemLabel="All Statuses" itemValue="" />
-                                <f:selectItem itemLabel="Active" itemValue="Active" />
-                                <f:selectItem itemLabel="Inactive" itemValue="Inactive" />
-                            </h:selectOneMenu>
-                        </div>
-                        <!-- Product Count -->
-                        <div class="md:col-span-3">
-                            <select class="w-full h-11 px-3 rounded-lg
-                                   bg-white dark:bg-surface-dark
-                                   shadow-sm">
-                                <option>Product Count: Any</option>
-                                <option>High (&gt;100)</option>
-                                <option>Low (&lt;10)</option>
-                                <option>Empty (0)</option>
-                            </select>
-                        </div>
+                        
                     </div>
                 </h:form>
 

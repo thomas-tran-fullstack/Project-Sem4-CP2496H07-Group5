@@ -149,6 +149,8 @@ public class ProductMB implements Serializable {
 
     public void loadProducts() {
         products = productsFacade.findAll();
+        sortProducts();
+    updatePagination();
     }
 
     public void loadCategories() {
@@ -413,17 +415,43 @@ public class ProductMB implements Serializable {
     }
 
     private String saveUploadedFile(Part file) throws IOException {
-        String fileName = UUID.randomUUID().toString() + "_" + file.getSubmittedFileName();
+        String original = file.getSubmittedFileName();
+        if (original == null) original = "file";
+        // sanitize filename: keep only base name and replace suspicious chars
+        String base = original.replaceAll("\\\\", "/");
+        int idx = base.lastIndexOf('/');
+        if (idx >= 0 && idx < base.length() - 1) base = base.substring(idx + 1);
+        base = base.replaceAll("[^a-zA-Z0-9._-]", "_");
+        String fileName = UUID.randomUUID().toString() + "_" + base;
+
+        // Save to user home uploads/products
         Path uploadPath = Paths.get(System.getProperty("user.home"), "uploads", "products");
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
+        Path filePath = uploadPath.resolve(fileName);
         try (InputStream input = file.getInputStream()) {
-            Path filePath = uploadPath.resolve(fileName);
             Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
-           return "/uploads/products/" + fileName; 
         }
+
+        // Also try to save a copy inside webapp resources (so ImageServlet can serve from webapp folder)
+        try {
+            String realPath = jakarta.faces.context.FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/uploads/products/");
+            if (realPath != null) {
+                Path webappDir = Paths.get(realPath);
+                if (!Files.exists(webappDir)) {
+                    Files.createDirectories(webappDir);
+                }
+                Path webappFile = webappDir.resolve(fileName);
+                Files.copy(filePath, webappFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (Exception ex) {
+            // ignore; fallback will still work via user.home
+            System.err.println("Warning: could not copy uploaded product image into webapp folder: " + ex.getMessage());
+        }
+
+        return "/uploads/products/" + fileName;
     }
 
     public void addProductImage() {
@@ -679,22 +707,25 @@ public class ProductMB implements Serializable {
     }
 
     public String productImageUrl(Products product) {
-        // Use product relationship instead of facade
-        if (product != null && product.getProductImagesList() != null && !product.getProductImagesList().isEmpty()) {
-            String imageUrl = product.getProductImagesList().get(0).getImageURL();
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                // Convert /uploads/ path to /resources/uploads/ for ImageServlet
-                if (imageUrl.startsWith("/uploads/products/")) {
-                    return "/resources" + imageUrl;
-                } else if (imageUrl.startsWith("/uploads/")) {
-                    return "/resources" + imageUrl;
-                } else if (!imageUrl.startsWith("/resources/uploads/")) {
-                    return "/resources/uploads/products/" + imageUrl;
+        try {
+            if (product == null) return null;
+            List<ProductImages> images = productImagesFacade.findByProductID(product);
+            if (images != null && !images.isEmpty()) {
+                String imageUrl = images.get(0).getImageURL();
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    if (imageUrl.startsWith("/resources/uploads/")) {
+                        return imageUrl;
+                    } else if (imageUrl.startsWith("/uploads/")) {
+                        return "/resources" + imageUrl;
+                    } else {
+                        return "/resources/uploads/products/" + imageUrl;
+                    }
                 }
-                return imageUrl;
             }
+        } catch (Exception e) {
+            System.err.println("Error in productImageUrl: " + e.getMessage());
         }
-        return null; // No image available
+        return null;
     }
 
     public Integer getQuantity() {
