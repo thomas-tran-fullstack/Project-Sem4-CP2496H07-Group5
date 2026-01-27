@@ -345,8 +345,26 @@ public class ReviewMB implements Serializable {
         if (product == null || customer == null) {
             return false;
         }
+        // First check: customer must have purchased the product (order DELIVERED and PAID)
+        if (!reviewsFacade.hasCustomerPurchasedProduct(product, customer)) {
+            return false;
+        }
+        // Second check: customer must have already written a review
         List<Reviews> reviews = reviewsFacade.findByProductIDAndCustomerID(product, customer);
         return !reviews.isEmpty();
+    }
+
+    public boolean canUserReviewProduct(Products product, Customers customer) {
+        if (product == null || customer == null) {
+            return false;
+        }
+        // Customer can review if they've purchased the product but haven't reviewed it yet
+        if (!reviewsFacade.hasCustomerPurchasedProduct(product, customer)) {
+            return false;
+        }
+        // Check they haven't already reviewed
+        List<Reviews> reviews = reviewsFacade.findByProductIDAndCustomerID(product, customer);
+        return reviews.isEmpty();
     }
 
     public double getAverageRating(Products product) {

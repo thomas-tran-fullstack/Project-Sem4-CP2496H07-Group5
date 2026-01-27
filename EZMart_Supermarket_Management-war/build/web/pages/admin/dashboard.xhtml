@@ -39,7 +39,7 @@
                             </span>
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Revenue</p>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">$#{dashboardMB.totalRevenueValue}</h3>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">$#{dashboardMB.totalRevenueValue != null ? dashboardMB.totalRevenueValue : '0.00'}</h3>
                     </div>
                     <!-- New Orders -->
                     <div class="p-5 bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
@@ -53,7 +53,7 @@
                             </span>
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">New Orders</p>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{dashboardMB.newOrdersCount}</h3>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{dashboardMB.newOrdersCount != null ? dashboardMB.newOrdersCount : '0'}</h3>
                     </div>
                     <!-- Pending Deliveries -->
                     <div class="p-5 bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
@@ -67,7 +67,7 @@
                             </span>
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Pending Deliveries</p>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{dashboardMB.pendingDeliveriesCount}</h3>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{dashboardMB.pendingDeliveriesCount != null ? dashboardMB.pendingDeliveriesCount : '0'}</h3>
                     </div>
                     <!-- Total Customers -->
                     <div class="p-5 bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
@@ -81,7 +81,7 @@
                             </span>
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Active Customers</p>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{dashboardMB.activeCustomersCount}</h3>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{dashboardMB.activeCustomersCount != null ? dashboardMB.activeCustomersCount : '0'}</h3>
                     </div>
                     <!-- Low Stock Alert -->
                     <div class="p-5 bg-white dark:bg-[#1a2e22] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
@@ -95,7 +95,7 @@
                             </span>
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Low Stock Items</p>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{dashboardMB.lowStockItemsCount}</h3>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">#{dashboardMB.lowStockItemsCount != null ? dashboardMB.lowStockItemsCount : '0'}</h3>
                     </div>
                 </div>
                 <!-- Main Grid: Chart & Top Products -->
@@ -269,9 +269,7 @@
                                         </div>
                                     </td>
                                     <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400">
-                                        <h:outputText value="#{order.orderDate}">
-                                            <f:convertDateTime pattern="MMM dd, yyyy" />
-                                        </h:outputText>
+                                        <h:outputText value="#{order.orderDate}" />
                                     </td>
                                     <td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">$#{order.amount}</td>
                                     <td class="py-4 px-6">

@@ -327,7 +327,7 @@
                             <div id="reviews-tab" class="tab-content hidden">
                                 <div id="reviews">
 
-                                    <!-- Review Form (Only for logged in users) -->
+                                    <!-- Review Form (Only for logged in users who have purchased the product) -->
                                     <h:panelGroup rendered="#{auth.loggedIn}">
                                         <div
                                             class="mb-8 bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
@@ -335,8 +335,9 @@
                                                 Review</h4>
 
                                             <h:panelGroup
-                                                rendered="#{!reviewMB.hasUserReviewedProduct(productMB.selectedProduct, auth.currentCustomer)}">
-                                                <div class="mb-4">
+                                                rendered="#{reviewMB.canUserReviewProduct(productMB.selectedProduct, auth.currentCustomer)}">
+                                                <div id="reviewFormContainer" class="mb-8">
+                                                    <div class="mb-4">
                                                     <label
                                                         class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                                         Your Rating
@@ -373,12 +374,14 @@
 
                                                 <h:commandButton action="#{reviewMB.submitReview()}"
                                                     value="Submit Review"
+                                                    id="submitReviewBtn"
                                                     styleClass="px-6 py-2.5 bg-primary hover:bg-green-600 text-white font-bold rounded-lg shadow-lg transition-colors">
                                                     <f:ajax execute="@form"
-                                                        render="productForm:productMessages productForm:successMessage reviews-tab" />
+                                                        render="productForm:successMessage productForm:reviewsList"
+                                                        oncomplete="hideReviewFormShowSuccess()" />
                                                 </h:commandButton>
 
-                                                <h:panelGroup id="successMessage">
+                                                <h:panelGroup id="successMessage" rendered="#{not empty reviewMB.comment and reviewMB.rating != null}">
                                                     <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-3">
                                                         <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">check_circle</span>
                                                         <span class="text-green-800 dark:text-green-200 font-medium">
@@ -386,8 +389,10 @@
                                                         </span>
                                                     </div>
                                                 </h:panelGroup>
+                                                    </div>
                                             </h:panelGroup>
 
+                                            <!-- Already reviewed message -->
                                             <h:panelGroup
                                                 rendered="#{reviewMB.hasUserReviewedProduct(productMB.selectedProduct, auth.currentCustomer)}">
                                                 <div
@@ -396,6 +401,19 @@
                                                         class="material-symbols-outlined text-green-600 text-2xl">check_circle</span>
                                                     <span class="text-green-800 dark:text-green-200 font-medium">
                                                         You have already reviewed this product. Thank you!
+                                                    </span>
+                                                </div>
+                                            </h:panelGroup>
+
+                                            <!-- Not purchased message -->
+                                            <h:panelGroup
+                                                rendered="#{!reviewMB.canUserReviewProduct(productMB.selectedProduct, auth.currentCustomer) and !reviewMB.hasUserReviewedProduct(productMB.selectedProduct, auth.currentCustomer)}">
+                                                <div
+                                                    class="flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                                                    <span
+                                                        class="material-symbols-outlined text-amber-600 text-2xl">info</span>
+                                                    <span class="text-amber-800 dark:text-amber-200 font-medium">
+                                                        You can only review products you have purchased and received. Please complete your order first.
                                                     </span>
                                                 </div>
                                             </h:panelGroup>
@@ -419,6 +437,7 @@
                                     </h:panelGroup>
 
                                     <!-- Reviews List -->
+                                    <h:panelGroup id="reviewsList">
                                     <div class="flex items-center justify-between mb-6">
                                         <h3 class="text-xl font-bold text-slate-900 dark:text-white">Customer Reviews
                                         </h3>
@@ -508,6 +527,7 @@
                                         </h:panelGroup>
 
                                     </div>
+                                    </h:panelGroup>
 
                                 </div>
                             </div>
@@ -669,6 +689,17 @@
                 font-size: 18px;
             }
 
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
             /* Dark mode */
             @media (prefers-color-scheme: dark) {
                 .error {
@@ -690,6 +721,92 @@
                 }
             }
         </style>
+
+        <script>
+        //<![CDATA[
+            // Hide review form and show success message
+            function hideReviewFormShowSuccess() {
+                const formContainer = document.getElementById('reviewFormContainer');
+                const successMsg = document.getElementById('successMessage');
+                
+                if (formContainer) {
+                    formContainer.style.opacity = '0';
+                    formContainer.style.maxHeight = '0';
+                    formContainer.style.overflow = 'hidden';
+                    formContainer.style.transition = 'all 0.3s ease-out';
+                    formContainer.style.marginBottom = '0';
+                }
+                
+                if (successMsg) {
+                    successMsg.style.display = 'block';
+                    setTimeout(() => {
+                        successMsg.style.animation = 'slideIn 0.5s ease-out forwards';
+                    }, 50);
+                }
+            }
+
+            function switchTab(button, tabName) {
+                // Get all tab buttons in the nav
+                const tabs = button.parentElement.querySelectorAll('button[type="button"]');
+                const tabContents = document.querySelectorAll('.tab-content');
+
+                // Remove active state from all buttons
+                tabs.forEach(tab => {
+                    tab.classList.remove('border-primary', 'text-primary');
+                    tab.classList.add('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'dark:text-slate-400', 'dark:hover:text-slate-300');
+                });
+
+                // Hide all tab contents
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+
+                // Activate clicked button
+                button.classList.remove('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'dark:text-slate-400', 'dark:hover:text-slate-300');
+                button.classList.add('border-primary', 'text-primary');
+
+                // Show selected tab content
+                const selectedTab = document.getElementById(tabName + '-tab');
+                if (selectedTab) {
+                    selectedTab.classList.remove('hidden');
+                }
+            }
+
+            // Star rating click handler
+            document.addEventListener('DOMContentLoaded', function() {
+                const starRating = document.getElementById('star-rating');
+                if (starRating) {
+                    const stars = starRating.querySelectorAll('button[data-rating]');
+                    const ratingInputId = Object.keys(document.forms[0].elements)
+                        .find(key => document.forms[0].elements[key].id && document.forms[0].elements[key].id.includes('ratingInput'));
+                    const ratingInput = ratingInputId ? document.forms[0].elements[ratingInputId] : document.querySelector('input[id*="ratingInput"]');
+                    const ratingValue = document.getElementById('ratingValue');
+
+                    if (ratingInput && ratingValue) {
+                        stars.forEach(star => {
+                            star.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const rating = this.getAttribute('data-rating');
+                                if (ratingInput) ratingInput.value = rating;
+                                ratingValue.textContent = rating + '/5';
+
+                                // Update visual state
+                                stars.forEach((s, index) => {
+                                    if (index < rating) {
+                                        s.classList.remove('text-slate-300', 'dark:text-slate-600');
+                                        s.classList.add('text-yellow-400');
+                                    } else {
+                                        s.classList.remove('text-yellow-400');
+                                        s.classList.add('text-slate-300', 'dark:text-slate-600');
+                                    }
+                                });
+                            });
+                        });
+                    }
+                }
+            });
+        //]]>
+        </script>
 
     </ui:define>
 </ui:composition>

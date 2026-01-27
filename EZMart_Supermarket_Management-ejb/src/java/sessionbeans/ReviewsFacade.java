@@ -96,4 +96,22 @@ public class ReviewsFacade extends AbstractFacade<Reviews> implements ReviewsFac
                  .getResultList();
     }
 
+    // Check if customer has purchased product (order completed and payment completed)
+    public boolean hasCustomerPurchasedProduct(entityclass.Products product, entityclass.Customers customer) {
+        try {
+            Long count = em.createQuery(
+                "SELECT COUNT(od) FROM OrderDetails od " +
+                "WHERE od.productID = :product " +
+                "AND od.orderID.customerID = :customer " +
+                "AND od.orderID.status = 'COMPLETED' " +
+                "AND od.orderID.paymentStatus = 'PAID'", Long.class)
+                    .setParameter("product", product)
+                    .setParameter("customer", customer)
+                    .getSingleResult();
+            return count > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

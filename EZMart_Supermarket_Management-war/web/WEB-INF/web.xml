@@ -116,6 +116,28 @@
         <mime-type>font/ttf</mime-type>
     </mime-mapping>
 
+    <!-- ================= OAUTH SERVLETS ================= -->
+    
+    <!-- Google OAuth Callback Servlet -->
+    <servlet>
+        <servlet-name>GoogleOAuthCallback</servlet-name>
+        <servlet-class>controllers.GoogleOAuthCallback</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GoogleOAuthCallback</servlet-name>
+        <url-pattern>/oauth-callback</url-pattern>
+    </servlet-mapping>
+
+    <!-- Google OAuth Processor Servlet -->
+    <servlet>
+        <servlet-name>GoogleOAuthProcessor</servlet-name>
+        <servlet-class>controllers.GoogleOAuthProcessor</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GoogleOAuthProcessor</servlet-name>
+        <url-pattern>/process-google</url-pattern>
+    </servlet-mapping>
+
     <!-- ================= CHAT SERVLETS ================= -->
 
     <!-- Chat API Servlet -->

@@ -47,4 +47,6 @@ public interface ReviewsFacadeLocal {
 
     List<Reviews> searchReviews(String searchTerm);
 
+    boolean hasCustomerPurchasedProduct(entityclass.Products product, entityclass.Customers customer);
+
 }
