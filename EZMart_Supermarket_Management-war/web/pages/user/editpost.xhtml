@@ -9,7 +9,7 @@
         <f:viewAction action="#{communityMB.checkLogin}" />
     </f:metadata>
     <ui:define name="content">
-        <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="min-h-screen bg-gray-50 dark:bg-[#112116] py-12 px-4 sm:px-6 lg:px-8">
             <div class="max-w-4xl mx-auto">
                 <!-- Header -->
                 <div class="mb-8">
@@ -24,7 +24,7 @@
                     </h:link>
                 </div>
 
-                <h:form id="editPostForm" styleClass="bg-white dark:bg-[#1a2e22] rounded-lg shadow-md p-8 border border-gray-200 dark:border-gray-700">
+                <h:form id="editPostForm" styleClass="bg-white dark:bg-surface-dark rounded-lg shadow-md p-8 border border-gray-200 dark:border-[#2a3e32]">
                     
                     <!-- Messages -->
                     <h:messages id="messages" globalOnly="true" 
@@ -39,7 +39,7 @@
                         <h:inputText id="title" 
                                    value="#{communityMB.selectedPost.title}"
                                    placeholder="Nhập tiêu đề bài viết..."
-                                   styleClass="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                   styleClass="w-full px-4 py-3 border border-gray-300 dark:border-[#2a3e32] rounded-lg bg-white dark:bg-surface-dark text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                                    required="true"
                                    requiredMessage="Vui lòng nhập tiêu đề"/>
                         <h:message for="title" styleClass="text-red-600 dark:text-red-400 text-sm mt-2 block"/>
@@ -51,7 +51,7 @@
                         <h:inputTextarea id="content" 
                                        value="#{communityMB.selectedPost.content}"
                                        placeholder="Viết nội dung bài viết của bạn ở đây..."
-                                       styleClass="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-vertical"
+                                       styleClass="w-full px-4 py-3 border border-gray-300 dark:border-[#2a3e32] rounded-lg bg-white dark:bg-surface-dark text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-vertical"
                                        rows="10"
                                        cols="50"
                                        required="true"
@@ -65,7 +65,7 @@
                         <h:inputText id="coverImage" 
                                    value="#{communityMB.selectedPost.coverImageUrl}"
                                    placeholder="https://example.com/image.jpg"
-                                   styleClass="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"/>
+                                   styleClass="w-full px-4 py-3 border border-gray-300 dark:border-[#2a3e32] rounded-lg bg-white dark:bg-surface-dark text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"/>
                         <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Nếu có: hình ảnh sẽ hiển thị ở phía trên bài viết</p>
                     </div>
 
@@ -81,14 +81,14 @@
                     </div>
 
                     <!-- Buttons -->
-                    <div class="flex gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex gap-4 pt-6 border-t border-gray-200 dark:border-[#2a3e32]">
                         <h:commandButton value="💾 Lưu Thay Đổi"
                                        action="#{communityMB.submitPost()}"
                                        update="@form"
                                        styleClass="px-8 py-3 bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white font-bold rounded-lg transition-colors shadow-md"/>
                         
                         <h:link outcome="/pages/user/myposts" 
-                               styleClass="px-8 py-3 bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white font-bold rounded-lg transition-colors text-center">
+                               styleClass="px-8 py-3 bg-gray-500 hover:bg-gray-600 dark:bg-[#25382c] dark:hover:bg-gray-700 text-white font-bold rounded-lg transition-colors text-center">
                             ← Quay Lại
                         </h:link>
                     </div>

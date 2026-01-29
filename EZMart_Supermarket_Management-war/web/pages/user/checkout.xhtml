@@ -23,7 +23,7 @@
                         <!-- Page Heading -->
                         <div>
                             <h1
-                                class="text-3xl md:text-4xl font-black tracking-tight text-[#111813] dark:text-[#111813] mb-2">
+                                class="text-3xl md:text-4xl font-black tracking-tight text-[#111813] dark:text-white mb-2">
                                 Checkout</h1>
                             <p class="text-gray-500 dark:text-gray-400">Complete your order by filling in the details
                                 below.</p>
@@ -31,23 +31,23 @@
 
                         <!-- Shipping Information Section -->
                         <section
-                            class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+                            class="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-border-dark p-6 shadow-sm">
                             <div class="mb-6">
-                                <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Contact Details
+                                <h3 class="text-xl font-bold text-[#111813] dark:text-white mb-1">Contact Details
                                 </h3>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">We'll use this to update you on your
                                     order.</p>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                                 <div class="flex flex-col flex-1">
-                                    <h:outputLabel class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                    <h:outputLabel class="text-[#111813] dark:text-white text-sm font-medium mb-2"
                                         for="firstName">First Name</h:outputLabel>
                                     <h:inputText id="firstName" value="#{checkoutMB.firstName}"
                                         class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
                                         placeholder="e.g. John" required="true" />
                                 </div>
                                 <div class="flex flex-col flex-1">
-                                    <h:outputLabel class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                    <h:outputLabel class="text-[#111813] dark:text-white text-sm font-medium mb-2"
                                         for="lastName">Last Name</h:outputLabel>
                                     <h:inputText id="lastName" value="#{checkoutMB.lastName}"
                                         class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
@@ -56,7 +56,7 @@
                             </div>
                             <div class="mb-8">
                                 <div class="flex flex-col w-full">
-                                    <h:outputLabel class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                    <h:outputLabel class="text-[#111813] dark:text-white text-sm font-medium mb-2"
                                         for="phoneNumber">Phone Number</h:outputLabel>
                                     <div class="relative">
                                         <span
@@ -68,7 +68,7 @@
                                 </div>
                             </div>
                             <div class="mb-6">
-                                <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Shipping Address
+                                <h3 class="text-xl font-bold text-[#111813] dark:text-white mb-1">Shipping Address
                                 </h3>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Where should we deliver your
                                     groceries?</p>
@@ -77,12 +77,12 @@
                                 <!-- Existing Addresses -->
                                 <ui:fragment rendered="#{not empty addressCtrl.addresses}">
                                     <h:outputLabel
-                                        class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2 block">Select
+                                        class="text-[#111813] dark:text-white text-sm font-medium mb-2 block">Select
                                         Address</h:outputLabel>
                                     <div class="space-y-3 mb-4">
                                         <ui:repeat value="#{addressCtrl.addresses}" var="address" varStatus="status">
                                             <label for="checkoutForm:addressRadio#{status.index}"
-                                                class="block border rounded-lg p-4 cursor-pointer #{checkoutMB.selectedAddressID eq address.addressID ? 'border-primary bg-primary/5' : 'border-gray-200 dark:border-gray-700'} hover:border-primary/50">
+                                                class="block border rounded-lg p-4 cursor-pointer #{checkoutMB.selectedAddressID eq address.addressID ? 'border-primary bg-primary/5' : 'border-gray-200 dark:border-[#2a3e32]'} hover:border-primary/50">
                                             <h:selectOneRadio id="addressRadio#{status.index}"
                                                     value="#{checkoutMB.selectedAddressID}">
                                                     <f:selectItem itemValue="#{address.addressID}" />
@@ -114,7 +114,7 @@
                                     rendered="#{empty addressCtrl.addresses or checkoutMB.selectedAddress eq null}">
                                     <div class="flex flex-col w-full">
                                         <h:outputLabel
-                                            class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                            class="text-[#111813] dark:text-white text-sm font-medium mb-2"
                                             for="newAddressLine1">Address Line 1</h:outputLabel>
                                         <h:inputText id="newAddressLine1" value="#{checkoutMB.newAddressLine1}"
                                             class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
@@ -122,7 +122,7 @@
                                     </div>
                                     <div class="flex flex-col w-full">
                                         <h:outputLabel
-                                            class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                            class="text-[#111813] dark:text-white text-sm font-medium mb-2"
                                             for="newAddressLine2">Address Line 2 (Optional)</h:outputLabel>
                                         <h:inputText id="newAddressLine2" value="#{checkoutMB.newAddressLine2}"
                                             class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
@@ -131,7 +131,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                                         <div class="flex flex-col w-full">
                                             <h:outputLabel
-                                                class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                                class="text-[#111813] dark:text-white text-sm font-medium mb-2"
                                                 for="newCity">City</h:outputLabel>
                                             <h:inputText id="newCity" value="#{checkoutMB.newCity}"
                                                 class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
@@ -139,11 +139,11 @@
                                         </div>
                                         <div class="flex flex-col w-full">
                                             <h:outputLabel
-                                                class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                                class="text-[#111813] dark:text-white text-sm font-medium mb-2"
                                                 for="newState">State / Province</h:outputLabel>
                                             <div class="relative">
                                                 <h:selectOneMenu id="newState" value="#{checkoutMB.newState}"
-                                                    class="form-select w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary text-[#111813] dark:text-[#111813] transition-colors appearance-none"
+                                                    class="form-select w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary text-[#111813] dark:text-white transition-colors appearance-none"
                                                     required="true">
                                                     <f:selectItem itemLabel="Select Province/City" itemValue="" />
                                                     <f:selectItem itemLabel="An Giang" itemValue="An Giang" />
@@ -216,7 +216,7 @@
                                         </div>
                                         <div class="flex flex-col w-full">
                                             <h:outputLabel
-                                                class="text-[#111813] dark:text-gray-200 text-sm font-medium mb-2"
+                                                class="text-[#111813] dark:text-white text-sm font-medium mb-2"
                                                 for="newZipCode">Zip Code</h:outputLabel>
                                             <h:inputText id="newZipCode" value="#{checkoutMB.newZipCode}"
                                                 class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
@@ -226,7 +226,7 @@
                                     <div class="flex items-center gap-3 pt-2">
                                         <h:selectBooleanCheckbox id="saveAddress" value="#{checkoutMB.saveAddress}" />
                                         <h:outputLabel for="saveAddress"
-                                            class="text-sm text-[#111813] dark:text-gray-200 cursor-pointer select-none">
+                                            class="text-sm text-[#111813] dark:text-white cursor-pointer select-none">
                                             Save this address for next time</h:outputLabel>
                                     </div>
                                 </ui:fragment>
@@ -234,16 +234,16 @@
                         </section>
                         <!-- Delivery Method Section -->
                         <section
-                            class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+                            class="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-border-dark p-6 shadow-sm">
                             <div class="mb-6">
-                                <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Delivery Method
+                                <h3 class="text-xl font-bold text-[#111813] dark:text-white mb-1">Delivery Method
                                 </h3>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Select your preferred shipping
                                     option.</p>
                             </div>
                             <div class="flex flex-col w-full">
                                 <h:outputLabel
-                                    class="text-[#111813] dark:text-gray-200 text-sm font-semibold mb-2 flex items-center gap-2"
+                                    class="text-[#111813] dark:text-white text-sm font-semibold mb-2 flex items-center gap-2"
                                     for="shippingMethodSelect">
                                     <span
                                         class="material-symbols-outlined text-primary text-[20px]">local_shipping</span>
@@ -252,7 +252,7 @@
                                 </h:outputLabel>
                                 <div class="relative">
                                     <h:selectOneMenu id="shippingMethodSelect" value="#{checkoutMB.shippingMethod}"
-                                        class="form-select w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-2 focus:ring-primary/50 text-[#111813] dark:text-[#111813] transition-all hover:border-primary/50 appearance-none">
+                                        class="form-select w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-2 focus:ring-primary/50 text-[#111813] dark:text-white transition-all hover:border-primary/50 appearance-none">
                                         <f:selectItem
                                             itemLabel="Standard Delivery (Free, 3-5 Business Days - Eco-friendly)"
                                             itemValue="standard" />
@@ -272,16 +272,16 @@
 
                         <!-- Payment Method Selection -->
                         <section
-                            class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm">
+                            class="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-border-dark p-6 shadow-sm">
                             <div class="mb-6">
-                                <h3 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-1">Payment Method
+                                <h3 class="text-xl font-bold text-[#111813] dark:text-white mb-1">Payment Method
                                 </h3>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Choose how you want to pay for your
                                     order.</p>
                             </div>
                             <div class="flex flex-col w-full">
                                 <h:outputLabel
-                                    class="text-[#111813] dark:text-gray-200 text-sm font-semibold mb-2 flex items-center gap-2"
+                                    class="text-[#111813] dark:text-white text-sm font-semibold mb-2 flex items-center gap-2"
                                     for="paymentMethodTypeSelect">
                                     <span class="material-symbols-outlined text-primary text-[20px]">payment</span>
                                     Choose Payment
@@ -289,7 +289,7 @@
                                 <div class="relative">
                                     <h:selectOneMenu id="paymentMethodTypeSelect"
                                         value="#{checkoutMB.paymentMethodType}"
-                                        class="form-select w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-2 focus:ring-primary/50 text-[#111813] dark:text-[#111813] transition-all hover:border-primary/50 appearance-none">
+                                        class="form-select w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base focus:border-primary focus:ring-2 focus:ring-primary/50 text-[#111813] dark:text-white transition-all hover:border-primary/50 appearance-none">
                                         <f:selectItem itemLabel="Cash on Delivery (Pay when you receive your order)"
                                             itemValue="cod" />
                                         <f:selectItem itemLabel="Online Payment (Bank Transfer/QR Code)"
@@ -309,14 +309,14 @@
                     <div class="lg:col-span-4">
                         <div class="sticky top-24 space-y-6">
                             <div
-                                class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg shadow-gray-200/50 dark:shadow-none">
+                                class="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-border-dark p-6 shadow-lg shadow-gray-200/50 dark:shadow-none">
                                 <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Order Summary</h2>
                                 <!-- Mini Product List -->
                                 <div class="space-y-4 mb-6">
                                     <ui:repeat value="#{cartMB.cartItems}" var="item">
                                         <div class="flex gap-3 items-center">
                                             <div
-                                                class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
+                                                class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-[#1e3326] overflow-hidden shrink-0">
                                                 <ui:param name="checkoutImgPath" value="#{checkoutMB.productImageUrl(item.productID)}" />
                                                 <img alt="#{item.productID.productName}"
                                                     class="h-full w-full object-cover"
@@ -324,19 +324,19 @@
                                             </div>
                                             <div class="flex-1 min-w-0">
                                                 <p
-                                                    class="text-sm font-semibold text-[#111813] dark:text-[#111813] truncate">
+                                                    class="text-sm font-semibold text-[#111813] dark:text-white truncate">
                                                     #{item.productID.productName}</p>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">Qty:
                                                     #{item.quantity}</p>
                                             </div>
-                                            <p class="text-sm font-semibold text-[#111813] dark:text-[#111813]">
+                                            <p class="text-sm font-semibold text-[#111813] dark:text-white">
                                                 $#{cartMB.getItemTotal(item)}</p>
                                         </div>
                                     </ui:repeat>
                                 </div>
                                 <!-- Calculations -->
                                 <div id="calculationsSection"
-                                    class="border-t border-gray-100 dark:border-gray-800 pt-4 space-y-2">
+                                    class="border-t border-gray-100 dark:border-border-dark pt-4 space-y-2">
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-600 dark:text-gray-400">Subtotal</span>
                                         <span
@@ -367,7 +367,7 @@
                                 </div>
                                 <!-- Voucher Input -->
                                 <div id="voucherSection"
-                                    class="border-t border-gray-100 dark:border-gray-800 pt-4 pb-4">
+                                    class="border-t border-gray-100 dark:border-border-dark pt-4 pb-4">
                                     <div class="flex gap-2">
                                         <h:inputText id="voucherCode" value="#{checkoutMB.voucherCode}"
                                             class="form-input flex-1 rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-10 px-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-gray-400 dark:placeholder:text-gray-600 transition-colors"
@@ -400,7 +400,7 @@
                                 </div>
                                 <!-- Total -->
                                 <div id="totalSection"
-                                    class="border-t border-gray-100 dark:border-gray-800 pt-4 mt-4 mb-6">
+                                    class="border-t border-gray-100 dark:border-border-dark pt-4 mt-4 mb-6">
                                     <div class="flex justify-between items-center">
                                         <span class="text-base font-bold text-gray-900 dark:text-white">Total</span>
                                         <span
@@ -419,7 +419,7 @@
                                         <span class="material-symbols-outlined text-[18px]">verified_user</span>
                                         <span>SSL Secure</span>
                                     </div>
-                                    <div class="h-3 w-px bg-gray-300 dark:bg-gray-700"></div>
+                                    <div class="h-3 w-px bg-gray-300 dark:bg-[#1e3326]"></div>
                                     <div class="flex items-center gap-1 text-xs">
                                         <span class="material-symbols-outlined text-[18px]">shield</span>
                                         <span>Encrypted</span>

@@ -125,7 +125,7 @@
                                     <!-- Confirmed Button -->
                                     <h:commandButton value="Confirmed" action="#{adminOrderMB.confirmOrder(order)}"
                                         styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-green-600 bg-green-100 hover:bg-green-200 transition-colors cursor-pointer">
-                                        <f:ajax execute="@this" render=":orderForm:ordersTable :orderForm:globalMessages" />
+                                        <f:ajax execute="@this" render=":orderForm:ordersTable :orderForm:globalMessages" onevent="function(){setTimeout(function(){window.location.reload();},500);}" />
                                     </h:commandButton>
                                 </h:panelGroup>
 
@@ -133,7 +133,7 @@
                                     <!-- Shipped Button -->
                                     <h:commandButton value="Shipping" action="#{adminOrderMB.shipOrder(order)}"
                                         styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-purple-600 bg-purple-100 hover:bg-purple-200 transition-colors cursor-pointer">
-                                        <f:ajax execute="@this" render=":orderForm:ordersTable :orderForm:globalMessages" />
+                                        <f:ajax execute="@this" render=":orderForm:ordersTable :orderForm:globalMessages" onevent="function(){setTimeout(function(){window.location.reload();},500);}" />
                                     </h:commandButton>
                                 </h:panelGroup>
 
@@ -141,7 +141,7 @@
                                     <!-- Completed Button -->
                                     <h:commandButton value="Completed" action="#{adminOrderMB.completeOrder(order)}"
                                         styleClass="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-green-600 bg-green-100 hover:bg-green-200 transition-colors cursor-pointer">
-                                        <f:ajax execute="@this" render=":orderForm:ordersTable :orderForm:globalMessages" />
+                                        <f:ajax execute="@this" render=":orderForm:ordersTable :orderForm:globalMessages" onevent="function(){setTimeout(function(){window.location.reload();},500);}" />
                                     </h:commandButton>
                                 </h:panelGroup>
                             </div>

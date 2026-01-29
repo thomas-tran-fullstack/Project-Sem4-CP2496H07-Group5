@@ -17,7 +17,7 @@
                 <nav aria-label="Breadcrumb" class="flex mb-8">
                     <ol class="inline-flex items-center space-x-1 md:space-x-2">
                         <li class="inline-flex items-center">
-                            <a class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-primary dark:text-slate-400"
+                            <a class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-primary dark:text-gray-400"
                                 href="#{request.contextPath}/pages/user/index.xhtml">
                                 Home
                             </a>
@@ -25,16 +25,16 @@
 
                         <li>
                             <div class="flex items-center">
-                                <span class="material-symbols-outlined text-slate-400 text-sm mx-1">chevron_right</span>
-                                <a class="ml-1 text-sm font-medium text-slate-500 hover:text-primary dark:text-slate-400"
+                                <span class="material-symbols-outlined text-gray-400 text-sm mx-1">chevron_right</span>
+                                <a class="ml-1 text-sm font-medium text-gray-500 hover:text-primary dark:text-gray-400"
                                     href="#">#{productMB.selectedProduct.categoryID.categoryName}</a>
                             </div>
                         </li>
 
                         <li aria-current="page">
                             <div class="flex items-center">
-                                <span class="material-symbols-outlined text-slate-400 text-sm mx-1">chevron_right</span>
-                                <span class="ml-1 text-sm font-medium text-slate-900 dark:text-white">
+                                <span class="material-symbols-outlined text-gray-400 text-sm mx-1">chevron_right</span>
+                                <span class="ml-1 text-sm font-medium text-[#111813] dark:text-white">
                                     #{productMB.selectedProduct.productName}
                                 </span>
                             </div>
@@ -49,7 +49,7 @@
                     <div class="flex flex-col gap-4">
 
                         <div
-                            class="aspect-square bg-white dark:bg-surface-dark rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative group">
+                            class="aspect-square bg-white dark:bg-surface-dark rounded-2xl overflow-hidden border border-gray-200 dark:border-[#2a3e32] shadow-sm relative group">
 
                             <ui:param name="mainImgPath" value="#{productMB.selectedProductImageUrl}" />
 
@@ -62,7 +62,7 @@
 
                             <ui:fragment rendered="#{empty mainImgPath}">
                                 <div
-                                    class="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                                    class="w-full h-full bg-slate-100 dark:bg-[#1e3326] flex items-center justify-center text-gray-400">
                                     <span class="material-symbols-outlined text-6xl">image</span>
                                 </div>
                             </ui:fragment>
@@ -82,7 +82,7 @@
                                     <h:commandButton 
                                         rendered="#{!wishlistMB.isProductInWishlist(productMB.selectedProduct.productID)}"
                                         action="#{wishlistMB.addToWishlist(productMB.selectedProduct.productID)}"
-                                        styleClass="w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-red-100 text-slate-400 hover:text-red-600 transition-colors shadow-md hover:shadow-lg"
+                                        styleClass="w-10 h-10 flex items-center justify-center rounded-full bg-white/90 hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors shadow-md hover:shadow-lg"
                                         title="Add to Wishlist"
                                         value="🤍"
                                         style="font-size: 20px; border: none; padding: 0; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
@@ -104,7 +104,7 @@
                         <div class="grid grid-cols-4 gap-4">
                             <ui:repeat value="#{productMB.productImages}" var="image" varStatus="status">
                                 <h:commandLink action="#{productMB.selectProductImage(image.imageURL)}"
-                                    styleClass="aspect-square rounded-lg overflow-hidden p-0.5 bg-white dark:bg-surface-dark #{status.index == productMB.selectedImageIndex ? 'border-2 border-primary' : 'border border-slate-200 dark:border-slate-800 hover:border-primary/50'} transition-colors">
+                                    styleClass="aspect-square rounded-lg overflow-hidden p-0.5 bg-white dark:bg-surface-dark #{status.index == productMB.selectedImageIndex ? 'border-2 border-primary' : 'border border-gray-200 dark:border-[#2a3e32] hover:border-primary/50'} transition-colors">
 
                                     <ui:param name="thumbImgPath"
                                         value="#{image.imageURL.startsWith('/') ? image.imageURL : '/uploads/'.concat(image.imageURL)}" />
@@ -118,9 +118,9 @@
                             <!-- FIX: thiếu đóng div ở block empty -->
                             <h:panelGroup rendered="#{empty productMB.productImages}">
                                 <div
-                                    class="aspect-square rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-surface-dark">
+                                    class="aspect-square rounded-lg border border-gray-200 dark:border-[#2a3e32] overflow-hidden bg-white dark:bg-surface-dark">
                                     <div
-                                        class="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                                        class="w-full h-full bg-slate-100 dark:bg-[#1e3326] flex items-center justify-center text-gray-400">
                                         <span class="material-symbols-outlined">image</span>
                                     </div>
                                 </div>
@@ -139,7 +139,7 @@
                             </h:link>
                         </div>
 
-                        <h1 class="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
+                        <h1 class="text-3xl lg:text-4xl font-bold text-[#111813] dark:text-white mb-2 tracking-tight">
                             #{productMB.selectedProduct.productName}
                         </h1>
 
@@ -149,11 +149,11 @@
                                 <div class="flex text-yellow-400 text-sm">
                                     <ui:repeat value="#{['1','2','3','4','5']}" var="star">
                                         <span
-                                            class="material-symbols-outlined filled-icon text-[20px] #{star le reviewMB.getAverageRating(productMB.selectedProduct) ? '' : 'text-slate-300 dark:text-slate-600'}"
+                                            class="material-symbols-outlined filled-icon text-[20px] #{star le reviewMB.getAverageRating(productMB.selectedProduct) ? '' : 'text-gray-300 dark:text-gray-400'}"
                                             style="font-variation-settings: 'FILL' 1;">star</span>
                                     </ui:repeat>
                                 </div>
-                                <span class="font-bold text-slate-900 dark:text-white ml-2">
+                                <span class="font-bold text-[#111813] dark:text-white ml-2">
                                     #{reviewMB.getAverageRating(productMB.selectedProduct) gt 0 ?
                                     reviewMB.getAverageRating(productMB.selectedProduct) : '0'}
                                 </span>
@@ -161,7 +161,7 @@
 
                             <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
 
-                            <a class="text-sm text-slate-500 hover:text-primary dark:text-slate-400 underline decoration-slate-300 underline-offset-4"
+                            <a class="text-sm text-gray-500 hover:text-primary dark:text-gray-400 underline decoration-gray-300 underline-offset-4"
                                 href="#reviews">
                                 #{reviewMB.getReviewCount(productMB.selectedProduct)} Reviews
                             </a>
@@ -174,16 +174,16 @@
                             </span>
                         </div>
 
-                        <div class="flex items-end gap-3 mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-end gap-3 mb-6 pb-6 border-b border-slate-100 dark:border-[#2a3e32]">
                             <div class="flex flex-col">
                                 <div class="flex items-center gap-3">
                                     <span
-                                        class="text-4xl font-bold #{productMB.hasOffer(productMB.selectedProduct) ? 'text-red-600' : 'text-slate-900 dark:text-white'}">
+                                        class="text-4xl font-bold #{productMB.hasOffer(productMB.selectedProduct) ? 'text-red-600' : 'text-[#111813] dark:text-white'}">
                                         $#{productMB.getDiscountedPrice(productMB.selectedProduct)}
                                     </span>
 
                                     <h:panelGroup rendered="#{productMB.hasOffer(productMB.selectedProduct)}">
-                                        <span class="text-xl text-slate-400 line-through">
+                                        <span class="text-xl text-gray-400 line-through">
                                             $#{productMB.selectedProduct.unitPrice}
                                         </span>
                                     </h:panelGroup>
@@ -196,7 +196,7 @@
                                 </h:panelGroup>
                             </div>
 
-                            <div class="mb-1.5 text-slate-500 dark:text-slate-400 font-medium">
+                            <div class="mb-1.5 text-gray-500 dark:text-gray-400 font-medium">
                                 / #{productMB.selectedProduct.categoryID.categoryName eq 'Food' ? 'bunch (approx. 7
                                 pcs)' : 'item'}
                             </div>
@@ -206,30 +206,28 @@
                             </div>
                         </div>
 
-                        <div class="prose prose-slate dark:prose-invert mb-8 text-slate-600 dark:text-slate-300">
+                        <div class="prose dark:prose-invert mb-8 text-gray-600 dark:text-gray-300">
                             <p>#{productMB.selectedProduct.description}</p>
                         </div>
 
-                        <h:panelGroup id="messagesContainer" layout="block">
-                            <h:messages id="productMessages" globalOnly="false" showDetail="true" showSummary="false"
-                                styleClass="mb-4" />
-                        </h:panelGroup>
+                        <h:messages id="productMessages" globalOnly="false" showDetail="true" showSummary="false"
+                            styleClass="mb-4" />
 
                         <div
-                            class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-800 rounded-xl p-5 mb-8 shadow-sm">
+                            class="bg-white dark:bg-surface-dark border border-gray-200 dark:border-[#2a3e32] rounded-xl p-5 mb-8 shadow-sm">
                             <div class="flex flex-col sm:flex-row gap-4">
 
                                 <!-- Quantity -->
                                 <div class="flex flex-col gap-2">
-                                    <label class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">
+                                    <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400">
                                         Quantity
                                     </label>
 
                                     <div
-                                        class="flex items-center h-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg w-32">
+                                        class="flex items-center h-12 bg-slate-50 dark:bg-[#1e3326] border border-gray-200 dark:border-[#2a3e32] rounded-lg w-32">
 
                                         <h:commandLink action="#{productMB.decreaseQuantity()}"
-                                            styleClass="w-10 h-full flex items-center justify-center text-slate-500 hover:text-primary"
+                                            styleClass="w-10 h-full flex items-center justify-center text-gray-500 hover:text-primary"
                                             style="background:none;border:none">
                                             <span class="material-symbols-outlined text-[20px]">remove</span>
                                             <f:ajax execute="@this"
@@ -237,10 +235,10 @@
                                         </h:commandLink>
 
                                         <h:outputText id="quantityDisplay" value="#{productMB.quantity}"
-                                            styleClass="w-12 text-center text-slate-900 dark:text-white font-bold bg-transparent border-none" />
+                                            styleClass="w-12 text-center text-[#111813] dark:text-white font-bold bg-transparent border-none" />
 
                                         <h:commandLink action="#{productMB.increaseQuantity()}"
-                                            styleClass="w-10 h-full flex items-center justify-center text-slate-500 hover:text-primary"
+                                            styleClass="w-10 h-full flex items-center justify-center text-gray-500 hover:text-primary"
                                             style="background:none;border:none">
                                             <span class="material-symbols-outlined text-[20px]">add</span>
                                             <f:ajax execute="@this"
@@ -253,7 +251,7 @@
                                 <!-- Add to cart -->
                                 <div class="flex-1 flex flex-col gap-2">
                                     <label
-                                        class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 opacity-0 sm:opacity-100">
+                                        class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 opacity-0 sm:opacity-100">
                                         Action
                                     </label>
 
@@ -270,11 +268,11 @@
                             </div>
                         </div>
 
-                        <div class="flex gap-4 text-xs text-slate-500 dark:text-slate-400">
-                            <span class="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                        <div class="flex gap-4 text-xs text-gray-500 dark:text-gray-400">
+                            <span class="bg-slate-100 dark:bg-[#1e3326] px-3 py-1 rounded-full">
                                 SKU: PROD-#{productMB.selectedProduct.productID}
                             </span>
-                            <span class="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                            <span class="bg-slate-100 dark:bg-[#1e3326] px-3 py-1 rounded-full">
                                 Category: #{productMB.selectedProduct.categoryID.categoryName}
                             </span>
                         </div>
@@ -288,19 +286,19 @@
                     <!-- Tabs -->
                     <div class="lg:col-span-2 space-y-8">
                         <div
-                            class="bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-6">
-                            <div class="border-b border-slate-200 dark:border-slate-800 mb-6">
+                            class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-[#2a3e32] p-6">
+                            <div class="border-b border-gray-200 dark:border-[#2a3e32] mb-6">
                                 <nav aria-label="Tabs" class="flex gap-8 -mb-px overflow-x-auto">
                                     <button type="button"
                                         class="border-b-2 border-primary text-primary whitespace-nowrap py-4 px-1 text-sm font-medium"
                                         onclick="switchTab(this, 'description')">Description</button>
                                     <button type="button"
-                                        class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 whitespace-nowrap py-4 px-1 text-sm font-medium"
+                                        class="border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap py-4 px-1 text-sm font-medium"
                                         onclick="switchTab(this, 'reviews')">
                                         Reviews (#{reviewMB.getReviewCount(productMB.selectedProduct)})
                                     </button>
                                     <button type="button"
-                                        class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 whitespace-nowrap py-4 px-1 text-sm font-medium"
+                                        class="border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap py-4 px-1 text-sm font-medium"
                                         onclick="switchTab(this, 'shipping')">Shipping &amp; Returns</button>
                                 </nav>
                             </div>
@@ -308,11 +306,11 @@
                             <!-- Description Tab -->
                             <div id="description-tab" class="tab-content">
                                 <div
-                                    class="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
-                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Product Description
+                                    class="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300">
+                                    <h3 class="text-lg font-bold text-[#111813] dark:text-white">Product Description
                                     </h3>
                                     <p>#{productMB.selectedProduct.description}</p>
-                                    <h4 class="text-base font-bold text-slate-900 dark:text-white mt-6">Storage Tips
+                                    <h4 class="text-base font-bold text-[#111813] dark:text-white mt-6">Storage Tips
                                     </h4>
                                     <p>
                                         Store at room temperature away from direct sunlight. To speed up ripening, place
@@ -329,25 +327,26 @@
                             <div id="reviews-tab" class="tab-content hidden">
                                 <div id="reviews">
 
-                                    <!-- Review Form (Only for logged in users) -->
+                                    <!-- Review Form (Only for logged in users who have purchased the product) -->
                                     <h:panelGroup rendered="#{auth.loggedIn}">
                                         <div
-                                            class="mb-8 bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
-                                            <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Write a
+                                            class="mb-8 bg-slate-50 dark:bg-[#1e3326] rounded-xl p-6 border border-gray-200 dark:border-[#2a3e32]">
+                                            <h4 class="text-lg font-bold text-[#111813] dark:text-white mb-4">Write a
                                                 Review</h4>
 
                                             <h:panelGroup
-                                                rendered="#{!reviewMB.hasUserReviewedProduct(productMB.selectedProduct, auth.currentCustomer)}">
-                                                <div class="mb-4">
+                                                rendered="#{reviewMB.canUserReviewProduct(productMB.selectedProduct, auth.currentCustomer)}">
+                                                <div id="reviewFormContainer" class="mb-8">
+                                                    <div class="mb-4">
                                                     <label
-                                                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                                         Your Rating
                                                     </label>
 
                                                     <div class="flex gap-2" id="star-rating">
                                                         <ui:repeat value="#{[1,2,3,4,5]}" var="star">
                                                             <button type="button"
-                                                                class="text-3xl cursor-pointer transition-colors hover:scale-110 #{star le reviewMB.rating ? 'text-yellow-400' : 'text-slate-300 dark:text-slate-600'}"
+                                                                class="text-3xl cursor-pointer transition-colors hover:scale-110 #{star le reviewMB.rating ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-400'}"
                                                                 data-rating="#{star}">
                                                                 <span class="material-symbols-outlined"
                                                                     style="font-size: 32px;">star</span>
@@ -356,31 +355,33 @@
                                                     </div>
 
                                                     <h:inputHidden id="ratingInput" value="#{reviewMB.rating}" />
-                                                    <span id="ratingValue" class="text-sm text-slate-500 ml-2">
+                                                    <span id="ratingValue" class="text-sm text-gray-500 ml-2">
                                                         #{reviewMB.rating != null ? reviewMB.rating : '0'}/5
                                                     </span>
                                                 </div>
 
                                                 <div class="mb-4">
                                                     <label
-                                                        class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                                         Your Review
                                                     </label>
                                                     <h:inputTextarea id="reviewComment" value="#{reviewMB.comment}"
                                                         rows="4"
-                                                        styleClass="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                                                        styleClass="w-full rounded-lg border border-slate-300 dark:border-[#2a3e32] bg-white dark:bg-[#112116] px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-primary"
                                                         placeholder="Share your experience with this product...">
                                                     </h:inputTextarea>
                                                 </div>
 
                                                 <h:commandButton action="#{reviewMB.submitReview()}"
                                                     value="Submit Review"
+                                                    id="submitReviewBtn"
                                                     styleClass="px-6 py-2.5 bg-primary hover:bg-green-600 text-white font-bold rounded-lg shadow-lg transition-colors">
                                                     <f:ajax execute="@form"
-                                                        render="productForm:productMessages productForm:successMessage reviews-tab" />
+                                                        render="productForm:successMessage productForm:reviewsList"
+                                                        oncomplete="hideReviewFormShowSuccess()" />
                                                 </h:commandButton>
 
-                                                <h:panelGroup id="successMessage">
+                                                <h:panelGroup id="successMessage" rendered="#{not empty reviewMB.comment and reviewMB.rating != null}">
                                                     <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-3">
                                                         <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-2xl">check_circle</span>
                                                         <span class="text-green-800 dark:text-green-200 font-medium">
@@ -388,8 +389,10 @@
                                                         </span>
                                                     </div>
                                                 </h:panelGroup>
+                                                    </div>
                                             </h:panelGroup>
 
+                                            <!-- Already reviewed message -->
                                             <h:panelGroup
                                                 rendered="#{reviewMB.hasUserReviewedProduct(productMB.selectedProduct, auth.currentCustomer)}">
                                                 <div
@@ -401,15 +404,28 @@
                                                     </span>
                                                 </div>
                                             </h:panelGroup>
+
+                                            <!-- Not purchased message -->
+                                            <h:panelGroup
+                                                rendered="#{!reviewMB.canUserReviewProduct(productMB.selectedProduct, auth.currentCustomer) and !reviewMB.hasUserReviewedProduct(productMB.selectedProduct, auth.currentCustomer)}">
+                                                <div
+                                                    class="flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                                                    <span
+                                                        class="material-symbols-outlined text-amber-600 text-2xl">info</span>
+                                                    <span class="text-amber-800 dark:text-amber-200 font-medium">
+                                                        You can only review products you have purchased and received. Please complete your order first.
+                                                    </span>
+                                                </div>
+                                            </h:panelGroup>
                                         </div>
                                     </h:panelGroup>
 
                                     <h:panelGroup rendered="#{!auth.loggedIn}">
                                         <div
-                                            class="mb-8 bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 text-center">
+                                            class="mb-8 bg-slate-50 dark:bg-[#1e3326] rounded-xl p-6 border border-gray-200 dark:border-[#2a3e32] text-center">
                                             <span
-                                                class="material-symbols-outlined text-slate-400 text-4xl mb-3 block">rate_review</span>
-                                            <p class="text-slate-600 dark:text-slate-300 mb-4">
+                                                class="material-symbols-outlined text-gray-400 text-4xl mb-3 block">rate_review</span>
+                                            <p class="text-gray-600 dark:text-gray-300 mb-4">
                                                 Please login to write a review for this product
                                             </p>
                                             <h:link outcome="/pages/user/login.xhtml"
@@ -421,10 +437,11 @@
                                     </h:panelGroup>
 
                                     <!-- Reviews List -->
+                                    <h:panelGroup id="reviewsList">
                                     <div class="flex items-center justify-between mb-6">
-                                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Customer Reviews
+                                        <h3 class="text-xl font-bold text-[#111813] dark:text-white">Customer Reviews
                                         </h3>
-                                        <div class="text-sm text-slate-500">
+                                        <div class="text-sm text-gray-500">
                                             #{reviewMB.getReviewCount(productMB.selectedProduct)} reviews
                                         </div>
                                     </div>
@@ -433,7 +450,7 @@
                                         <ui:repeat value="#{reviewMB.productReviews}" var="review" varStatus="status">
                                             <h:panelGroup rendered="#{status.index lt 5}">
                                                 <div
-                                                    class="border-b border-slate-100 dark:border-slate-800 pb-6 last:border-0 last:pb-0">
+                                                    class="border-b border-slate-100 dark:border-[#2a3e32] pb-6 last:border-0 last:pb-0">
                                                     <div class="flex items-center justify-between mb-2">
                                                         <div class="flex items-center gap-2">
                                                             <div
@@ -442,7 +459,7 @@
                                                                 2).toUpperCase()}
                                                             </div>
                                                             <span
-                                                                class="font-medium text-slate-900 dark:text-white text-sm">
+                                                                class="font-medium text-[#111813] dark:text-white text-sm">
                                                                 #{reviewMB.getCustomerName(review)}
                                                             </span>
                                                             <span
@@ -450,7 +467,7 @@
                                                                 Verified
                                                             </span>
                                                         </div>
-                                                        <span class="text-xs text-slate-400">
+                                                        <span class="text-xs text-gray-400">
                                                             <h:outputText value="#{review.createdAt}">
                                                                 <f:convertDateTime pattern="MMM dd, yyyy" />
                                                             </h:outputText>
@@ -460,12 +477,12 @@
                                                     <div class="flex text-yellow-400 text-xs mb-2">
                                                         <ui:repeat value="#{['1','2','3','4','5']}" var="star">
                                                             <span
-                                                                class="material-symbols-outlined filled-icon text-[16px] #{star le review.rating ? '' : 'text-slate-300 dark:text-slate-600'}"
+                                                                class="material-symbols-outlined filled-icon text-[16px] #{star le review.rating ? '' : 'text-gray-300 dark:text-gray-400'}"
                                                                 style="font-variation-settings: 'FILL' 1;">star</span>
                                                         </ui:repeat>
                                                     </div>
 
-                                                    <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-300">
                                                         #{review.comment}</p>
 
                                                     <!-- Admin Reply -->
@@ -477,13 +494,13 @@
                                                                     class="material-symbols-outlined text-primary text-sm">store</span>
                                                                 <span class="text-xs font-bold text-primary">Admin
                                                                     Reply</span>
-                                                                <span class="text-xs text-slate-400">
+                                                                <span class="text-xs text-gray-400">
                                                                     <h:outputText value="#{review.replyAt}">
                                                                         <f:convertDateTime pattern="MMM dd, yyyy" />
                                                                     </h:outputText>
                                                                 </span>
                                                             </div>
-                                                            <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                            <p class="text-sm text-gray-600 dark:text-gray-300">
                                                                 #{review.reply}</p>
                                                         </div>
                                                     </h:panelGroup>
@@ -494,35 +511,36 @@
                                         <h:panelGroup rendered="#{empty reviewMB.productReviews}">
                                             <div class="text-center py-8">
                                                 <span
-                                                    class="material-symbols-outlined text-slate-400 text-5xl mb-4 block">rate_review</span>
-                                                <p class="text-slate-500 dark:text-slate-400 text-lg">No reviews yet</p>
-                                                <p class="text-sm text-slate-400">Be the first to review this product!
+                                                    class="material-symbols-outlined text-gray-400 text-5xl mb-4 block">rate_review</span>
+                                                <p class="text-gray-500 dark:text-gray-400 text-lg">No reviews yet</p>
+                                                <p class="text-sm text-gray-400">Be the first to review this product!
                                                 </p>
                                             </div>
                                         </h:panelGroup>
 
                                         <h:panelGroup rendered="#{reviewMB.productReviews.size() gt 5}">
                                             <button type="button"
-                                                class="w-full mt-4 py-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 rounded-lg transition-colors"
+                                                class="w-full mt-4 py-2 text-sm text-gray-500 hover:text-slate-900 dark:hover:text-white border border-gray-200 dark:border-[#2a3e32] rounded-lg transition-colors"
                                                 onclick="showAllReviews()">
                                                 Load More Reviews
                                             </button>
                                         </h:panelGroup>
 
                                     </div>
+                                    </h:panelGroup>
 
                                 </div>
                             </div>
 
                             <!-- Shipping Tab -->
                             <div id="shipping-tab" class="tab-content hidden">
-                                <div class="prose prose-slate dark:prose-invert max-w-none">
-                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Shipping Information
+                                <div class="prose dark:prose-invert max-w-none">
+                                    <h3 class="text-lg font-bold text-[#111813] dark:text-white">Shipping Information
                                     </h3>
                                     <p>We deliver to all areas within 30km of our store locations. Orders placed before
                                         10 AM are typically delivered the same day.</p>
 
-                                    <h4 class="text-base font-bold text-slate-900 dark:text-white mt-6">Delivery Options
+                                    <h4 class="text-base font-bold text-[#111813] dark:text-white mt-6">Delivery Options
                                     </h4>
                                     <ul class="list-disc pl-5 space-y-2">
                                         <li>Standard Delivery: 2-4 hours (Free for orders over $50)</li>
@@ -530,7 +548,7 @@
                                         <li>Scheduled Delivery: Choose your preferred time slot</li>
                                     </ul>
 
-                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-6">Returns Policy
+                                    <h3 class="text-lg font-bold text-[#111813] dark:text-white mt-6">Returns Policy
                                     </h3>
                                     <p>If you're not completely satisfied with your purchase, we offer a full refund
                                         within 24 hours of delivery for fresh products.</p>
@@ -544,8 +562,8 @@
                     <div class="space-y-6">
 
                         <div
-                            class="bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-5">
-                            <h3 class="font-bold text-slate-900 dark:text-white mb-4 text-sm uppercase tracking-wider">
+                            class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-[#2a3e32] p-5">
+                            <h3 class="font-bold text-[#111813] dark:text-white mb-4 text-sm uppercase tracking-wider">
                                 Why Shop With EZMart
                             </h3>
                             <ul class="space-y-4">
@@ -555,8 +573,8 @@
                                         <span class="material-symbols-outlined text-[20px]">local_shipping</span>
                                     </div>
                                     <div>
-                                        <h4 class="font-bold text-sm text-slate-900 dark:text-white">Free Delivery</h4>
-                                        <p class="text-xs text-slate-500 dark:text-slate-400">On all orders over $50</p>
+                                        <h4 class="font-bold text-sm text-[#111813] dark:text-white">Free Delivery</h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">On all orders over $50</p>
                                     </div>
                                 </li>
 
@@ -566,9 +584,9 @@
                                         <span class="material-symbols-outlined text-[20px]">verified</span>
                                     </div>
                                     <div>
-                                        <h4 class="font-bold text-sm text-slate-900 dark:text-white">Quality Guarantee
+                                        <h4 class="font-bold text-sm text-[#111813] dark:text-white">Quality Guarantee
                                         </h4>
-                                        <p class="text-xs text-slate-500 dark:text-slate-400">Freshness you can trust
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Freshness you can trust
                                         </p>
                                     </div>
                                 </li>
@@ -579,31 +597,31 @@
                                         <span class="material-symbols-outlined text-[20px]">support_agent</span>
                                     </div>
                                     <div>
-                                        <h4 class="font-bold text-sm text-slate-900 dark:text-white">24/7 Support</h4>
-                                        <p class="text-xs text-slate-500 dark:text-slate-400">We are here to help</p>
+                                        <h4 class="font-bold text-sm text-[#111813] dark:text-white">24/7 Support</h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">We are here to help</p>
                                     </div>
                                 </li>
                             </ul>
                         </div>
 
                         <div
-                            class="bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+                            class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-[#2a3e32] p-5">
                             <div class="flex items-center gap-3 mb-4">
-                                <div class="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
+                                <div class="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 dark:bg-[#1e3326] flex items-center justify-center flex-shrink-0">
                                     <h:graphicImage value="#{homeMB.getCategoryImageUrl(productMB.selectedProduct.categoryID)}" 
                                         alt="#{productMB.selectedProduct.categoryID.categoryName}"
                                         styleClass="w-full h-full object-cover" />
                                 </div>
-                                <h3 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">
+                                <h3 class="font-bold text-[#111813] dark:text-white text-sm uppercase tracking-wider">
                                     More in #{productMB.selectedProduct.categoryID.categoryName}
                                 </h3>
                             </div>
                             <div class="flex flex-wrap gap-2">
-                                <a class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                                <a class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-[#1e3326] text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-[#25382c] transition-colors"
                                     href="#">Apples</a>
-                                <a class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                                <a class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-[#1e3326] text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-[#25382c] transition-colors"
                                     href="#">Berries</a>
-                                <a class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                                <a class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-[#1e3326] text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-[#25382c] transition-colors"
                                     href="#">Citrus</a>
                             </div>
                         </div>
@@ -671,6 +689,17 @@
                 font-size: 18px;
             }
 
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
             /* Dark mode */
             @media (prefers-color-scheme: dark) {
                 .error {
@@ -692,6 +721,92 @@
                 }
             }
         </style>
+
+        <script>
+        //<![CDATA[
+            // Hide review form and show success message
+            function hideReviewFormShowSuccess() {
+                const formContainer = document.getElementById('reviewFormContainer');
+                const successMsg = document.getElementById('successMessage');
+                
+                if (formContainer) {
+                    formContainer.style.opacity = '0';
+                    formContainer.style.maxHeight = '0';
+                    formContainer.style.overflow = 'hidden';
+                    formContainer.style.transition = 'all 0.3s ease-out';
+                    formContainer.style.marginBottom = '0';
+                }
+                
+                if (successMsg) {
+                    successMsg.style.display = 'block';
+                    setTimeout(() => {
+                        successMsg.style.animation = 'slideIn 0.5s ease-out forwards';
+                    }, 50);
+                }
+            }
+
+            function switchTab(button, tabName) {
+                // Get all tab buttons in the nav
+                const tabs = button.parentElement.querySelectorAll('button[type="button"]');
+                const tabContents = document.querySelectorAll('.tab-content');
+
+                // Remove active state from all buttons
+                tabs.forEach(tab => {
+                    tab.classList.remove('border-primary', 'text-primary');
+                    tab.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'dark:text-gray-400', 'dark:hover:text-gray-300');
+                });
+
+                // Hide all tab contents
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+
+                // Activate clicked button
+                button.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'dark:text-gray-400', 'dark:hover:text-gray-300');
+                button.classList.add('border-primary', 'text-primary');
+
+                // Show selected tab content
+                const selectedTab = document.getElementById(tabName + '-tab');
+                if (selectedTab) {
+                    selectedTab.classList.remove('hidden');
+                }
+            }
+
+            // Star rating click handler
+            document.addEventListener('DOMContentLoaded', function() {
+                const starRating = document.getElementById('star-rating');
+                if (starRating) {
+                    const stars = starRating.querySelectorAll('button[data-rating]');
+                    const ratingInputId = Object.keys(document.forms[0].elements)
+                        .find(key => document.forms[0].elements[key].id && document.forms[0].elements[key].id.includes('ratingInput'));
+                    const ratingInput = ratingInputId ? document.forms[0].elements[ratingInputId] : document.querySelector('input[id*="ratingInput"]');
+                    const ratingValue = document.getElementById('ratingValue');
+
+                    if (ratingInput && ratingValue) {
+                        stars.forEach(star => {
+                            star.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const rating = this.getAttribute('data-rating');
+                                if (ratingInput) ratingInput.value = rating;
+                                ratingValue.textContent = rating + '/5';
+
+                                // Update visual state
+                                stars.forEach((s, index) => {
+                                    if (index < rating) {
+                                        s.classList.remove('text-gray-300', 'dark:text-gray-400');
+                                        s.classList.add('text-yellow-400');
+                                    } else {
+                                        s.classList.remove('text-yellow-400');
+                                        s.classList.add('text-gray-300', 'dark:text-gray-400');
+                                    }
+                                });
+                            });
+                        });
+                    }
+                }
+            });
+        //]]>
+        </script>
 
     </ui:define>
 </ui:composition>

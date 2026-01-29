@@ -34,7 +34,7 @@
             <!-- Right Side: Registration Form -->
             <div class="w-full lg:w-1/2 flex flex-col h-screen overflow-y-auto">
                 <!-- Mobile Header -->
-                <div class="lg:hidden flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800">
+                <div class="lg:hidden flex items-center justify-between p-6 border-b border-gray-100 dark:border-border-dark">
                     <div class="flex items-center gap-2 text-[#111813] dark:text-white">
                         <div class="size-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
                             <span class="material-symbols-outlined text-xl">local_mall</span>
@@ -69,7 +69,7 @@
                             <h:form styleClass="contents">
                                 <h:commandButton id="google-reg-btn"
                                                action="#{auth.redirectToGoogleOAuth()}"
-                                               styleClass="flex items-center justify-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                                               styleClass="flex items-center justify-center gap-3 rounded-lg border border-gray-200 dark:border-[#2a3e32] bg-white dark:bg-surface-dark px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                                                value="Google" />
                             </h:form>
                         </div>
@@ -77,13 +77,13 @@
                         <h:form class="space-y-5">
                             <div class="relative">
                                 <div aria-hidden="true" class="absolute inset-0 flex items-center">
-                                    <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                                    <div class="w-full border-t border-gray-200 dark:border-[#2a3e32]"></div>
                                 </div>
                                 <!-- Username -->
                                 <div>
-                                    <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="username">#{locale.getMessage('register.username')}</label>
+                                    <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-white mb-1.5" for="username">#{locale.getMessage('register.username')}</label>
                                     <div class="relative">
-                                        <h:inputText id="username" value="#{auth.regUsername}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" />
+                                        <h:inputText id="username" value="#{auth.regUsername}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-surface-dark dark:ring-gray-700 dark:text-white transition-shadow" />
                                     </div>
                                 </div>
                                 <div class="relative flex justify-center">
@@ -92,9 +92,9 @@
                             </div>
                             <!-- First Name -->
                             <div>
-                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="first-name">#{locale.getMessage('register.firstName')}</label>
+                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-white mb-1.5" for="first-name">#{locale.getMessage('register.firstName')}</label>
                                 <div class="relative">
-                                    <h:inputText id="first-name" value="#{auth.firstName}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" />
+                                    <h:inputText id="first-name" value="#{auth.firstName}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-surface-dark dark:ring-gray-700 dark:text-white transition-shadow" />
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
                                         <span class="material-symbols-outlined text-[20px]">person</span>
                                     </div>
@@ -102,23 +102,23 @@
                             </div>
                             <!-- Middle Name -->
                             <div>
-                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="middle-name">#{locale.getMessage('register.middleName')}</label>
+                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-white mb-1.5" for="middle-name">#{locale.getMessage('register.middleName')}</label>
                                 <div class="relative">
-                                    <h:inputText id="middle-name" value="#{auth.middleName}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" />
+                                    <h:inputText id="middle-name" value="#{auth.middleName}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-surface-dark dark:ring-gray-700 dark:text-white transition-shadow" />
                                 </div>
                             </div>
                             <!-- Last Name -->
                             <div>
-                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="last-name">#{locale.getMessage('register.lastName')}</label>
+                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-white mb-1.5" for="last-name">#{locale.getMessage('register.lastName')}</label>
                                 <div class="relative">
-                                    <h:inputText id="last-name" value="#{auth.lastName}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" />
+                                    <h:inputText id="last-name" value="#{auth.lastName}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-surface-dark dark:ring-gray-700 dark:text-white transition-shadow" />
                                 </div>
                             </div>
                             <!-- Email -->
                             <div>
-                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="email">#{locale.getMessage('register.email')}</label>
+                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-white mb-1.5" for="email">#{locale.getMessage('register.email')}</label>
                                 <div class="relative">
-                                    <h:inputText id="email" value="#{auth.regEmail}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" />
+                                    <h:inputText id="email" value="#{auth.regEmail}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-surface-dark dark:ring-gray-700 dark:text-white transition-shadow" />
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
                                         <span class="material-symbols-outlined text-[20px]">mail</span>
                                     </div>
@@ -126,9 +126,9 @@
                             </div>
                             <!-- Mobile Phone -->
                             <div>
-                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="mobile-phone">#{locale.getMessage('register.mobilePhone')}</label>
+                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-white mb-1.5" for="mobile-phone">#{locale.getMessage('register.mobilePhone')}</label>
                                 <div class="relative">
-                                    <h:inputText id="mobile-phone" value="#{auth.mobilePhone}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" placeholder="10-11 digits" />
+                                    <h:inputText id="mobile-phone" value="#{auth.mobilePhone}" styleClass="form-input block w-full rounded-lg border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-surface-dark dark:ring-gray-700 dark:text-white transition-shadow" placeholder="10-11 digits" />
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
                                         <span class="material-symbols-outlined text-[20px]">phone</span>
                                     </div>
@@ -136,7 +136,7 @@
                             </div>
                             <!-- Address -->
                             <div>
-                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5">Address (Optional)</label>
+                                <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-white mb-1.5">Address (Optional)</label>
                                 <button type="button" id="select-map-btn" onclick="openRegisterAddressModal()" class="w-full flex items-center justify-center gap-2 rounded-lg bg-green-600 px-3 py-3.5 text-sm font-bold leading-6 text-white shadow-sm hover:bg-green-700 transition-all active:scale-[0.98]">
                                     <span class="material-symbols-outlined">add</span>
                                     <span>Add New Address</span>
@@ -147,18 +147,18 @@
                             <!-- Password Row -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
-                                    <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="pwd-field">#{locale.getMessage('register.password')}</label>
+                                    <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-white mb-1.5" for="pwd-field">#{locale.getMessage('register.password')}</label>
                                     <div class="relative">
-                                        <h:inputText id="pwd-field" value="#{auth.regPassword}" type="password" styleClass="form-input block w-full rounded-lg border-0 py-3.5 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" />
+                                        <h:inputText id="pwd-field" value="#{auth.regPassword}" type="password" styleClass="form-input block w-full rounded-lg border-0 py-3.5 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-surface-dark dark:ring-gray-700 dark:text-white transition-shadow" />
                                         <button id="pwd-toggle-1" class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-auto text-gray-400 hover:text-primary transition-colors" type="button">
                                             <span class="material-symbols-outlined pwd-icon">visibility_off</span>
                                         </button>
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-gray-200 mb-1.5" for="confirm-password">#{locale.getMessage('register.confirmPassword')}</label>
+                                    <label class="block text-sm font-medium leading-6 text-[#111813] dark:text-white mb-1.5" for="confirm-password">#{locale.getMessage('register.confirmPassword')}</label>
                                     <div class="relative">
-                                        <h:inputText id="confirm-password" value="#{auth.regConfirmPassword}" type="password" styleClass="form-input block w-full rounded-lg border-0 py-3.5 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-gray-800 dark:ring-gray-700 dark:text-white transition-shadow" />
+                                        <h:inputText id="confirm-password" value="#{auth.regConfirmPassword}" type="password" styleClass="form-input block w-full rounded-lg border-0 py-3.5 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-[#dce5df] placeholder:text-[#4b5563]/70 dark:placeholder:text-[#d1d5db]/70 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 dark:bg-surface-dark dark:ring-gray-700 dark:text-white transition-shadow" />
                                         <button id="pwd-toggle-2" class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-auto text-gray-400 hover:text-primary transition-colors" type="button">
                                             <span class="material-symbols-outlined pwd-icon">visibility_off</span>
                                         </button>
@@ -167,29 +167,29 @@
                             </div>
                                 <!-- Password Strength Indicator -->
                                 <div id="pwd-strength" class="flex items-center gap-1.5 mt-1">
-                                    <div id="bar1" class="h-1 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                                    <div id="bar2" class="h-1 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                                    <div id="bar3" class="h-1 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                                    <div id="bar4" class="h-1 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                                    <div id="bar1" class="h-1 flex-1 bg-gray-200 dark:bg-[#1e3326] rounded-full"></div>
+                                    <div id="bar2" class="h-1 flex-1 bg-gray-200 dark:bg-[#1e3326] rounded-full"></div>
+                                    <div id="bar3" class="h-1 flex-1 bg-gray-200 dark:bg-[#1e3326] rounded-full"></div>
+                                    <div id="bar4" class="h-1 flex-1 bg-gray-200 dark:bg-[#1e3326] rounded-full"></div>
                                     <span id="pwd-strength-label" class="text-xs text-[#4b5563] dark:text-[#d1d5db] ml-2">&#160;</span>
                                 </div>
                             <!-- Checkboxes -->
                             <div class="space-y-4 pt-2">
 <!--                                <div class="relative flex items-start">
                                     <div class="flex h-6 items-center">
-                                        <input aria-describedby="marketing-description" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700" id="marketing" name="marketing" type="checkbox"/>
+                                        <input aria-describedby="marketing-description" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-[#2a3e32] dark:bg-[#1e3326]" id="marketing" name="marketing" type="checkbox"/>
                                     </div>
                                     <div class="ml-3 text-sm leading-6">
-                                        <label class="font-medium text-[#111813] dark:text-gray-200" for="marketing">#{locale.getMessage('register.keepUpdated')}</label>
+                                        <label class="font-medium text-[#111813] dark:text-white" for="marketing">#{locale.getMessage('register.keepUpdated')}</label>
                                         <p class="text-[#4b5563] dark:text-[#d1d5db]" id="marketing-description">#{locale.getMessage('register.emailAbout')}</p>
                                     </div>
                                 </div>-->
                                 <div class="relative flex items-start">
                                     <div class="flex h-6 items-center">
-                                        <input checked="" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700" id="terms" name="terms" type="checkbox"/>
+                                        <input checked="" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-[#2a3e32] dark:bg-[#1e3326]" id="terms" name="terms" type="checkbox"/>
                                     </div>
                                     <div class="ml-3 text-sm leading-6">
-                                        <label class="font-medium text-[#111813] dark:text-gray-200" for="terms">#{locale.getMessage('register.agreeToTerms')} <a class="text-primary hover:underline" href="#">#{locale.getMessage('register.termsOfService')}</a> #{locale.getMessage('register.and')} <a class="text-primary hover:underline" href="#">#{locale.getMessage('register.privacyPolicy')}</a>.</label>
+                                        <label class="font-medium text-[#111813] dark:text-white" for="terms">#{locale.getMessage('register.agreeToTerms')} <a class="text-primary hover:underline" href="#">#{locale.getMessage('register.termsOfService')}</a> #{locale.getMessage('register.and')} <a class="text-primary hover:underline" href="#">#{locale.getMessage('register.privacyPolicy')}</a>.</label>
                                     </div>
                                 </div>
                             </div>
@@ -410,12 +410,12 @@
                                     for(var i=0;i<4;i++){
                                         if(i<score){
                                             bars[i].classList.remove('bg-gray-200');
-                                            bars[i].classList.remove('dark:bg-gray-700');
+                                            bars[i].classList.remove('dark:bg-[#1e3326]');
                                             bars[i].classList.add('bg-primary');
                                         } else {
                                             bars[i].classList.remove('bg-primary');
                                             bars[i].classList.add('bg-gray-200');
-                                            bars[i].classList.add('dark:bg-gray-700');
+                                            bars[i].classList.add('dark:bg-[#1e3326]');
                                         }
                                     }
                                     var label = document.querySelector('span[id$="pwd-strength-label"]') || document.getElementById('pwd-strength-label');
@@ -609,7 +609,7 @@
                                         // Add styling to the control element (the visible input area)
                                         var regionControl = regionSelect.parentElement.querySelector('.ts-control');
                                         if(regionControl && regionControl.classList) {
-                                            regionControl.classList.add('w-full', 'p-2', 'border', 'rounded-md', 'bg-white', 'dark:bg-gray-800');
+                                            regionControl.classList.add('w-full', 'p-2', 'border', 'rounded-md', 'bg-white', 'dark:bg-surface-dark');
                                         }
                                         console.log('Region Tom-Select initialized successfully');
                                     } catch(e) {
@@ -633,7 +633,7 @@
                                         // Add styling to the control element (the visible input area)
                                         var cityControl = citySelect.parentElement.querySelector('.ts-control');
                                         if(cityControl && cityControl.classList) {
-                                            cityControl.classList.add('w-full', 'p-2', 'border', 'rounded-md', 'bg-white', 'dark:bg-gray-800');
+                                            cityControl.classList.add('w-full', 'p-2', 'border', 'rounded-md', 'bg-white', 'dark:bg-surface-dark');
                                         }
                                         console.log('City Tom-Select initialized successfully');
                                     } catch(e) {

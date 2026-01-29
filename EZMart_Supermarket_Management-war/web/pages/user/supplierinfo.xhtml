@@ -18,7 +18,7 @@
                     <h:messages globalOnly="false" styleClass="text-red-600 font-medium mb-4" />
 
                     <!-- Supplier Details -->
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-12">
+                    <div class="bg-white dark:bg-surface-dark rounded-xl shadow-lg overflow-hidden mb-12">
                         <div class="bg-gradient-to-r from-primary/20 to-primary/5 p-8">
                             <div class="flex items-center gap-6">
                                 <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
@@ -80,8 +80,8 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             <ui:repeat value="#{supplierUserMB.supplierProducts}" var="product">
                                 <div
-                                    class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
-                                    <div class="relative aspect-square bg-gray-50 dark:bg-gray-700 overflow-hidden">
+                                    class="group bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-[#2a3e32] overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
+                                    <div class="relative aspect-square bg-gray-50 dark:bg-[#1e3326] overflow-hidden">
                                         <ui:param name="supplierImgPath"
                                             value="#{not empty productMB.productImageUrl(product) ? productMB.productImageUrl(product) : '/images/no-image.png'}" />
                                         <img alt="#{product.productName}"

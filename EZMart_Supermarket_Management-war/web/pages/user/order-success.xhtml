@@ -8,7 +8,7 @@
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full mb-4">
                     <span class="material-symbols-outlined text-green-600 text-3xl">check_circle</span>
                 </div>
-                <h1 class="text-3xl md:text-4xl font-black tracking-tight text-[#111813] dark:text-[#111813] mb-2">
+                <h1 class="text-3xl md:text-4xl font-black tracking-tight text-[#111813] dark:text-white mb-2">
                     #{orderSuccessMB.successTitle}
                 </h1>
                 <p class="text-gray-500 dark:text-gray-400 text-lg">
@@ -20,23 +20,23 @@
                 <!-- Order Details -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- Order Summary Card -->
-                    <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg">
-                        <h2 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-4">Order Details</h2>
+                    <div class="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-border-dark p-6 shadow-lg">
+                        <h2 class="text-xl font-bold text-[#111813] dark:text-white mb-4">Order Details</h2>
                         <div class="space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">Order ID</p>
-                                    <p class="font-semibold text-[#111813] dark:text-[#111813]">##{orderSuccessMB.orderId}</p>
+                                    <p class="font-semibold text-[#111813] dark:text-white">##{orderSuccessMB.orderId}</p>
                                 </div>
                                 <div>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">Order Date</p>
-                                    <p class="font-semibold text-[#111813] dark:text-[#111813]">#{orderSuccessMB.order.orderDate}</p>
+                                    <p class="font-semibold text-[#111813] dark:text-white">#{orderSuccessMB.order.orderDate}</p>
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">Payment Method</p>
-                                    <p class="font-semibold text-[#111813] dark:text-[#111813]">#{orderSuccessMB.order.paymentMethod}</p>
+                                    <p class="font-semibold text-[#111813] dark:text-white">#{orderSuccessMB.order.paymentMethod}</p>
                                 </div>
                                 <div>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">Order Status</p>
@@ -46,23 +46,23 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">Delivery Method</p>
-                                    <p class="font-semibold text-[#111813] dark:text-[#111813]">#{orderSuccessMB.shippingMethodDisplay}</p>
+                                    <p class="font-semibold text-[#111813] dark:text-white">#{orderSuccessMB.shippingMethodDisplay}</p>
                                 </div>
                                 <div>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">Estimated Delivery</p>
-                                    <p class="font-semibold text-[#111813] dark:text-[#111813]">#{orderSuccessMB.deliveryEstimate}</p>
+                                    <p class="font-semibold text-[#111813] dark:text-white">#{orderSuccessMB.deliveryEstimate}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Order Items -->
-                    <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg">
-                        <h2 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-4">Order Items</h2>
+                    <div class="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-border-dark p-6 shadow-lg">
+                        <h2 class="text-xl font-bold text-[#111813] dark:text-white mb-4">Order Items</h2>
                         <div class="space-y-4">
                             <ui:repeat value="#{orderSuccessMB.orderItems}" var="item">
-                                <div class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                                    <div class="h-16 w-16 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0 flex items-center justify-center">
+                                <div class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-surface-dark/50 rounded-lg">
+                                    <div class="h-16 w-16 rounded-lg bg-gray-100 dark:bg-[#1e3326] overflow-hidden shrink-0 flex items-center justify-center">
                                         <ui:param name="productImgPath" value="#{orderSuccessMB.productImageUrl(item.productID)}" />
                                         <img alt="#{orderSuccessMB.getProductName(item)}"
                                              class="h-full w-full object-cover"
@@ -70,7 +70,7 @@
                                              onerror="this.onerror=null; this.src='/images/work.png';" />
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="font-semibold text-[#111813] dark:text-[#111813] truncate">
+                                        <p class="font-semibold text-[#111813] dark:text-white truncate">
                                             #{orderSuccessMB.getProductName(item)}
                                         </p>
                                         <p class="text-sm text-gray-600 dark:text-gray-400">
@@ -78,7 +78,7 @@
                                         </p>
                                     </div>
                                     <div class="text-right">
-                                        <p class="font-semibold text-[#111813] dark:text-[#111813]">
+                                        <p class="font-semibold text-[#111813] dark:text-white">
                                             $#{item.totalPrice}
                                         </p>
                                     </div>
@@ -91,18 +91,18 @@
                 <!-- Order Total & Actions -->
                 <div class="space-y-6">
                     <!-- Order Total -->
-                    <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg">
-                        <h2 class="text-xl font-bold text-[#111813] dark:text-[#111813] mb-4">Order Total</h2>
+                    <div class="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-border-dark p-6 shadow-lg">
+                        <h2 class="text-xl font-bold text-[#111813] dark:text-white mb-4">Order Total</h2>
                         <div class="space-y-2">
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-600 dark:text-gray-400">Subtotal</span>
-                                <span class="font-medium text-[#111813] dark:text-[#111813]">$#{orderSuccessMB.orderTotal}</span>
+                                <span class="font-medium text-[#111813] dark:text-white">$#{orderSuccessMB.orderTotal}</span>
                             </div>
                         </div>
-                        <div class="border-t border-gray-100 dark:border-gray-800 pt-4 mt-4">
+                        <div class="border-t border-gray-100 dark:border-border-dark pt-4 mt-4">
                             <div class="flex justify-between items-center">
-                                <span class="text-lg font-bold text-[#111813] dark:text-[#111813]">Total</span>
-                                <span class="text-2xl font-black text-[#111813] dark:text-[#111813]">$#{orderSuccessMB.orderTotal}</span>
+                                <span class="text-lg font-bold text-[#111813] dark:text-white">Total</span>
+                                <span class="text-2xl font-black text-[#111813] dark:text-white">$#{orderSuccessMB.orderTotal}</span>
                             </div>
                         </div>
                     </div>
@@ -143,7 +143,7 @@
                             Continue Shopping
                         </h:link>
                         <h:link outcome="/pages/user/orderhistory.xhtml"
-                                class="w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                                class="w-full bg-gray-100 dark:bg-surface-dark hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined">receipt_long</span>
                             View My Orders
                         </h:link>

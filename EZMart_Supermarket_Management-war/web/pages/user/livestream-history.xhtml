@@ -15,8 +15,8 @@
                             <span class="material-symbols-outlined">arrow_back</span>
                             Back to Live
                         </a>
-                        <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Your Livestream History</h1>
-                        <p class="text-slate-600 dark:text-slate-400 mt-1">Replay sessions you've watched</p>
+                        <h1 class="text-3xl font-bold text-[#111813] dark:text-white">Your Livestream History</h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Replay sessions you've watched</p>
                     </div>
                 </div>
 
@@ -24,7 +24,7 @@
                 <div id="historyList" class="space-y-3">
                     <!-- History items will be loaded here -->
                     <div class="text-center py-12">
-                        <div class="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                        <div class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400">
                             <div class="w-4 h-4 border-2 border-slate-300 border-t-primary rounded-full animate-spin"></div>
                             Loading your history...
                         </div>
@@ -34,12 +34,12 @@
                 <!-- Empty State -->
                 <div id="emptyState" class="text-center py-16" style="display: none;">
                     <div class="inline-flex flex-col items-center gap-4">
-                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center">
-                            <span class="material-symbols-outlined text-3xl text-slate-400">history</span>
+                        <div class="w-16 h-16 bg-slate-100 dark:bg-[#1e3326] rounded-full flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl text-gray-400">history</span>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">No history yet</h3>
-                            <p class="text-slate-600 dark:text-slate-400 mt-1">Join a livestream to start your history</p>
+                            <h3 class="text-lg font-semibold text-[#111813] dark:text-white">No history yet</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mt-1">Join a livestream to start your history</p>
                         </div>
                         <a href="/EZMart_Supermarket_Management-war/pages/user/livestream.xhtml"
                            class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-green-600 transition-colors">
@@ -84,18 +84,18 @@
                     const duration = item.totalDuration ? formatDuration(item.totalDuration) : 'Still watching';
 
                     return `
-                        <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 hover:shadow-md transition-shadow">
+                        <div class="bg-white dark:bg-[#1e3326] rounded-lg border border-gray-200 dark:border-[#2a3e32] p-4 hover:shadow-md transition-shadow">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
-                                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white">${item.sessionTitle}</h3>
-                                    <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">by ${item.staffName}</p>
+                                    <h3 class="text-lg font-semibold text-[#111813] dark:text-white">${item.sessionTitle}</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">by ${item.staffName}</p>
                                     
                                     <div class="flex flex-wrap gap-4 mt-3 text-sm">
-                                        <div class="flex items-center gap-1 text-slate-600 dark:text-slate-400">
+                                        <div class="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                                             <span class="material-symbols-outlined text-[16px]">schedule</span>
                                             ${joinDate.toLocaleString()}
                                         </div>
-                                        <div class="flex items-center gap-1 text-slate-600 dark:text-slate-400">
+                                        <div class="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                                             <span class="material-symbols-outlined text-[16px]">timer</span>
                                             Watched: ${duration}
                                         </div>

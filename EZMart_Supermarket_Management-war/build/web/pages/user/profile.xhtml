@@ -122,7 +122,7 @@
                                             <div id="addr_is_default_toggle" role="button" tabindex="0"
                                                 onclick="toggleDefaultCheckbox();"
                                                 onkeydown="if(event.key==='Enter' || event.key===' '){ event.preventDefault(); toggleDefaultCheckbox(); }"
-                                                class="w-11 h-6 bg-gray-300 dark:bg-gray-600 peer-checked:bg-emerald-500 rounded-full transition-colors peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white dark:after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:border after:border-gray-300 dark:after:border-gray-600 cursor-pointer">
+                                                class="w-11 h-6 bg-gray-300 dark:bg-[#25382c] peer-checked:bg-emerald-500 rounded-full transition-colors peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white dark:after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:border after:border-gray-300 dark:after:border-gray-600 cursor-pointer">
                                             </div>
                                             <h:inputHidden id="addr_is_default_hidden"
                                                 value="#{addressCtrl.editingAddress.isDefault}" />
@@ -304,7 +304,7 @@
                                     <input type="file" name="avatarFile" id="avatarFileInput" class="hidden"
                                         accept="image/*" data-context-path="#{request.contextPath}" />
                                     <label for="avatarFileInput"
-                                        class="inline-block bg-white dark:bg-[#2a3e32] rounded-full p-2 border border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-[#111813] dark:text-white transition-colors cursor-pointer">
+                                        class="inline-block bg-white dark:bg-[#2a3e32] rounded-full p-2 border border-gray-200 dark:border-[#2a3e32] shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-[#111813] dark:text-white transition-colors cursor-pointer">
                                         <span
                                             class="material-symbols-outlined text-[18px] leading-none">photo_camera</span>
                                     </label>
@@ -603,7 +603,7 @@
                                         </div>
 
                                         <!-- Map Section (portrait 9:16) -->
-                                        <div class="mt-2 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex-grow"
+                                        <div class="mt-2 rounded-lg overflow-hidden bg-gray-100 dark:bg-surface-dark flex-grow"
                                             style="aspect-ratio:16/9; min-height:200px;">
                                             <div class="addr-leaflet-map w-full h-full" data-lat="#{addr.latitude}"
                                                 data-lng="#{addr.longitude}" data-id="map-#{addr.addressID}"></div>
@@ -705,7 +705,7 @@
                                 <!-- Modal Body (scrollable) -->
                                 <div class="flex-1 overflow-y-auto">
                                     <!-- Tabs Navigation -->
-                                    <div class="flex gap-0 border-b bg-gray-50 dark:bg-gray-800 px-6 pt-4">
+                                    <div class="flex gap-0 border-b bg-gray-50 dark:bg-surface-dark px-6 pt-4">
                                         <button type="button" onclick="switchPaymentTab('visa')" class="payment-tab-btn active px-6 py-3 font-semibold text-sm border-b-2 border-primary text-primary" data-tab="visa">
                                             <span class="material-symbols-outlined mr-2" style="vertical-align: middle; font-size: 20px;">credit_card</span>
                                             Visa
@@ -851,7 +851,7 @@
                                 </div>
 
                                 <!-- Modal Footer -->
-                                <div class="sticky bottom-0 flex justify-end gap-3 p-6 bg-gray-50 dark:bg-gray-800 border-t">
+                                <div class="sticky bottom-0 flex justify-end gap-3 p-6 bg-gray-50 dark:bg-surface-dark border-t">
                                     <button type="button" onclick="closePaymentModal();" 
                                         class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition">
                                         Cancel

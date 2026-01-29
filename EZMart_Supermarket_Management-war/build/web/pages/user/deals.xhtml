@@ -38,7 +38,7 @@
                 <div class="grid grid-cols-1 gap-8">
                     <ui:repeat var="deal" value="#{dealsMB.availableDeals}">
                         <!-- Deal Card -->
-                        <div class="rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900">
+                        <div class="rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-[#2a3e32] bg-white dark:bg-[#112116]">
                             <!-- Banner -->
                             <div class="relative">
                                 <h:panelGroup rendered="#{not empty deal.bannerImage}">
@@ -94,7 +94,7 @@
 
                             <!-- Associated Products (for PERCENTAGE) -->
 <h:panelGroup rendered="#{deal.offerType != null and deal.offerType.toLowerCase() == 'percentage'}">
-                                <div class="p-6 md:p-8 border-t border-gray-100 dark:border-gray-800">
+                                <div class="p-6 md:p-8 border-t border-gray-100 dark:border-border-dark">
                                     <div class="flex items-center justify-between mb-6">
                                         <h4 class="text-xl font-bold text-gray-900 dark:text-white">
                                             Products in this Deal
@@ -107,19 +107,19 @@
                                     <ui:fragment rendered="#{not empty dealsMB.getAssociatedProducts(deal)}">
                                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                                             <ui:repeat var="product" value="#{dealsMB.getAssociatedProducts(deal)}">
-                                                <div class="group rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-5 hover:shadow-lg transition">
+                                                <div class="group rounded-2xl border border-gray-100 dark:border-[#2a3e32] bg-gray-50 dark:bg-surface-dark p-5 hover:shadow-lg transition">
                                                     <!-- Product Image -->
                                                     <div class="relative aspect-square mb-4">
                                                         <h:link outcome="productdetail" styleClass="block w-full h-full">
                                                             <f:param name="productId" value="#{product.productID}" />
 
-                                                            <div class="relative aspect-square bg-slate-50 dark:bg-slate-800 rounded-lg overflow-hidden">
+                                                            <div class="relative aspect-square bg-slate-50 dark:bg-[#1e3326] rounded-lg overflow-hidden">
                                                                 <ui:param name="productImgPath" value="#{productMB.productImageUrl(product)}" />
                                                                 <img src="#{request.contextPath}#{productImgPath}"
                                                                     rendered="#{not empty productImgPath}"
                                                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                                     alt="#{product.productName}" />
-                                                                <div class="w-full h-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"
+                                                                <div class="w-full h-full bg-slate-100 dark:bg-[#1e3326] flex items-center justify-center text-gray-400"
                                                                     rendered="#{empty productImgPath}">
                                                                     <span class="material-symbols-outlined text-6xl">image</span>
                                                                 </div>
@@ -173,7 +173,7 @@
             <!-- No Deals -->
             <ui:fragment rendered="#{empty dealsMB.availableDeals}">
                 <div class="text-center py-16">
-                    <div class="max-w-md mx-auto rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-8 shadow-sm">
+                    <div class="max-w-md mx-auto rounded-2xl border border-gray-100 dark:border-border-dark bg-white dark:bg-[#112116] p-8 shadow-sm">
                         <svg class="mx-auto h-20 w-20 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>

@@ -81,7 +81,7 @@
 
                     <!-- Page Header & Toolbar -->
                     <div
-                        class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 border-b border-gray-100 dark:border-gray-800 pb-6">
+                        class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 border-b border-gray-100 dark:border-border-dark pb-6">
                         <div>
                             <h1
                                 class="text-3xl sm:text-4xl font-black text-text-main dark:text-white tracking-tight mb-2">
@@ -94,7 +94,7 @@
                             <div class="relative flex-grow md:flex-grow-0 md:w-64">
                                 <h:form style="display:inline;">
                                     <h:inputText value="#{wishlistMB.searchKeyword}"
-                                        styleClass="w-full h-10 pl-3 pr-8 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:ring-primary focus:border-primary"
+                                        styleClass="w-full h-10 pl-3 pr-8 rounded-lg border border-gray-200 dark:border-[#2a3e32] bg-white dark:bg-surface-dark text-sm focus:ring-primary focus:border-primary"
                                         placeholder="Search wishlist...">
                                         <f:ajax event="keyup" listener="#{wishlistMB.searchWishlist}"
                                             render=":wishlistGrid" delay="300" />
@@ -133,13 +133,13 @@
                                 <ui:repeat value="#{wishlistMB.wishlistItems}" var="item">
                                     <!-- Product Card -->
                                     <div
-                                        class="group bg-surface dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col overflow-hidden">
+                                        class="group bg-surface dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-[#2a3e32] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col overflow-hidden">
 
                                         <!-- Remove Button -->
                                         <h:form>
                                             <h:commandLink
                                                 action="#{wishlistMB.removeFromWishlist(item.productID.productID)}"
-                                                styleClass="absolute top-3 right-3 z-10 p-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-full text-gray-400 hover:text-red-500 hover:bg-white dark:hover:bg-gray-700 transition-colors shadow-sm group/btn"
+                                                styleClass="absolute top-3 right-3 z-10 p-2 bg-white/80 dark:bg-[#1e3326]/80 backdrop-blur-sm rounded-full text-gray-400 hover:text-red-500 hover:bg-white dark:hover:bg-gray-700 transition-colors shadow-sm group/btn"
                                                 title="Remove from wishlist">
                                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                                 <f:ajax render="@this :wishlistGrid" /> <!-- Ajax removal -->
@@ -147,7 +147,7 @@
                                         </h:form>
 
                                         <!-- Image Area -->
-                                        <div class="relative pt-[100%] bg-gray-50 dark:bg-gray-900 overflow-hidden">
+                                        <div class="relative pt-[100%] bg-gray-50 dark:bg-[#112116] overflow-hidden">
                                             <a href="#{request.contextPath}/pages/user/productdetail.xhtml?productId=#{item.productID.productID}"
                                                 class="absolute inset-0 block">
                                                 <h:graphicImage value="#{wishlistMB.getProductImageUrl(item.productID)}"
@@ -188,7 +188,7 @@
                                             <!-- Action Button -->
                                             <h:form>
                                                 <h:commandLink action="#{cartMB.addToCart(item.productID, 1)}"
-                                                    styleClass="w-full flex items-center justify-center gap-2 #{item.productID.stockQuantity > 0 ? 'bg-primary hover:bg-primary-dark text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'} font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm active:scale-[0.98]"
+                                                    styleClass="w-full flex items-center justify-center gap-2 #{item.productID.stockQuantity > 0 ? 'bg-primary hover:bg-primary-dark text-white' : 'bg-gray-200 dark:bg-[#1e3326] text-gray-500 dark:text-gray-400 cursor-not-allowed'} font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm active:scale-[0.98]"
                                                     disabled="#{item.productID.stockQuantity le 0}">
                                                     <ui:fragment rendered="#{item.productID.stockQuantity > 0}">
                                                         <span

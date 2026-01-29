@@ -121,7 +121,7 @@
                 <h:panelGroup rendered="#{homeMB.categories != null and homeMB.categories.size() > 0}">
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         <ui:repeat var="category" value="#{homeMB.categories}">
-                            <h:link outcome="products" styleClass="group flex flex-col items-center gap-3 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 hover:border-primary/50 hover:shadow-md transition-all">
+                            <h:link outcome="products" styleClass="group flex flex-col items-center gap-3 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-border-dark hover:border-primary/50 hover:shadow-md transition-all">
                                 <f:param name="category" value="#{category.categoryID}"/>
                                 <div class="w-16 h-16 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center overflow-hidden">
                                     <img src="#{request.contextPath}/images/categories/#{category.imageURL}" alt="#{category.categoryName}" class="w-full h-full object-cover" />
@@ -148,10 +148,10 @@
                         <p class="text-sm text-green-600 dark:text-green-400 mt-1">Offers expire in 04:23:15</p>
                     </div>
                     <div class="flex gap-2">
-                        <button class="p-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <button class="p-2 rounded-full border border-gray-300 dark:border-[#2a3e32] hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                             <span class="material-symbols-outlined text-[20px]">chevron_left</span>
                         </button>
-                        <button class="p-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <button class="p-2 rounded-full border border-gray-300 dark:border-[#2a3e32] hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                             <span class="material-symbols-outlined text-[20px]">chevron_right</span>
                         </button>
                     </div>
@@ -159,16 +159,16 @@
                 <h:panelGroup rendered="#{homeMB.dailyDeals != null and homeMB.dailyDeals.size() > 0}">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <ui:repeat var="product" value="#{homeMB.dailyDeals}">
-                            <div class="group bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full p-5">
+                            <div class="group bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-[#2a3e32] overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full p-5">
                                 <!-- Product Image with Link -->
-                                <h:link outcome="productdetail" styleClass="block relative aspect-square bg-gray-50 dark:bg-gray-800 overflow-hidden rounded-xl mb-4">
+                                <h:link outcome="productdetail" styleClass="block relative aspect-square bg-gray-50 dark:bg-surface-dark overflow-hidden rounded-xl mb-4">
                                     <f:param name="productId" value="#{product.productID}" />
                                     <ui:param name="productImgPath" value="#{homeMB.getProductImageUrl(product)}" />
                                     <img src="#{request.contextPath}#{productImgPath}"
                                         rendered="#{not empty productImgPath}"
                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                         alt="#{product.productName}" />
-                                    <div class="w-full h-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400"
+                                    <div class="w-full h-full bg-gray-100 dark:bg-surface-dark flex items-center justify-center text-gray-400"
                                         rendered="#{empty productImgPath}">
                                         <span class="material-symbols-outlined text-6xl">image</span>
                                     </div>
@@ -209,7 +209,7 @@
             </section>
 
             <!-- Featured Collection -->
-            <section class="rounded-2xl bg-surface-light dark:bg-surface-dark p-8 md:p-12 border border-gray-100 dark:border-gray-800">
+            <section class="rounded-2xl bg-surface-light dark:bg-surface-dark p-8 md:p-12 border border-gray-100 dark:border-border-dark">
                 <div class="flex flex-col md:flex-row items-center gap-8">
                     <div class="flex-1 space-y-4">
                         <span class="text-primary font-bold tracking-wide uppercase text-sm">Best Sellers</span>

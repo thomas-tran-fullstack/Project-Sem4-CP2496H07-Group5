@@ -16,17 +16,17 @@
 
             <!-- Page Heading -->
             <div class="mb-8">
-                <h1 class="text-3xl md:text-4xl font-black tracking-tight text-[#111813] dark:text-[#111813] mb-2">
+                <h1 class="text-3xl md:text-4xl font-black tracking-tight text-[#111813] dark:text-white mb-2">
                     My Orders
                 </h1>
                 <p class="text-gray-500 dark:text-gray-400">View and track your order history</p>
             </div>
 
             <!-- Filters -->
-            <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 p-6 shadow-lg mb-8">
+            <div class="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-border-dark p-6 shadow-lg mb-8">
                 <div class="flex flex-col md:flex-row gap-4">
                     <div class="flex-1">
-                        <label class="block text-sm font-medium text-[#111813] dark:text-gray-200 mb-2">
+                        <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">
                             Status Filter
                         </label>
                         <h:selectOneMenu value="#{orderHistoryMB.selectedStatus}" class="form-select w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base">
@@ -40,7 +40,7 @@
                         </h:selectOneMenu>
                     </div>
                     <div class="flex-1">
-                        <label class="block text-sm font-medium text-[#111813] dark:text-gray-200 mb-2">
+                        <label class="block text-sm font-medium text-[#111813] dark:text-white mb-2">
                             Search Order ID
                         </label>
                         <h:inputText value="#{orderHistoryMB.searchTerm}" class="form-input w-full rounded-lg border border-[#dce5df] dark:border-[#405646] bg-white dark:bg-[#112116] h-12 px-4 text-base" placeholder="Enter Order ID">
@@ -51,10 +51,10 @@
             </div>
 
             <!-- Orders Table -->
-            <div class="bg-white dark:bg-[#1a2e22] rounded-xl border border-gray-100 dark:border-gray-800 shadow-lg overflow-hidden">
+            <div class="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-border-dark shadow-lg overflow-hidden">
                 <h:dataTable id="ordersTable" value="#{orderHistoryMB.filteredOrders}" var="order" 
-                    styleClass="w-full" rowClasses="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-[#1f332a] transition-colors"
-                    headerClass="bg-gray-50 dark:bg-[#1a2e22] text-left text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider"
+                    styleClass="w-full" rowClasses="border-b border-gray-100 dark:border-border-dark hover:bg-gray-50 dark:hover:bg-[#1f332a] transition-colors"
+                    headerClass="bg-gray-50 dark:bg-surface-dark text-left text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider"
                     columnClasses="px-6 py-4 whitespace-nowrap">
 
                     <h:column>
@@ -78,7 +78,7 @@
 
                     <h:column>
                         <f:facet name="header">Total</f:facet>
-                        <span class="font-bold text-[#111813] dark:text-[#111813]">$#{order.totalAmount}</span>
+                        <span class="font-bold text-[#111813] dark:text-white">$#{order.totalAmount}</span>
                     </h:column>
 
                     <h:column>

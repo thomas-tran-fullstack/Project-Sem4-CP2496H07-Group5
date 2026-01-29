@@ -76,4 +76,23 @@ public class TimeFormatUtil {
         
         return diffInMinutes <= 5;
     }
+
+    /**
+     * Check if the last online time was "just now" (within 60 seconds)
+     */
+    public static boolean isJustNow(Date lastOnlineAt) {
+        if (lastOnlineAt == null) {
+            return true; // New user is considered "just now"
+        }
+        
+        Date now = new Date();
+        long diffInMillis = now.getTime() - lastOnlineAt.getTime();
+        
+        if (diffInMillis < 0) {
+            return true;
+        }
+        
+        long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(diffInMillis);
+        return diffInSeconds < 60;
+    }
 }

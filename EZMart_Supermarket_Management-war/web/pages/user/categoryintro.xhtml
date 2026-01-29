@@ -16,7 +16,7 @@
                 <!-- Categories Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <ui:repeat value="#{categoryUserMB.categories}" var="category">
-                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                        <div class="bg-white dark:bg-surface-dark rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
                             <!-- Category Image/Icon -->
                             <div class="h-48 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                                 <span class="material-symbols-outlined text-6xl text-primary">category</span>
@@ -58,7 +58,7 @@
                             <h:link outcome="products" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200">
                                 Browse All Products
                             </h:link>
-                            <h:link outcome="contact" class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 px-6 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors duration-200">
+                            <h:link outcome="contact" class="bg-white dark:bg-surface-dark hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium py-3 px-6 rounded-lg border border-gray-200 dark:border-[#2a3e32] transition-colors duration-200">
                                 Contact Us
                             </h:link>
                         </div>
